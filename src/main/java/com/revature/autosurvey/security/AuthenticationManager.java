@@ -45,6 +45,12 @@ public class AuthenticationManager implements ReactiveAuthenticationManager, Ini
 	private Logger log = LoggerFactory.getLogger(AuthenticationManager.class);
 	@Value("${google.firebase.apikey}")
 	private String firebaseKey;
+	@Value("${google.firebase.credentialsjson")
+	private String credentials;
+	@Value("${google.firebase.serviceaccountid}")
+	private String serviceAccountId;
+	@Value("${google.firebase.databaseurl}")
+	private String databaseUrl;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -52,10 +58,10 @@ public class AuthenticationManager implements ReactiveAuthenticationManager, Ini
 			if (FirebaseApp.getApps().isEmpty()) {
 				FirebaseOptions options = FirebaseOptions.builder()
 						.setCredentials(GoogleCredentials.fromStream(new FileInputStream(
-								new ClassPathResource("authtest-2eb7f-firebase-adminsdk-kbcc0-74b1383c77.json")
+								new ClassPathResource(credentials)
 										.getFile())))
-						.setServiceAccountId("firebase-adminsdk-kbcc0@authtest-2eb7f.iam.gserviceaccount.com")
-						.setDatabaseUrl("https://authtest-2eb7f-default-rtdb.firebaseio.com/").build();
+						.setServiceAccountId(serviceAccountId)
+						.setDatabaseUrl(databaseUrl).build();
 				FirebaseApp.initializeApp(options);
 			}
 		} catch (IOException e) {
