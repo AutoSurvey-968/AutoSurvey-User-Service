@@ -31,8 +31,8 @@ public class SecurityConfig {
 						(swe, e) -> Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN)))
 				.and().csrf().disable().formLogin().disable().httpBasic().disable()
 				.authenticationManager(authenticationManager).securityContextRepository(securityContextRepository)
-				.authorizeExchange().pathMatchers(HttpMethod.OPTIONS).permitAll().pathMatchers("/gamers/login")
-				.permitAll().pathMatchers("/gamers/register").permitAll().anyExchange().authenticated().and().build();
+				.authorizeExchange().pathMatchers(HttpMethod.OPTIONS).permitAll().pathMatchers(HttpMethod.PUT, "/users")
+				.permitAll().pathMatchers(HttpMethod.POST, "/users").permitAll().anyExchange().authenticated().and().build();
 	}
 
 }

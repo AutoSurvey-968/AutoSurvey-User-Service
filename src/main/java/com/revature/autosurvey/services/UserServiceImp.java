@@ -1,6 +1,7 @@
 package com.revature.autosurvey.services;
 
 import com.revature.autosurvey.beans.User;
+import com.revature.autosurvey.repos.UserRepo;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -41,6 +42,11 @@ public class UserServiceImp implements UserService{
 	public Mono<User> deleteUser(String ID) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void setUserRepo(UserRepo userRepo) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

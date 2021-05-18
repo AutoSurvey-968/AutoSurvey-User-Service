@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.group3.beans.Gamer;
 import com.revature.autosurvey.beans.User;
 
 @Component
