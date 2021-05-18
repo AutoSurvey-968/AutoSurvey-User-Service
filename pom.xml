@@ -46,8 +46,8 @@
 						</goals>
 						<configuration>
 							<excludes>
-								<exclude>**/com/group3/beans/*</exclude>
-								<exclude>**/com/group3/aspects/*</exclude>
+								<exclude>**/com/revature/autoservey/beans/*</exclude>
+								<exclude>**/com/revature/autosurveyaspects/*</exclude>
 							</excludes>
 						</configuration>
 					</execution>
