@@ -18,7 +18,7 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 
 @Configuration
-@EnableCassandraRepositories(basePackages = { "com.group3.data" })
+@EnableCassandraRepositories(basePackages = { "com.revature.survey.data" })
 public class CassandraConfig {
 
 	@Bean
