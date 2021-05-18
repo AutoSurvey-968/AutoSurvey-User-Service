@@ -18,7 +18,7 @@
 	<properties>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
-		<sonar.projectKey>AutoSurvey-968_AutoSurvey-Analytics-Service</sonar.projectKey>
+		<sonar.projectKey>AutoSurvey-968_AutoSurvey-User-Service</sonar.projectKey>
 		<sonar.organization>autosurvey-968</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
@@ -46,8 +46,8 @@
 						</goals>
 						<configuration>
 							<excludes>
-								<exclude>**/com/group3/beans/*</exclude>
-								<exclude>**/com/group3/aspects/*</exclude>
+								<exclude>**/com/revature/autoservey/beans/*</exclude>
+								<exclude>**/com/revature/autosurveyaspects/*</exclude>
 							</excludes>
 						</configuration>
 					</execution>
