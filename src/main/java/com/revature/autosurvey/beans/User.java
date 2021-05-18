@@ -1,4 +1,4 @@
-package com.revature.autosurvey.users.beans;
+package com.revature.autosurvey.beans;
 
 import java.util.UUID;
 
