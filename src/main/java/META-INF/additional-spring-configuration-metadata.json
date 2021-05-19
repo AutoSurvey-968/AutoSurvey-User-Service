@@ -1,0 +1,22 @@
+{"properties": [
+  {
+    "name": "google.firebase.credentialsjson",
+    "type": "java.lang.String",
+    "description": "A description for 'google.firebase.credentialsjson'"
+  },
+  {
+    "name": "google.firebase.serviceaccountid",
+    "type": "java.lang.String",
+    "description": "A description for 'google.firebase.serviceaccountid'"
+  },
+  {
+    "name": "google.firebase.apikey",
+    "type": "java.lang.String",
+    "description": "A description for 'google.firebase.apikey'"
+  },
+  {
+    "name": "google.firebase.databaseurl",
+    "type": "java.lang.String",
+    "description": "A description for 'google.firebase.databaseurl'"
+  }
+]}

@@ -1,4 +1,4 @@
-package com.revature.autosurvey.users.controllers;
+package com.revature.autosurvey.controllers;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

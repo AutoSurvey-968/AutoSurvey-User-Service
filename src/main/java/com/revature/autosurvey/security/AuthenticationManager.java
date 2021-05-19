@@ -49,8 +49,6 @@ public class AuthenticationManager implements ReactiveAuthenticationManager, Ini
 	private String credentials;
 	@Value("${google.firebase.serviceaccountid}")
 	private String serviceAccountId;
-	@Value("${google.firebase.databaseurl}")
-	private String databaseUrl;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -61,7 +59,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager, Ini
 								new ClassPathResource(credentials)
 										.getFile())))
 						.setServiceAccountId(serviceAccountId)
-						.setDatabaseUrl(databaseUrl).build();
+						.build();
 				FirebaseApp.initializeApp(options);
 			}
 		} catch (IOException e) {
