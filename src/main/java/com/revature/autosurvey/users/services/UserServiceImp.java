@@ -1,6 +1,7 @@
 package com.revature.autosurvey.users.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.data.UserRepository;
@@ -8,6 +9,7 @@ import com.revature.autosurvey.users.data.UserRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Service
 public class UserServiceImp implements UserService{
 
 	private UserRepository userRepository;
@@ -24,7 +26,7 @@ public class UserServiceImp implements UserService{
 
 	@Override
 	public Mono<User> getUserByEmail(String email) {
-		return userRepository.findByEmail(email);
+		return userRepository.findById(email);
 	}
 
 	@Override
@@ -44,8 +46,6 @@ public class UserServiceImp implements UserService{
 
 	@Override
 	public Mono<User> deleteUser(String email) {
-		userRepository.existsById("a");
-		
 		return userRepository.existsById(email).flatMap(bool -> {
 			if(bool) {
 				Mono<User> user = userRepository.findById(email);
@@ -56,6 +56,6 @@ public class UserServiceImp implements UserService{
 				return Mono.empty();
 			}
 		});
-		
 	}
+
 }
