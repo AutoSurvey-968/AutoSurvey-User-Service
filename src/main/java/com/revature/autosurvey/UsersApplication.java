@@ -1,4 +1,4 @@
-package com.revature.autosurvey.users;
+package com.revature.autosurvey;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

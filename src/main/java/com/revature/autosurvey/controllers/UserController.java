@@ -1,4 +1,4 @@
-package com.revature.autosurvey.users.controllers;
+package com.revature.autosurvey.controllers;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.revature.autosurvey.users.beans.User;
+import com.revature.autosurvey.beans.User;
+
 
 @RestController
 @RequestMapping(value = "/users")
@@ -29,12 +30,12 @@ public class UserController {
 		
 	}
 	
-	@GetMapping
+	@GetMapping("/{id}")
 	public void getUserById() {
 		
 	}
 	
-	@GetMapping("")
+	@GetMapping
 	public void getUserEmail() {
 		
 	}

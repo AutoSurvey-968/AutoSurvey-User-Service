@@ -1,6 +1,8 @@
-package com.revature.autosurvey.users.services;
+package com.revature.autosurvey.services;
 
-import com.revature.autosurvey.users.beans.User;
+import com.revature.autosurvey.beans.User;
+import com.revature.autosurvey.repos.UserRepo;
+
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -32,15 +34,20 @@ public class UserServiceImp implements UserService{
 	}
 
 	@Override
-	public Mono<User> getUserById(String ID) {
+	public Mono<User> getUserById(String Id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Mono<User> deleteUser(String ID) {
+	public Mono<User> deleteUser(String Id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void setUserRepo(UserRepo userRepo) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
