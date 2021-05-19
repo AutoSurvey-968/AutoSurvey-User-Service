@@ -1,7 +1,7 @@
-package com.revature.autosurvey.services;
+package com.revature.autosurvey.users.services;
 
-import com.revature.autosurvey.beans.User;
-import com.revature.autosurvey.repos.UserRepo;
+import com.revature.autosurvey.users.beans.User;
+import com.revature.autosurvey.users.repos.UserRepo;
 
 
 import reactor.core.publisher.Flux;

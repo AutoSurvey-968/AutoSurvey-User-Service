@@ -1,4 +1,4 @@
-package com.revature.autosurvey.security;
+package com.revature.autosurvey.users.security;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.revature.autosurvey.beans.User;
+import com.revature.autosurvey.users.beans.User;
 
 @Component
 public class FirebaseUtil {
