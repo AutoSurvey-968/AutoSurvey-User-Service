@@ -13,6 +13,7 @@ import com.revature.autosurvey.users.data.UserRepository;
 import com.revature.autosurvey.users.services.UserService;
 import com.revature.autosurvey.users.services.UserServiceImp;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -29,16 +30,10 @@ public class UserServiceTest {
 			return usi;
 		}
 		
-					
 		@Bean
 		public UserRepository getUserRepo() {
 			return Mockito.mock(UserRepository.class);
 		}
-		
-		
-		
-		
-		
 	}
 	
 	@Autowired
@@ -62,5 +57,30 @@ public class UserServiceTest {
 		User user = new User();
 		Mono<User> result = userService.addUser(user);
 		StepVerifier.create(result).verifyComplete();
+	}
+	
+	@Test
+	void testGetAllUsers() {
+		User u1 = new User();
+		User u2 = new User();
+		User u3 = new User();
+
+		Mockito.when(userRepository.findAll()).thenReturn(Flux.just(u1, u2, u3));
+		Flux<User> result = userService.getAllUsers();
+		StepVerifier.create(result).expectNext(u1, u2, u3).verifyComplete();
+	}
+	
+	@Test
+	void testUpdateUser() {
+		User u1 = new User();
+		u1.setEmail("text@text.com");
+		Mockito.when(userRepository.findById(u1.getEmail()))
+		.thenReturn(Mono.just(u1));
+		Mono<User> result = userService.getUserById("text@text.com").doOnNext(u -> {
+			u.setEmail("true");
+		}).map(c -> c);
+		StepVerifier.create(result).expectNextMatches(u -> u.getEmail().equals("true"))
+		.verifyComplete();
+		
 	}
 }
