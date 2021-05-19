@@ -1,9 +1,8 @@
-package com.revature.autosurvey.beans;
+package com.revature.autosurvey.users.beans;
 
 
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
@@ -30,14 +29,12 @@ public class User implements UserDetails {
 		}
 	}
 	
+	@PrimaryKey
 	@Column
 	private String email;
 	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private String username;
-	@Column
-	@PrimaryKey
-	private UUID id;
 	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private String password;
@@ -68,12 +65,7 @@ public class User implements UserDetails {
 	public void setUsername(String name) {
 		this.username = name;
 	}
-	public UUID getId() {
-		return id;
-	}
-	public void setId(UUID id) {
-		this.id = id;
-	}
+
 	public String getPassword() {
 		return password;
 	}
@@ -90,7 +82,6 @@ public class User implements UserDetails {
 		result = prime * result + (credentialsNonExpired ? 1231 : 1237);
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + (enabled ? 1231 : 1237);
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((username == null) ? 0 : username.hashCode());
 		return result;
 	}
@@ -122,11 +113,6 @@ public class User implements UserDetails {
 			return false;
 		if (enabled != other.enabled)
 			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
 		if (username == null) {
 			if (other.username != null)
 				return false;
@@ -137,8 +123,8 @@ public class User implements UserDetails {
 
 	@Override
 	public String toString() {
-		return "User [email=" + email + ", username=" + username + ", id=" + id + ", authorities=" + authorities
-				+ ", enabled=" + enabled + ", credentialsNonExpired=" + credentialsNonExpired + ", accountNonLocked="
+		return "User [email=" + email + ", username=" + username + ", authorities=" + authorities + ", enabled="
+				+ enabled + ", credentialsNonExpired=" + credentialsNonExpired + ", accountNonLocked="
 				+ accountNonLocked + ", accountNonExpired=" + accountNonExpired + "]";
 	}
 	@Override

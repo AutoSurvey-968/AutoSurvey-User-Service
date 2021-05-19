@@ -1,4 +1,4 @@
-package com.revature.autosurvey.users.services;
+package com.revature.autosurvey.users.services.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -11,10 +11,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.revature.autosurvey.beans.User;
-import com.revature.autosurvey.data.UserRepository;
-import com.revature.autosurvey.services.UserService;
-import com.revature.autosurvey.services.UserServiceImp;
+import com.revature.autosurvey.users.beans.User;
+import com.revature.autosurvey.users.data.UserRepository;
+import com.revature.autosurvey.users.services.UserService;
+import com.revature.autosurvey.users.services.UserServiceImp;
 
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -26,10 +26,10 @@ public class UserServiceTest {
 	static class Config{
 		
 		@Bean
-		public UserService getUserService(UserRepository userRepo){
 
+		public UserService getUserService(UserRepository userRepository){
 			UserServiceImp usi = new UserServiceImp();
-			usi.setUserRepo(userRepo);
+			usi.setUserRepo(userRepository);
 			return usi;
 		}
 		
@@ -55,7 +55,7 @@ public class UserServiceTest {
 		User user = new User();
 		
 		assertThat(userService.addUser(user)).isNull();
-		assertThat(userService.deleteUser("test")).isNull();
+		assertThat(userService.deleteUser(user)).isNull();
 		assertThat(userService.getAllUsers()).isNull();
 		assertThat(userService.getUserById("test")).isNull();
 		assertThat(userService.getUserByEmail("test")).isNull();
@@ -71,7 +71,7 @@ public class UserServiceTest {
 		String email = u.getEmail();
 		
 		when(userRepo.delete(u)).thenReturn(Mono.empty());
-		StepVerifier.create(null)
-		assert(userService.deleteUser(email)).isNull();
+		StepVerifier.create(null);
+		assertThat(userService.deleteUser(u)).isNull();;
 	}
 }

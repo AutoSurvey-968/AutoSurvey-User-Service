@@ -1,4 +1,4 @@
-package com.revature.autosurvey.security;
+package com.revature.autosurvey.users.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
