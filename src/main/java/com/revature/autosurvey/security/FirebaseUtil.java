@@ -15,7 +15,7 @@ public class FirebaseUtil {
 	
 	public String generateToken(User user) throws FirebaseAuthException {
 		Map<String, Object> claims =  new HashMap<>();
-		claims.put("roles", user.getAuthorities().stream().map(auth -> auth.toString()).collect(Collectors.toList()));
+		claims.put("roles", user.getAuthorities().stream().map(Object::toString).collect(Collectors.toList()));
 		return FirebaseAuth.getInstance().createCustomToken(user.getId().toString(), claims);
 	}
 }

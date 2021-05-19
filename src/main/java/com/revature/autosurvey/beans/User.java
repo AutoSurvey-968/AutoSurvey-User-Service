@@ -15,6 +15,15 @@ public class User implements UserDetails {
 
 	private static final long serialVersionUID = 1120343599093192914L;
 	
+	public enum Role implements GrantedAuthority {
+		ROLE_USER, ROLE_ADMIN;
+
+		@Override
+		public String getAuthority() {
+			return name();
+		}
+	}
+	
 	private String email;
 	private String username;
 	private UUID id;
@@ -23,7 +32,8 @@ public class User implements UserDetails {
 	private boolean enabled;
 	private boolean credentialsNonExpired;
 	private boolean accountNonLocked;
-	private boolean accountNonExpired;;
+	private boolean accountNonExpired;
+	
 	public String getEmail() {
 		return email;
 	}

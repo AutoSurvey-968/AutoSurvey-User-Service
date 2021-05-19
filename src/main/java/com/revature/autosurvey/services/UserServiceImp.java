@@ -34,13 +34,13 @@ public class UserServiceImp implements UserService{
 	}
 
 	@Override
-	public Mono<User> getUserById(String ID) {
+	public Mono<User> getUserById(String Id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Mono<User> deleteUser(String ID) {
+	public Mono<User> deleteUser(String Id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
