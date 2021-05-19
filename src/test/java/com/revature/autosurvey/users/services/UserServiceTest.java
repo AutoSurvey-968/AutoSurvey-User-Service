@@ -1,6 +1,7 @@
 package com.revature.autosurvey.users.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,16 +61,15 @@ public class UserServiceTest {
 		assertThat(userService.updateUser(user)).isNull();
 	}
 	
-	@Test
-	void addUserReurnsUser() {
-		User u = new User();
-	}
 	
 	@Test
 	void deleteUser() {
 		User u =new User();
+		u.setEmail("a@a.com");
 		
-		when(userRepo.findByEmail(u).thenReturn(Mono.just(u));
+		String email = u.getEmail();
 		
+		when(userRepo.delete(u)).thenReturn(Mono.empty());
+		assert(userService.deleteUser(email);
 	}
 }
