@@ -12,8 +12,6 @@ public interface UserService {
 	
 	Flux<User> getAllUsers();
 	
-	Mono<User> getUserByEmail(String email);
-	
 	Mono<User> addUser(User user);
 	
 	Mono<User> updateUser(User user);

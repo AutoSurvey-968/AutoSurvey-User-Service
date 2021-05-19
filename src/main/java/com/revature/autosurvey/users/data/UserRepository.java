@@ -8,8 +8,6 @@ import com.revature.autosurvey.users.beans.User;
 import reactor.core.publisher.Mono;
 
 public interface UserRepository extends ReactiveCassandraRepository<User, String> {
-
-	Mono<User> findByEmail(String email);
 	
 	@AllowFiltering
 	Mono<User> findbyUserName(String userName);

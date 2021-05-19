@@ -3,6 +3,7 @@ package com.revature.autosurvey.users.services.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import org.apache.logging.log4j.core.util.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -16,6 +17,7 @@ import com.revature.autosurvey.users.data.UserRepository;
 import com.revature.autosurvey.users.services.UserService;
 import com.revature.autosurvey.users.services.UserServiceImp;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -51,9 +53,29 @@ public class UserServiceTest {
 //		assertThat(userService.addUser(user)).isNull();
 //		assertThat(userService.deleteUser("test")).isNull();
 //		assertThat(userService.getAllUsers()).isNull();
-		assertThat(userService.getUserById("test")).isNull();
+//		assertThat(userService.getUserById("test")).isNull();
 //		assertThat(userService.getUserByEmail("test")).isNull();
 		assertThat(userService.updateUser(user)).isNull();
+	}
+	
+	@Test
+	void getAllUsersreturnsFlux() {
+		User u = new User();
+		u.setEmail("a");
+		u.setPassword("c");
+		User u2 = new User();
+		u2.setEmail("b");
+		u2.setPassword("d");
+		User[] uArr = {u,u2};
+		Flux<User> uFlux = Flux.fromArray(uArr);
+		
+		Mockito.when(userRepository.findAll()).thenReturn(uFlux);
+		Flux<User> resultFlux = userService.getAllUsers();
+		
+		StepVerifier.create(resultFlux)
+		.expectNext(u)
+		.expectNext(u2)
+		.verifyComplete();
 	}
 	
 	
@@ -74,11 +96,13 @@ public class UserServiceTest {
 	
 	@Test
 	void deleteUserReturnsEmptyIfnoUser() {
-		
-		when(userRepository.findbyUserName(null)).thenReturn(Mono.empty());
+//		User user = new User();
+		Mono<User> noOne = Mono.empty();
+		when(userRepository.findbyUserName("a")).thenReturn(Mono.empty());
 		when(userRepository.delete(null)).thenReturn(Mono.empty());
-		Mono<User> result = userService.deleteUser(null);
-		StepVerifier.create(result).expectComplete();
+		Mono<User> result = userService.deleteUser("a");	
+		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
+		StepVerifier.create(comparer).expectNext(true).verifyComplete();
 	}
 	
 	@Test
@@ -90,10 +114,6 @@ public class UserServiceTest {
 		Mockito.when(userRepository.insert(user)).thenReturn(Mono.just(user));
 		Mono<User> result = userService.addUser(user);
 		StepVerifier.create(result).expectNext(user).verifyComplete();		
-	}
-	@Test
-	void getAllUsersreturnsFlux() {
-		
 	}
 	
 	@Test
