@@ -18,15 +18,15 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 
 @Configuration
-@EnableCassandraRepositories(basePackages = { "com.group3.data" })
+@EnableCassandraRepositories(basePackages = { "com.revature.autosurvey.data" })
 public class CassandraConfig {
 
 	@Bean
 	public CqlSessionFactoryBean session() {
 		CqlSessionFactoryBean factory = new CqlSessionFactoryBean();
 		DriverConfigLoader loader = DriverConfigLoader.fromClasspath("application.conf");
-		factory.setSessionBuilderConfigurer(builder -> builder.withConfigLoader(loader).withKeyspace("gacha"));
-		factory.setKeyspaceName("gacha");
+		factory.setSessionBuilderConfigurer(builder -> builder.withConfigLoader(loader).withKeyspace("AutoSurvey"));
+		factory.setKeyspaceName("AutoSurvey");
 		return factory;
 	}
 
