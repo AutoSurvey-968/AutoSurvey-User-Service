@@ -8,12 +8,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.autosurvey.beans.User;
+import com.revature.autosurvey.services.UserService;
 
 
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
-	private User emptyUser;
+	private UserService userService;
 	
 	@PostMapping
 	public void addUser(User user) {
@@ -48,6 +49,10 @@ public class UserController {
 	@DeleteMapping("/{id}")
 	public void deleteUser() {
 		
+	}
+
+	public void setUserService(UserService userService) {
+		this.userService = userService;
 	}
 
 }
