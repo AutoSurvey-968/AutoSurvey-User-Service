@@ -3,7 +3,6 @@ package com.revature.autosurvey.users.services.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import org.apache.logging.log4j.core.util.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -86,9 +85,9 @@ public class UserServiceTest {
 		u.setUsername("a");
 		String email = u.getEmail();
 		
-		when(userRepository.existsById(u.getEmail())).thenReturn(Mono.just(true));
-		when(userRepository.findById(u.getEmail())).thenReturn(Mono.just(u));
-		when(userRepository.deleteById(u.getEmail())).thenReturn(Mono.empty());
+		when(userRepository.existsById(email)).thenReturn(Mono.just(true));
+		when(userRepository.findById(email)).thenReturn(Mono.just(u));
+		when(userRepository.deleteById(email)).thenReturn(Mono.empty());
 		Mono<User> result = userService.deleteUser("a@a.com");
 		StepVerifier.create(result)
 		.expectNext(u)
@@ -134,7 +133,7 @@ public class UserServiceTest {
 		user.setEmail("test@test.com");
 		Mockito.when(userRepository.existsById("test@test.com"))
 			.thenReturn(Mono.just(Boolean.TRUE));
-		Mockito.when(userRepository.findByEmail(user.getEmail()))
+		Mockito.when(userRepository.findById(user.getEmail()))
 			.thenReturn(Mono.just(user));
 		Mono<User> result = userService.getUserByEmail("test@test.com");
 		StepVerifier.create(result).expectNext(user).verifyComplete();
@@ -144,7 +143,7 @@ public class UserServiceTest {
 	void testGetUserByEmailFailReturnsEmpty() {
 		Mockito.when(userRepository.existsById("test@test.com"))
 			.thenReturn(Mono.just(Boolean.FALSE));
-		Mockito.when(userRepository.findByEmail("test@test.com"))
+		Mockito.when(userRepository.findById("test@test.com"))
 			.thenReturn(Mono.empty());
 		Mono<User> result = userService.getUserByEmail("test@test.com");
 		StepVerifier.create(result).verifyComplete();
