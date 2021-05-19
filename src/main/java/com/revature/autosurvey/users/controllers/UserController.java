@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.revature.autosurvey.beans.User;
+import com.revature.autosurvey.users.beans.User;
 
 @RestController
 @RequestMapping(value = "/users")
