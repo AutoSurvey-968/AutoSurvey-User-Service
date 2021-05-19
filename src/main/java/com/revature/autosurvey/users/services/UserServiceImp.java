@@ -15,7 +15,7 @@ public class UserServiceImp implements UserService{
 	private UserRepository userRepository;
 	
 	@Autowired
-	public void setUserRepository(UserRepository userRepository) {
+	public void setUserRepo(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
 
@@ -26,7 +26,7 @@ public class UserServiceImp implements UserService{
 
 	@Override
 	public Mono<User> getUserByEmail(String email) {
-		return userRepository.findByEmail(email);
+		return userRepository.findById(email);
 	}
 
 	@Override
@@ -45,7 +45,17 @@ public class UserServiceImp implements UserService{
 	}
 
 	@Override
-	public Mono<User> deleteUser(User user) {
-		return userRepository.delete(user).just(user);
+	public Mono<User> deleteUser(String email) {
+		return userRepository.existsById(email).flatMap(bool -> {
+			if(bool) {
+				Mono<User> user = userRepository.findById(email);
+				userRepository.deleteById(email).subscribe();
+				return user;
+			}
+			else {
+				return Mono.empty();
+			}
+		});
 	}
+
 }

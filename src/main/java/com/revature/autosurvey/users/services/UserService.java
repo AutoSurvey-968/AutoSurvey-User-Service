@@ -1,17 +1,16 @@
 package com.revature.autosurvey.users.services;
 
-import java.util.UUID;
-
 import com.revature.autosurvey.users.beans.User;
+import com.revature.autosurvey.users.data.UserRepository;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface UserService {
 	
-	Flux<User> getAllUsers();
+	public void setUserRepo(UserRepository userRepo);
 	
-	Mono<User> getUserByEmail(String email);
+	Flux<User> getAllUsers();
 	
 	Mono<User> addUser(User user);
 	
@@ -19,7 +18,8 @@ public interface UserService {
 	
 	Mono<User> getUserById(String Id);
 
-	Mono<User> deleteUser(User user);
+	Mono<User> deleteUser(String userName);
 
+	Mono<User> getUserByEmail(String email);
 
 }
