@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 public interface UserRepository extends ReactiveCassandraRepository<User, String> {
 	
 	@AllowFiltering
-	Mono<User> findbyUserName(String userName);
+	Mono<User> findbyUsername(String userName);
 
 
 	@AllowFiltering
