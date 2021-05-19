@@ -44,7 +44,6 @@ public class UserServiceImp implements UserService{
 
 	@Override
 	public Mono<User> deleteUser(String eMail) {
-		userRepository.existsById("a");
 		
 		return userRepository.existsById(eMail).flatMap(bool -> {
 			if(bool) {

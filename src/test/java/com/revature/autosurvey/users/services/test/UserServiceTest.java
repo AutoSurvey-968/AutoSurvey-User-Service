@@ -84,10 +84,12 @@ public class UserServiceTest {
 		User u =new User();
 		u.setEmail("a@a.com");
 		u.setUsername("a");
+		String email = u.getEmail();
 		
-		when(userRepository.findbyUserName(u.getUsername())).thenReturn(Mono.just(u));
-		when(userRepository.delete(u)).thenReturn(Mono.empty());
-		Mono<User> result = userService.deleteUser("a");
+		when(userRepository.existsById(u.getEmail())).thenReturn(Mono.just(true));
+		when(userRepository.findById(u.getEmail())).thenReturn(Mono.just(u));
+		when(userRepository.deleteById(u.getEmail())).thenReturn(Mono.empty());
+		Mono<User> result = userService.deleteUser("a@a.com");
 		StepVerifier.create(result)
 		.expectNext(u)
 		.expectComplete()
@@ -98,8 +100,7 @@ public class UserServiceTest {
 	void deleteUserReturnsEmptyIfnoUser() {
 //		User user = new User();
 		Mono<User> noOne = Mono.empty();
-		when(userRepository.findbyUserName("a")).thenReturn(Mono.empty());
-		when(userRepository.delete(null)).thenReturn(Mono.empty());
+		when(userRepository.existsById("a")).thenReturn(Mono.just(false));
 		Mono<User> result = userService.deleteUser("a");	
 		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
 		StepVerifier.create(comparer).expectNext(true).verifyComplete();
