@@ -21,8 +21,6 @@ import com.revature.autosurvey.users.services.UserService;
 import reactor.core.publisher.Mono;
 
 @Component
-//@RestController
-//@RequestMapping(value = "/users")
 public class UserController {
 	private UserService userService;
 	private User emptyUser;
@@ -51,8 +49,8 @@ public class UserController {
 	}
 
 //	@GetMapping("/{id}")
-	public void getUserById() {
-
+	public Mono<ServerResponse> getUserById(ServerRequest req) {
+		return null;
 	}
 
 //	@GetMapping
@@ -61,12 +59,13 @@ public class UserController {
 	}
 
 //	@PutMapping("/{id}")
-	public void updateUser() {
-
+	public Mono<ServerResponse> updateUser(ServerRequest req) {
+		return null;
 	}
 
 //	@DeleteMapping("/{id}")
-	public void deleteUser() {
+	public Mono<ServerResponse> deleteUser(ServerRequest req) {
+		return null;
 
 	}
 }
