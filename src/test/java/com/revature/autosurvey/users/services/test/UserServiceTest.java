@@ -85,7 +85,7 @@ public class UserServiceTest {
 		u.setEmail("a@a.com");
 		u.setUsername("a");
 		
-		when(userRepository.findbyUserName(u.getUsername())).thenReturn(Mono.just(u));
+		when(userRepository.findByUsername(u.getUsername())).thenReturn(Mono.just(u));
 		when(userRepository.delete(u)).thenReturn(Mono.empty());
 		Mono<User> result = userService.deleteUser("a");
 		StepVerifier.create(result)
@@ -98,7 +98,7 @@ public class UserServiceTest {
 	void deleteUserReturnsEmptyIfnoUser() {
 //		User user = new User();
 		Mono<User> noOne = Mono.empty();
-		when(userRepository.findbyUserName("a")).thenReturn(Mono.empty());
+		when(userRepository.findByUsername("a")).thenReturn(Mono.empty());
 		when(userRepository.delete(null)).thenReturn(Mono.empty());
 		Mono<User> result = userService.deleteUser("a");	
 		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
@@ -133,7 +133,7 @@ public class UserServiceTest {
 		user.setEmail("test@test.com");
 		Mockito.when(userRepository.existsById("test@test.com"))
 			.thenReturn(Mono.just(Boolean.TRUE));
-		Mockito.when(userRepository.findByEmail(user.getEmail()))
+		Mockito.when(userRepository.findById(user.getEmail()))
 			.thenReturn(Mono.just(user));
 		Mono<User> result = userService.getUserByEmail("test@test.com");
 		StepVerifier.create(result).expectNext(user).verifyComplete();
@@ -143,7 +143,7 @@ public class UserServiceTest {
 	void testGetUserByEmailFailReturnsEmpty() {
 		Mockito.when(userRepository.existsById("test@test.com"))
 			.thenReturn(Mono.just(Boolean.FALSE));
-		Mockito.when(userRepository.findByEmail("test@test.com"))
+		Mockito.when(userRepository.findById("test@test.com"))
 			.thenReturn(Mono.empty());
 		Mono<User> result = userService.getUserByEmail("test@test.com");
 		StepVerifier.create(result).verifyComplete();

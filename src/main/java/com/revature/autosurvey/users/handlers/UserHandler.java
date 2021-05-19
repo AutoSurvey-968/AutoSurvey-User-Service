@@ -15,7 +15,6 @@ import reactor.core.publisher.Mono;
 public class UserHandler {
 	
 	private UserService userService;
-	private User emptyUser;
 
 	@Autowired
 	public void setUserService(UserService userService) {
