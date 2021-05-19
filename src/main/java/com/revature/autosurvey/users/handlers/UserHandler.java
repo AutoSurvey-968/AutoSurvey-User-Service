@@ -1,4 +1,4 @@
-package com.revature.autosurvey.users.controllers;
+package com.revature.autosurvey.users.handlers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,7 +12,7 @@ import com.revature.autosurvey.users.services.UserService;
 import reactor.core.publisher.Mono;
 
 @Component
-public class UserController {
+public class UserHandler {
 	
 	private UserService userService;
 	private User emptyUser;
