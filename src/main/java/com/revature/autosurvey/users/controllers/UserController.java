@@ -19,7 +19,6 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
-	
 	private UserService userService;
 	private User emptyUser;
 
@@ -62,5 +61,4 @@ public class UserController {
 	public void deleteUser() {
 
 	}
-
 }
