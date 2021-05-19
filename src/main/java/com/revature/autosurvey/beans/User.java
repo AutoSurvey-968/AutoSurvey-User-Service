@@ -1,5 +1,6 @@
 package com.revature.autosurvey.beans;
 
+
 import java.util.Collection;
 import java.util.UUID;
 

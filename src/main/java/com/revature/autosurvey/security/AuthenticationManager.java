@@ -43,9 +43,10 @@ import reactor.netty.http.client.HttpClient;
 public class AuthenticationManager implements ReactiveAuthenticationManager, InitializingBean {
 
 	private Logger log = LoggerFactory.getLogger(AuthenticationManager.class);
+	
 	@Value("${google.firebase.apikey}")
 	private String firebaseKey;
-	@Value("${google.firebase.credentialsjson")
+	@Value("${google.firebase.credentialsjson}")
 	private String credentials;
 	@Value("${google.firebase.serviceaccountid}")
 	private String serviceAccountId;
