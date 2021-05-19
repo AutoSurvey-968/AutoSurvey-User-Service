@@ -5,8 +5,8 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.revature.autosurvey.repos.UserRepo;
-import com.revature.autosurvey.services.UserService;
+import com.revature.autosurvey.users.repos.UserRepo;
+import com.revature.autosurvey.users.services.UserService;
 
 @ExtendWith(SpringExtension.class)
 public class UserServiceTest {
