@@ -33,11 +33,6 @@ public class UserServiceTest {
 		}
 		
 		@Bean
-		public UserRepository getService() {
-			return Mockito.mock(UserRepository.class);
-		}
-		
-		@Bean
 		public UserRepository getUserRepo() {
 			return Mockito.mock(UserRepository.class);
 		}
@@ -54,7 +49,7 @@ public class UserServiceTest {
 		User user = new User();
 		
 		assertThat(userService.addUser(user)).isNull();
-		assertThat(userService.deleteUser(user)).isNull();
+//		assertThat(userService.deleteUser("test")).isNull();
 		assertThat(userService.getAllUsers()).isNull();
 		assertThat(userService.getUserById("test")).isNull();
 		assertThat(userService.getUserByEmail("test")).isNull();
@@ -63,14 +58,29 @@ public class UserServiceTest {
 	
 	
 	@Test
-	void deleteUser() {
+	void deleteUserReturnsDeletedUser() {
 		User u =new User();
 		u.setEmail("a@a.com");
+		u.setUsername("a");
 		
-		String email = u.getEmail();
-		
+		when(userRepo.findbyUserName(u.getUsername())).thenReturn(Mono.just(u));
 		when(userRepo.delete(u)).thenReturn(Mono.empty());
-		StepVerifier.create(null);
-		assertThat(userService.deleteUser(u)).isNull();
+		Mono<User> result = userService.deleteUser("a");
+		StepVerifier.create(result)
+		.expectNext(u)
+		.expectComplete()
+		.verify();
+	}
+	
+	@Test
+	void deleteUserThrowsOnNull() {
+		User u =new User();
+		u.setEmail("a@a.com");
+		u.setUsername("a");
+		
+		when(userRepo.findbyUserName(null)).thenThrow(NullPointerException.class);
+		when(userRepo.delete(u)).thenReturn(Mono.empty());
+		Mono<User> result = userService.deleteUser(null);
+		StepVerifier.create(result).expectError(NullPointerException.class);
 	}
 }

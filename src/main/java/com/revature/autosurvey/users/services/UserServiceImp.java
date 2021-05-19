@@ -42,8 +42,11 @@ public class UserServiceImp implements UserService{
 	}
 
 	@Override
-	public Mono<Void> deleteUser(User user) {
-		return userRepository.delete(user);
+	public Mono<User> deleteUser(String userName) {
+		
+		return userRepository.findbyUserName(userName).doOnNext(u -> {
+			userRepository.delete(u);
+		});
 	}
 
 
