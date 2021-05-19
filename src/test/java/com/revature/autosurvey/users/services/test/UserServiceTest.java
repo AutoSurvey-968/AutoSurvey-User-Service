@@ -39,7 +39,7 @@ public class UserServiceTest {
 	}
 	
 	@Autowired
-	UserRepository userRepo;
+	UserRepository userRepository;
 	
 	@Autowired
 	UserService userService;
@@ -48,11 +48,11 @@ public class UserServiceTest {
 	void userServiceReturnsNull() {
 		User user = new User();
 		
-		assertThat(userService.addUser(user)).isNull();
+//		assertThat(userService.addUser(user)).isNull();
 //		assertThat(userService.deleteUser("test")).isNull();
-		assertThat(userService.getAllUsers()).isNull();
+//		assertThat(userService.getAllUsers()).isNull();
 		assertThat(userService.getUserById("test")).isNull();
-		assertThat(userService.getUserByEmail("test")).isNull();
+//		assertThat(userService.getUserByEmail("test")).isNull();
 		assertThat(userService.updateUser(user)).isNull();
 	}
 	
@@ -63,8 +63,8 @@ public class UserServiceTest {
 		u.setEmail("a@a.com");
 		u.setUsername("a");
 		
-		when(userRepo.findbyUserName(u.getUsername())).thenReturn(Mono.just(u));
-		when(userRepo.delete(u)).thenReturn(Mono.empty());
+		when(userRepository.findbyUserName(u.getUsername())).thenReturn(Mono.just(u));
+		when(userRepository.delete(u)).thenReturn(Mono.empty());
 		Mono<User> result = userService.deleteUser("a");
 		StepVerifier.create(result)
 		.expectNext(u)
@@ -73,14 +73,33 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	void deleteUserThrowsOnNull() {
-		User u =new User();
-		u.setEmail("a@a.com");
-		u.setUsername("a");
+	void deleteUserReturnsEmptyIfnoUser() {
 		
-		when(userRepo.findbyUserName(null)).thenThrow(NullPointerException.class);
-		when(userRepo.delete(u)).thenReturn(Mono.empty());
+		when(userRepository.findbyUserName(null)).thenReturn(Mono.empty());
+		when(userRepository.delete(null)).thenReturn(Mono.empty());
 		Mono<User> result = userService.deleteUser(null);
-		StepVerifier.create(result).expectError(NullPointerException.class);
+		StepVerifier.create(result).expectComplete();
+	}
+	
+	@Test
+	void testAddUserAddsUser() {
+		User user = new User();
+		user.setEmail("test@test.com");
+		Mockito.when(userRepository.existsById(user.getEmail()))
+			.thenReturn(Mono.just(Boolean.FALSE));
+		Mockito.when(userRepository.insert(user)).thenReturn(Mono.just(user));
+		Mono<User> result = userService.addUser(user);
+		StepVerifier.create(result).expectNext(user).verifyComplete();		
+	}
+	@Test
+	void getAllUsersreturnsFlux() {
+		
+	}
+	
+	@Test
+	void testAddUserFailReturnEmpty() {
+		User user = new User();
+		Mono<User> result = userService.addUser(user);
+		StepVerifier.create(result).verifyComplete();
 	}
 }
