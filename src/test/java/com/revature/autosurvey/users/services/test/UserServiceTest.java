@@ -26,7 +26,6 @@ public class UserServiceTest {
 	static class Config{
 		
 		@Bean
-
 		public UserService getUserService(UserRepository userRepository){
 			UserServiceImp usi = new UserServiceImp();
 			usi.setUserRepo(userRepository);
@@ -72,6 +71,6 @@ public class UserServiceTest {
 		
 		when(userRepo.delete(u)).thenReturn(Mono.empty());
 		StepVerifier.create(null);
-		assertThat(userService.deleteUser(u)).isNull();;
+		assertThat(userService.deleteUser(u)).isNull();
 	}
 }

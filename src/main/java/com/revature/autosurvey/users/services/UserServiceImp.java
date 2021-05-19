@@ -1,9 +1,5 @@
 package com.revature.autosurvey.users.services;
 
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.data.UserRepository;
 
@@ -14,7 +10,7 @@ public class UserServiceImp implements UserService{
 
 	private UserRepository userRepository;
 	
-	@Autowired
+	
 	public void setUserRepo(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
@@ -49,5 +45,6 @@ public class UserServiceImp implements UserService{
 	public Mono<Void> deleteUser(User user) {
 		return userRepository.delete(user);
 	}
+
 
 }
