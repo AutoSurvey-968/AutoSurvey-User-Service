@@ -64,26 +64,17 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	void testGetAllUsers() {
-		User u1 = new User();
-		User u2 = new User();
-		User u3 = new User();
-
-		Mockito.when(userRepository.findAll()).thenReturn(Flux.just(u1, u2, u3));
-		Flux<User> result = userService.getAllUsers();
-		StepVerifier.create(result).expectNext(u1, u2, u3).verifyComplete();
-	}
-	
-	@Test
 	void testUpdateUser() {
 		User u1 = new User();
 		u1.setEmail("text@text.com");
+		u1.setPassword("false");
 		Mockito.when(userRepository.findById(u1.getEmail()))
 		.thenReturn(Mono.just(u1));
-		Mono<User> result = userService.getUserById("text@text.com").doOnNext(u -> {
-			u.setEmail("true");
-		}).map(c -> c);
-		StepVerifier.create(result).expectNextMatches(u -> u.getEmail().equals("true"))
+		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
+		u1.setPassword("true");
+		Mono<User> result = userService.updateUser(u1);
+		
+		StepVerifier.create(result).expectNextMatches(u -> u.getPassword().equals("true"))
 		.verifyComplete();
 	}
 	
