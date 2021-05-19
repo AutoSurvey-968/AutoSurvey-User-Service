@@ -17,6 +17,7 @@ import com.revature.autosurvey.services.UserService;
 import com.revature.autosurvey.services.UserServiceImp;
 
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 public class UserServiceTest {
@@ -70,6 +71,7 @@ public class UserServiceTest {
 		String email = u.getEmail();
 		
 		when(userRepo.delete(u)).thenReturn(Mono.empty());
-		assert(userService.deleteUser(email);
+		StepVerifier.create(null)
+		assert(userService.deleteUser(email)).isNull();
 	}
 }
