@@ -1,6 +1,5 @@
 package com.revature.autosurvey.users.services;
 
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,7 +26,6 @@ public class UserServiceImp implements UserService{
 	@Override
 	public Mono<User> getUserByEmail(String email) {
 		return userRepository.findByEmail(email);
-	
 	}
 
 	@Override
@@ -49,5 +47,4 @@ public class UserServiceImp implements UserService{
 	public Mono<Void> deleteUser(User user) {
 		return userRepository.delete(user);
 	}
-
 }
