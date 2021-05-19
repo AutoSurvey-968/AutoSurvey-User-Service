@@ -18,5 +18,10 @@
     "name": "google.firebase.databaseurl",
     "type": "java.lang.String",
     "description": "A description for 'google.firebase.databaseurl'"
+  },
+  {
+    "name": "google.firebase.credentialsjson",
+    "type": "java.lang.String",
+    "description": "A description for 'google.firebase.credentialsjson'"
   }
 ]}

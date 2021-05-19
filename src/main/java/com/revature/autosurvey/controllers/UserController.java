@@ -30,12 +30,12 @@ public class UserController {
 		
 	}
 	
-	@GetMapping
+	@GetMapping("/{id}")
 	public void getUserById() {
 		
 	}
 	
-	@GetMapping("")
+	@GetMapping
 	public void getUserEmail() {
 		
 	}

@@ -2,8 +2,11 @@ package com.revature.autosurvey.beans;
 
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.cassandra.core.mapping.Column;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,14 +27,24 @@ public class User implements UserDetails {
 		}
 	}
 	
+	@Column
 	private String email;
+	@Column
 	private String username;
+	@Column
+	@PrimaryKey
 	private UUID id;
+	@Column
 	private String password;
-	private Collection<? extends GrantedAuthority> authorities;
+	@Column
+	private List<Role> authorities;
+	@Column
 	private boolean enabled;
+	@Column
 	private boolean credentialsNonExpired;
+	@Column
 	private boolean accountNonLocked;
+	@Column
 	private boolean accountNonExpired;
 	
 	public String getEmail() {
