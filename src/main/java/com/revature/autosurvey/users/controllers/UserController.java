@@ -19,10 +19,10 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
-	@Autowired
 	private UserService userService;
 	private User emptyUser;
-
+	
+	@Autowired
 	public void setUserService(UserService userService) {
 		this.userService = userService;
 	}
