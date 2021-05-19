@@ -21,5 +21,9 @@ public interface UserService {
 
 	Mono<User> getUserById(UUID Id);
 
+	Mono<User> getUserById(String Id);
+
+	Mono<User> deleteUser(String Id);
+
 
 }

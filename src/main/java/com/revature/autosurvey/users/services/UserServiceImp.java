@@ -2,58 +2,65 @@ package com.revature.autosurvey.users.services;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.data.UserRepository;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Service
 public class UserServiceImp implements UserService{
-	
-	private UserRepository userRepository;
-	
-	@Autowired
-	public void setUserRepo(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
 
 	@Override
 	public Flux<User> getAllUsers() {
-		return userRepository.findAll();
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public Mono<User> getUserByEmail(String email) {
-		return userRepository.findByEmail(email);
-	
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public Mono<User> addUser(User user) {
-		return userRepository.insert(user);
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public Mono<User> updateUser(User user) {
-		return userRepository.save(user);
+		// TODO Auto-generated method stub
+		return null;
 	}
-
 
 	@Override
-	public Mono<User> getUserById(UUID Id) {
-		return userRepository.findById(Id);
+	public Mono<User> getUserById(String Id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
+	@Override
+	public Mono<User> deleteUser(String Id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setUserRepo(UserRepository userRepo) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	public Mono<Void> deleteUser(User user) {
-		return userRepository.delete(user);
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-
+	@Override
+	public Mono<User> getUserById(UUID Id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
