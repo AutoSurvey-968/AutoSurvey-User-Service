@@ -27,9 +27,9 @@ public class UserRoutes {
 				.GET("/{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uc::getUserById)
 				.DELETE("/{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uc::deleteUser)
 				.PUT("/{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uc::updateUser)
-				.GET(uc::getUsers)
-				.POST(uc::addUser)
-				.PUT(uc::login))
+				.GET(RequestPredicates.accept(MediaType.APPLICATION_JSON), uc::getUsers)
+				.POST(RequestPredicates.accept(MediaType.APPLICATION_JSON), uc::addUser)
+				.PUT(RequestPredicates.accept(MediaType.APPLICATION_JSON), uc::login))
 				.build();
 	}
 }
