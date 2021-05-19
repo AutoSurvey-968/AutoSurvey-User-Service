@@ -69,7 +69,7 @@ public class UserServiceTest {
 	void deleteUser() {
 		User u =new User();
 		
-		when(userRepo.findByEmail(u.getEmail()).thenReturn(Mono.just(u));
+		when(userRepo.findByEmail(u).thenReturn(Mono.just(u));
 		
 	}
 }
