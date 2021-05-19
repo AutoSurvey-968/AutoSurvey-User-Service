@@ -19,7 +19,7 @@ public interface UserService {
 	
 	Mono<User> getUserById(String Id);
 
-	Mono<Void> deleteUser(User user);
+	Mono<User> deleteUser(User user);
 
 
 }

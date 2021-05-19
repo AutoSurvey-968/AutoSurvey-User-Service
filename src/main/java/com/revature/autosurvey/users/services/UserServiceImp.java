@@ -1,8 +1,7 @@
 package com.revature.autosurvey.users.services;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.data.UserRepository;
@@ -10,12 +9,13 @@ import com.revature.autosurvey.users.data.UserRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Service
 public class UserServiceImp implements UserService{
 
 	private UserRepository userRepository;
 	
 	@Autowired
-	public void setUserRepo(UserRepository userRepository) {
+	public void setUserRepository(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
 
@@ -46,8 +46,8 @@ public class UserServiceImp implements UserService{
 	}
 
 	@Override
-	public Mono<Void> deleteUser(User user) {
-		return userRepository.delete(user);
+	public Mono<User> deleteUser(User user) {
+		return userRepository.delete(user).just(user);
 	}
 
 }

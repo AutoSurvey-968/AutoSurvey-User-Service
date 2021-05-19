@@ -7,8 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.revature.autosurvey.users.data.UserRepository;
-
-
 import com.revature.autosurvey.users.services.UserService;
 import com.revature.autosurvey.users.services.UserServiceImp;
 
@@ -19,16 +17,21 @@ public class UserServiceTest {
 	static class Config{
 		
 		@Bean
-
 		public UserService getUserService(UserRepository userRepository){
 			UserServiceImp usi = new UserServiceImp();
-			usi.setUserRepo(userRepository);
+			usi.setUserRepository(userRepository);
 			return usi;
 		}
 		
+					
 		@Bean
 		public UserRepository getUserRepo() {
 			return Mockito.mock(UserRepository.class);
 		}
+		
+		
+		
+		
+		
 	}
 }
