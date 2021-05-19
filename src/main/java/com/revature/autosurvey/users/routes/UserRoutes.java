@@ -9,6 +9,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+
 import com.revature.autosurvey.users.controllers.UserController;
 
 
@@ -21,7 +22,9 @@ public class UserRoutes {
 	@Bean
 	@Primary
 	RouterFunction<ServerResponse> routes() {
-		return RouterFunctions.route(RequestPredicates
-				.GET("/users"), uc::getUsers);
+		return RouterFunctions
+				.route(RequestPredicates.GET("/users"), uc::getUsers)
+				.andRoute(RequestPredicates.POST("/users"), uc::addUser)
+				.andRoute(RequestPredicates.PUT("/users"), uc::login);
 	}
 }

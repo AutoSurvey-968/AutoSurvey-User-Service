@@ -26,31 +26,28 @@ import reactor.core.publisher.Mono;
 public class UserController {
 	private UserService userService;
 	private User emptyUser;
-	
+
 	@Autowired
 	public void setUserService(UserService userService) {
 		this.userService = userService;
 	}
-	
+
 	public Mono<ServerResponse> getUsers(ServerRequest req) {
-		return ServerResponse.ok()
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(userService.getAllUsers(), User.class);
+		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(userService.getAllUsers(), User.class);
 	}
 
 //	@PostMapping
-	public Mono<ResponseEntity<User>> addUser(@RequestBody User user) {
-		return userService.addUser(user).defaultIfEmpty(emptyUser).map(u -> {
-			if (u.getUsername() == null) {
-				return ResponseEntity.status(HttpStatus.CONFLICT).body(u);
-			}
-			return ResponseEntity.status(HttpStatus.CREATED).body(u);
-		});
+	public Mono<ServerResponse> addUser(ServerRequest req) {
+		return req.bodyToMono(User.class)
+				.flatMap(user -> userService.addUser(user)
+						.flatMap(u -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(u, User.class))
+						.doOnError(e -> Mono.just(e.getMessage()))
+						.flatMap(s -> ServerResponse.status(409).contentType(MediaType.TEXT_PLAIN).bodyValue(s)));
 	}
 
 //	@PutMapping
-	public void login() {
-
+	public Mono<ServerResponse> login(ServerRequest req) {
+		return null;
 	}
 
 //	@GetMapping("/{id}")

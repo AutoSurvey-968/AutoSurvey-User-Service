@@ -1,8 +1,7 @@
 package com.revature.autosurvey.users.services;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.data.UserRepository;
@@ -10,6 +9,7 @@ import com.revature.autosurvey.users.data.UserRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Component
 public class UserServiceImp implements UserService{
 
 	private UserRepository userRepository;

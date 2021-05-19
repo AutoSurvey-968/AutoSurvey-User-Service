@@ -16,8 +16,7 @@
 		<version>2.4.5</version>
 	</parent>
 	<properties>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.source>1.8</maven.compiler.source>
+		<java.version>8</java.version>
 		<sonar.projectKey>AutoSurvey-968_AutoSurvey-User-Service</sonar.projectKey>
 		<sonar.organization>autosurvey-968</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
