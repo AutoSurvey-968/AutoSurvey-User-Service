@@ -13,9 +13,8 @@ public class UserServiceImp implements UserService{
 	private UserRepository userRepo;
 	
 	@Autowired
-	public void UserRepo() {
+	public void setUserRepo(UserRepository userRepo) {
 		this.userRepo = userRepo;
-		
 	}
 
 	@Override
@@ -32,8 +31,7 @@ public class UserServiceImp implements UserService{
 
 	@Override
 	public Mono<User> addUser(User user) {
-		// TODO Auto-generated method stub
-		return null;
+		return userRepo.insert(user);
 	}
 
 	@Override
@@ -52,15 +50,6 @@ public class UserServiceImp implements UserService{
 	public Mono<User> deleteUser(String Id) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	public void setUserRepo(UserRepository userRepo) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	
-
-	
+	}	
 
 }

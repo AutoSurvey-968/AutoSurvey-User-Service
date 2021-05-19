@@ -6,6 +6,10 @@ import org.springframework.data.cassandra.repository.ReactiveCassandraRepository
 
 import com.revature.autosurvey.beans.User;
 
+import reactor.core.publisher.Mono;
+
 public interface UserRepository extends ReactiveCassandraRepository<User, UUID> {
+
+	Mono<User> findByEmail(String email);
 
 }

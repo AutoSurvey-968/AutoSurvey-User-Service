@@ -15,6 +15,8 @@ import com.revature.autosurvey.data.UserRepository;
 import com.revature.autosurvey.services.UserService;
 import com.revature.autosurvey.services.UserServiceImp;
 
+import reactor.core.publisher.Mono;
+
 @ExtendWith(SpringExtension.class)
 public class UserServiceTest {
 	
@@ -25,8 +27,13 @@ public class UserServiceTest {
 		public UserService getUserService(UserRepository userRepo){
 
 			UserServiceImp usi = new UserServiceImp();
-			usi.UserRepo();
+			usi.setUserRepo(userRepo);
 			return usi;
+		}
+		
+		@Bean
+		public UserRepository getService() {
+			return Mockito.mock(UserRepository.class);
 		}
 		
 		@Bean
@@ -42,7 +49,7 @@ public class UserServiceTest {
 	UserService userService;
 	
 	@Test
-	void UserServiceReturnsNull() {
+	void userServiceReturnsNull() {
 		User user = new User();
 		
 		assertThat(userService.addUser(user)).isNull();
@@ -51,5 +58,18 @@ public class UserServiceTest {
 		assertThat(userService.getUserById("test")).isNull();
 		assertThat(userService.getUserByEmail("test")).isNull();
 		assertThat(userService.updateUser(user)).isNull();
+	}
+	
+	@Test
+	void addUserReurnsUser() {
+		User u = new User();
+	}
+	
+	@Test
+	void deleteUser() {
+		User u =new User();
+		
+		when(userRepo.findByEmail(u.getEmail()).thenReturn(Mono.just(u));
+		
 	}
 }
