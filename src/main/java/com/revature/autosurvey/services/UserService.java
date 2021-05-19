@@ -1,14 +1,14 @@
 package com.revature.autosurvey.services;
 
 import com.revature.autosurvey.beans.User;
-import com.revature.autosurvey.repos.UserRepo;
+import com.revature.autosurvey.data.UserRepository;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface UserService {
 	
-	public void setUserRepo(UserRepo userRepo);
+	public void setUserRepo(UserRepository userRepo);
 	
 	Flux<User> getAllUsers();
 	
