@@ -20,4 +20,6 @@ public interface UserService {
 
 	Mono<User> deleteUser(String userName);
 
+	Mono<User> getUserByEmail(String email);
+
 }

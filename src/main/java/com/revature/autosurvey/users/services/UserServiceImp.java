@@ -23,6 +23,11 @@ public class UserServiceImp implements UserService{
 	}
 
 	@Override
+	public Mono<User> getUserByEmail(String email) {
+		return userRepository.findByEmail(email);
+	}
+
+	@Override
 	public Mono<User> addUser(User user) {
 		return userRepository.insert(user);
 	}
@@ -53,6 +58,4 @@ public class UserServiceImp implements UserService{
 		});
 		
 	}
-
-
 }

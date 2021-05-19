@@ -119,7 +119,55 @@ public class UserServiceTest {
 	@Test
 	void testAddUserFailReturnEmpty() {
 		User user = new User();
+		Mockito.when(userRepository.existsById(user.getEmail()))
+			.thenReturn(Mono.just(Boolean.TRUE));
+		Mockito.when(userRepository.insert(user))
+			.thenReturn(Mono.empty());
 		Mono<User> result = userService.addUser(user);
+		StepVerifier.create(result).verifyComplete();
+	}
+	
+	@Test
+	void testGetUserByEmailGetsUserByEmail() {
+		User user = new User();
+		user.setEmail("test@test.com");
+		Mockito.when(userRepository.existsById("test@test.com"))
+			.thenReturn(Mono.just(Boolean.TRUE));
+		Mockito.when(userRepository.findByEmail(user.getEmail()))
+			.thenReturn(Mono.just(user));
+		Mono<User> result = userService.getUserByEmail("test@test.com");
+		StepVerifier.create(result).expectNext(user).verifyComplete();
+	}
+	
+	@Test
+	void testGetUserByEmailFailReturnsEmpty() {
+		Mockito.when(userRepository.existsById("test@test.com"))
+			.thenReturn(Mono.just(Boolean.FALSE));
+		Mockito.when(userRepository.findByEmail("test@test.com"))
+			.thenReturn(Mono.empty());
+		Mono<User> result = userService.getUserByEmail("test@test.com");
+		StepVerifier.create(result).verifyComplete();
+	}
+	
+	@Test
+	void testGetUserByIdGetsUserById() {
+		User user = new User();
+		user.setEmail("test@test.com");
+		Mockito.when(userRepository.existsById("test@test.com"))
+			.thenReturn(Mono.just(Boolean.TRUE));
+		Mockito.when(userRepository.findById(user.getEmail()))
+			.thenReturn(Mono.just(user));
+		Mono<User> result = userService.getUserById("test@test.com");
+		StepVerifier.create(result).expectNext(user).verifyComplete();
+	}
+	
+	@Test
+	void testGetUserByIdFailReturnsEmpty() {
+		Mockito.when(userRepository.existsById("test@test.com"))
+			.thenReturn(Mono.just(Boolean.FALSE));
+		Mockito.when(userRepository.findById("test@test.com"))
+			.thenReturn(Mono.empty());
+		Mono<User> result = userService.getUserById("test@test.com");
 		StepVerifier.create(result).verifyComplete();
 	}
 }
