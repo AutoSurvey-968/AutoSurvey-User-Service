@@ -21,7 +21,7 @@ Feature: Add a new user - POST to /users
 
   @tag1
   Scenario: Send a request to add a new user
-    Given 'http://localhost:8080/users
+    Given 'http://localhost:8080/users'
     And request { userName: 'Tony', password: 'foo' }
     When method post
     Then status 201
