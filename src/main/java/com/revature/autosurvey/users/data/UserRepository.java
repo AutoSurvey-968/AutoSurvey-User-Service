@@ -11,4 +11,7 @@ public interface UserRepository extends ReactiveCassandraRepository<User, String
 	
 	@AllowFiltering
 	Mono<User> findbyUserName(String userName);
+
+	@AllowFiltering
+	Mono<Boolean> existsByUsername(String userName);
 }
