@@ -1,4 +1,4 @@
-package com.revature.autosurvey.security;
+package com.revature.autosurvey.users.security;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
-import com.revature.autosurvey.beans.TokenVerifier;
+import com.revature.autosurvey.users.beans.TokenVerifier;
 
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
