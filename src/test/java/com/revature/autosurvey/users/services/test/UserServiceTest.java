@@ -1,5 +1,9 @@
 package com.revature.autosurvey.users.services.test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
+import org.apache.logging.log4j.core.util.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -13,6 +17,7 @@ import com.revature.autosurvey.users.data.UserRepository;
 import com.revature.autosurvey.users.services.UserService;
 import com.revature.autosurvey.users.services.UserServiceImp;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -36,9 +41,69 @@ public class UserServiceTest {
 	}
 	
 	@Autowired
-	private UserRepository userRepository;
+	UserRepository userRepository;
+	
 	@Autowired
-	private UserServiceImp userService;
+	UserService userService;
+	
+	@Test
+	void userServiceReturnsNull() {
+		User user = new User();
+		
+//		assertThat(userService.addUser(user)).isNull();
+//		assertThat(userService.deleteUser("test")).isNull();
+//		assertThat(userService.getAllUsers()).isNull();
+//		assertThat(userService.getUserById("test")).isNull();
+//		assertThat(userService.getUserByEmail("test")).isNull();
+		assertThat(userService.updateUser(user)).isNull();
+	}
+	
+	@Test
+	void getAllUsersreturnsFlux() {
+		User u = new User();
+		u.setEmail("a");
+		u.setPassword("c");
+		User u2 = new User();
+		u2.setEmail("b");
+		u2.setPassword("d");
+		User[] uArr = {u,u2};
+		Flux<User> uFlux = Flux.fromArray(uArr);
+		
+		Mockito.when(userRepository.findAll()).thenReturn(uFlux);
+		Flux<User> resultFlux = userService.getAllUsers();
+		
+		StepVerifier.create(resultFlux)
+		.expectNext(u)
+		.expectNext(u2)
+		.verifyComplete();
+	}
+	
+	
+	@Test
+	void deleteUserReturnsDeletedUser() {
+		User u =new User();
+		u.setEmail("a@a.com");
+		u.setUsername("a");
+		
+		when(userRepository.findbyUserName(u.getUsername())).thenReturn(Mono.just(u));
+		when(userRepository.delete(u)).thenReturn(Mono.empty());
+		Mono<User> result = userService.deleteUser("a");
+		StepVerifier.create(result)
+		.expectNext(u)
+		.expectComplete()
+		.verify();
+	}
+	
+	@Test
+	void deleteUserReturnsEmptyIfnoUser() {
+//		User user = new User();
+		Mono<User> noOne = Mono.empty();
+		when(userRepository.findbyUserName("a")).thenReturn(Mono.empty());
+		when(userRepository.delete(null)).thenReturn(Mono.empty());
+		Mono<User> result = userService.deleteUser("a");	
+		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
+		StepVerifier.create(comparer).expectNext(true).verifyComplete();
+	}
 	
 	@Test
 	void testAddUserAddsUser() {
