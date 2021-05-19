@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.autosurvey.users.beans.User;
+import com.revature.autosurvey.users.services.UserService;
 
 
 @RestController
