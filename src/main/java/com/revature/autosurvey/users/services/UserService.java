@@ -17,13 +17,9 @@ public interface UserService {
 	
 	Mono<User> updateUser(User user);
 	
-	Mono<Void> deleteUser(User user);
-
-	Mono<User> getUserById(UUID Id);
-
 	Mono<User> getUserById(String Id);
 
-	Mono<User> deleteUser(String Id);
+	Mono<Void> deleteUser(User user);
 
 
 }
