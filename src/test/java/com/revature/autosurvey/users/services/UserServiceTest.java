@@ -1,12 +1,19 @@
 package com.revature.autosurvey.users.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.revature.autosurvey.beans.User;
 import com.revature.autosurvey.repos.UserRepo;
 import com.revature.autosurvey.services.UserService;
+import com.revature.autosurvey.services.UserServiceImp;
 
 @ExtendWith(SpringExtension.class)
 public class UserServiceTest {
@@ -16,8 +23,32 @@ public class UserServiceTest {
 		
 		@Bean
 		public UserService getUserService(UserRepo userRepo){
-			
-//			return userService;
+			UserService userService = new UserServiceImp();
+			userService.setUserRepo(userRepo);
+			return userService;
 		}
+		
+		@Bean
+		public UserRepo getService() {
+			return Mockito.mock(UserRepo.class);
+		}
+	}
+	
+	@Autowired
+	UserRepo userRepo;
+	
+	@Autowired
+	UserService userService;
+	
+	@Test
+	void UserServiceReturnsNull() {
+		User user = new User();
+		
+		assertThat(userService.addUser(user)).isNull();
+		assertThat(userService.deleteUser("test")).isNull();
+		assertThat(userService.getAllUsers()).isNull();
+		assertThat(userService.getUserById("test")).isNull();
+		assertThat(userService.getUserByEmail("test")).isNull();
+		assertThat(userService.updateUser(user)).isNull();
 	}
 }
