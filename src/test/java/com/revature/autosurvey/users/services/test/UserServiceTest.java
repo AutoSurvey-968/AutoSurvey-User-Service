@@ -3,7 +3,6 @@ package com.revature.autosurvey.users.services.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import org.apache.logging.log4j.core.util.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -80,8 +79,8 @@ public class UserServiceTest {
 		User u = new User();
 		u.setEmail("a@a.com");
 		u.setUsername("a");
-
-		when(userRepository.findbyUsername(u.getUsername())).thenReturn(Mono.just(u));
+		
+		when(userRepository.findByUsername(u.getUsername())).thenReturn(Mono.just(u));
 		when(userRepository.delete(u)).thenReturn(Mono.empty());
 		Mono<User> result = userService.deleteUser("a");
 		StepVerifier.create(result).expectNext(u).expectComplete().verify();
@@ -91,7 +90,7 @@ public class UserServiceTest {
 	void deleteUserReturnsEmptyIfnoUser() {
 //		User user = new User();
 		Mono<User> noOne = Mono.empty();
-		when(userRepository.findbyUsername("a")).thenReturn(Mono.empty());
+		when(userRepository.findByUsername("a")).thenReturn(Mono.empty());
 		when(userRepository.delete(null)).thenReturn(Mono.empty());
 		Mono<User> result = userService.deleteUser("a");
 		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
