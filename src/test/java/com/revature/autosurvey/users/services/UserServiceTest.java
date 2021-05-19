@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.revature.autosurvey.beans.User;
+import com.revature.autosurvey.data.UserRepository;
 import com.revature.autosurvey.repos.UserRepo;
 import com.revature.autosurvey.services.UserService;
 import com.revature.autosurvey.services.UserServiceImp;
@@ -23,9 +24,15 @@ public class UserServiceTest {
 		
 		@Bean
 		public UserService getUserService(UserRepo userRepo){
-			UserService userService = new UserServiceImp();
-			userService.setUserRepo(userRepo);
-			return userService;
+
+			UserServiceImp usi = new UserServiceImp();
+			usi.setUserRepo(userRepo);
+			return usi;
+		}
+		
+		@Bean
+		public UserRepository getUserRepo() {
+			return Mockito.mock(UserRepository.class);
 		}
 		
 		@Bean
