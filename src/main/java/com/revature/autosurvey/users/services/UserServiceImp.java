@@ -1,8 +1,7 @@
 package com.revature.autosurvey.users.services;
 
 import com.revature.autosurvey.users.beans.User;
-import com.revature.autosurvey.users.repos.UserRepo;
-
+import com.revature.autosurvey.users.data.UserRepository;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -45,7 +44,7 @@ public class UserServiceImp implements UserService{
 		return null;
 	}
 
-	public void setUserRepo(UserRepo userRepo) {
+	public void setUserRepo(UserRepository userRepo) {
 		// TODO Auto-generated method stub
 		
 	}

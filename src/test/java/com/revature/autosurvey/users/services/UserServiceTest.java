@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.revature.autosurvey.users.data.UserRepository;
-import com.revature.autosurvey.users.repos.UserRepo;
+
 import com.revature.autosurvey.users.services.UserService;
 import com.revature.autosurvey.users.services.UserServiceImp;
 
@@ -18,7 +18,7 @@ public class UserServiceTest {
 	static class Config{
 		
 		@Bean
-		public UserService getUserService(UserRepo userRepo){
+		public UserService getUserService(UserRepository userRepo){
 			UserServiceImp usi = new UserServiceImp();
 			usi.setUserRepo(userRepo);
 			return usi;
