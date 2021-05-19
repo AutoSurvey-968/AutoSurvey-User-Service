@@ -57,10 +57,6 @@
 							<goal>report</goal>
 						</goals>
 						<configuration>
-							<excludes>
-								<exclude>**/com/revature/autoservey/beans/*</exclude>
-								<exclude>**/com/revature/autosurveyaspects/*</exclude>
-							</excludes>
 						</configuration>
 					</execution>
 				</executions>
