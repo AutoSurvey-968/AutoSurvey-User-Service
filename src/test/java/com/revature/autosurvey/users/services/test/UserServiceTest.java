@@ -1,4 +1,4 @@
-package com.revature.autosurvey.users.services;
+package com.revature.autosurvey.users.services.test;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.revature.autosurvey.users.data.UserRepository;
+
 
 import com.revature.autosurvey.users.services.UserService;
 import com.revature.autosurvey.users.services.UserServiceImp;
@@ -18,9 +19,10 @@ public class UserServiceTest {
 	static class Config{
 		
 		@Bean
-		public UserService getUserService(UserRepository userRepo){
+
+		public UserService getUserService(UserRepository userRepository){
 			UserServiceImp usi = new UserServiceImp();
-			usi.setUserRepo(userRepo);
+			usi.setUserRepo(userRepository);
 			return usi;
 		}
 		

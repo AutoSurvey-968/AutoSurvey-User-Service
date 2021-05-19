@@ -1,5 +1,7 @@
 package com.revature.autosurvey.users.services;
 
+import java.util.UUID;
+
 import com.revature.autosurvey.users.beans.User;
 
 import reactor.core.publisher.Flux;
@@ -16,6 +18,8 @@ public interface UserService {
 	Mono<User> updateUser(User user);
 	
 	Mono<User> getUserById(String Id);
-	
-	Mono<User> deleteUser(String Id);
+
+	Mono<Void> deleteUser(User user);
+
+
 }
