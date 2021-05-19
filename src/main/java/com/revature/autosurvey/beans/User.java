@@ -12,6 +12,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 @Component
 @Table
 public class User implements UserDetails {
@@ -29,21 +32,26 @@ public class User implements UserDetails {
 	
 	@Column
 	private String email;
+	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private String username;
 	@Column
 	@PrimaryKey
 	private UUID id;
+	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private String password;
 	@Column
 	private List<Role> authorities;
 	@Column
 	private boolean enabled;
+	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private boolean credentialsNonExpired;
+	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private boolean accountNonLocked;
+	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private boolean accountNonExpired;
 	
