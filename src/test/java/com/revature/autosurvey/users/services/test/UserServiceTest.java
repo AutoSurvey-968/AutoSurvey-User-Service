@@ -15,7 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.data.UserRepository;
 import com.revature.autosurvey.users.services.UserService;
-import com.revature.autosurvey.users.services.UserServiceImp;
+import com.revature.autosurvey.users.services.UserServiceImpl;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -29,7 +29,7 @@ public class UserServiceTest {
 		
 		@Bean
 		public UserService getUserService(UserRepository userRepository){
-			UserServiceImp usi = new UserServiceImp();
+			UserServiceImpl usi = new UserServiceImpl();
 			usi.setUserRepo(userRepository);
 			return usi;
 		}

@@ -25,15 +25,18 @@ public class CassandraConfig {
 	public CqlSessionFactoryBean session() {
 		CqlSessionFactoryBean factory = new CqlSessionFactoryBean();
 		DriverConfigLoader loader = DriverConfigLoader.fromClasspath("application.conf");
-		factory.setSessionBuilderConfigurer(builder -> builder.withConfigLoader(loader).withKeyspace("AutoSurvey"));
+		factory.setSessionBuilderConfigurer(builder -> 
+		builder.withConfigLoader(loader).withKeyspace("AutoSurvey"));
 		factory.setKeyspaceName("AutoSurvey");
 		return factory;
 	}
 
 	@Bean
-	public SessionFactoryFactoryBean sessionFactory(CqlSession session, CassandraConverter converter) {
+	public SessionFactoryFactoryBean sessionFactory(CqlSession session, 
+			CassandraConverter converter) {
 		SessionFactoryFactoryBean sessionFactory = new SessionFactoryFactoryBean();
-		((MappingCassandraConverter) converter).setUserTypeResolver(new SimpleUserTypeResolver(session));
+		((MappingCassandraConverter) converter)
+		.setUserTypeResolver(new SimpleUserTypeResolver(session));
 		sessionFactory.setSession(session);
 		sessionFactory.setConverter(converter);
 		sessionFactory.setSchemaAction(SchemaAction.CREATE_IF_NOT_EXISTS);
@@ -52,7 +55,8 @@ public class CassandraConfig {
 	}
 
 	@Bean
-	public CassandraOperations cassandraTemplate(SessionFactory sessionFactory, CassandraConverter converter) {
+	public CassandraOperations cassandraTemplate(SessionFactory sessionFactory, 
+			CassandraConverter converter) {
 		return new CassandraTemplate(sessionFactory, converter);
 	}
 }

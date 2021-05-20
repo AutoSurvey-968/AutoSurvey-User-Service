@@ -8,7 +8,7 @@ import com.revature.autosurvey.users.data.UserRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public class UserServiceImp implements UserService{
+public class UserServiceImpl implements UserService{
 
 	private UserRepository userRepository;
 	
