@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.datastax.oss.driver.shaded.guava.common.base.Objects;
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.data.UserRepository;
 
@@ -39,7 +40,7 @@ public class UserServiceImp implements UserService{
 
 	@Override
 	public Mono<User> addUser(User user) {
-		if(user == null) {
+		if(Objects.equal(user, null)) {
 			return Mono.empty();
 		}
 		
