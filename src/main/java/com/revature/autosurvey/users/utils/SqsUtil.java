@@ -52,7 +52,7 @@ class SqsListener {
 		Mono<ReceiveMessageResponse> receiveMessageResponseMono = Mono.fromFuture(() ->
 			sqsAsyncClient.receiveMessage(ReceiveMessageRequest.builder()
 					.maxNumberOfMessages(5)
-					.queueUrl(userQueueUrl)
+					.queueUrl(userQueueUrl) // need q url of the q FROM WHICH msgs are received
 					.waitTimeSeconds(10)
 					.visibilityTimeout(30)
 					.build()
