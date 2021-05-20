@@ -16,17 +16,17 @@ public class SqsConfig {
 	@Bean
 	public SqsAsyncClient sqsAsyncClient() {
 		return SqsAsyncClient.builder()
-				.endpointOverride(URI.create("http://localhost:4566"))
-				.region(Region.US_EAST_1)
+				.endpointOverride(URI.create("https://sqs.us-east-2.amazonaws.com"))
+				.region(Region.US_EAST_2)
 				.credentialsProvider(StaticCredentialsProvider.create(new AwsCredentials() {
                     @Override
                     public String accessKeyId() {
-                        return "${SQS_USER}";
+                        return "${AWS_ACCESS_KEY_ID}";
                     }
 
                     @Override
                     public String secretAccessKey() {
-                        return "${SQS_PASS}";
+                        return "${AWS_SECRET_ACCESS_KEY}";
                     }
                 }))
                 .build();

@@ -1,6 +1,5 @@
 package com.revature.autosurvey.users.services.test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
@@ -9,6 +8,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.revature.autosurvey.users.beans.User;
@@ -27,9 +27,10 @@ public class UserServiceTest {
 	static class Config {
 
 		@Bean
-		public UserService getUserService(UserRepository userRepository) {
+		public UserService getUserService(UserRepository userRepository, PasswordEncoder encoder) {
 			UserServiceImpl usi = new UserServiceImpl();
 			usi.setUserRepo(userRepository);
+			usi.setPasswordEncoder(encoder);
 			return usi;
 		}
 
@@ -37,7 +38,14 @@ public class UserServiceTest {
 		public UserRepository getUserRepo() {
 			return Mockito.mock(UserRepository.class);
 		}
+		
+		@Bean
+		public PasswordEncoder getEncoder() {
+			return Mockito.mock(PasswordEncoder.class);
+		}
 	}
+	@Autowired
+	PasswordEncoder encoder;
 
 	@Autowired
 	UserRepository userRepository;
@@ -45,20 +53,20 @@ public class UserServiceTest {
 	@Autowired
 	UserService userService;
 
-	@Test
-	void userServiceReturnsNull() {
-		User user = new User();
-
+//	@Test
+//	void userServiceReturnsNull() {
+//		User user = new User();
+//
 //		assertThat(userService.addUser(user)).isNull();
 //		assertThat(userService.deleteUser("test")).isNull();
 //		assertThat(userService.getAllUsers()).isNull();
 //		assertThat(userService.getUserById("test")).isNull();
 //		assertThat(userService.getUserByEmail("test")).isNull();
-		assertThat(userService.updateUser(user)).isNull();
-	}
+//		assertThat(userService.updateUser(user)).isNull();
+//	}
 
 	@Test
-	void getAllUsersreturnsFlux() {
+	void TestGetAllUsersreturnsFlux() {
 		User u = new User();
 		u.setEmail("a");
 		u.setPassword("c");
@@ -75,23 +83,21 @@ public class UserServiceTest {
 	}
 
 	@Test
-	void deleteUserReturnsDeletedUser() {
+	void testDeleteUserReturnsDeletedUser() {
 		User u = new User();
 		u.setEmail("a@a.com");
-		u.setUsername("a");
 		
-		when(userRepository.findByUsername(u.getUsername())).thenReturn(Mono.just(u));
-		when(userRepository.delete(u)).thenReturn(Mono.empty());
-		Mono<User> result = userService.deleteUser("a");
+		when(userRepository.findById(u.getEmail())).thenReturn(Mono.just(u));
+		when(userRepository.deleteById("a@a.com")).thenReturn(Mono.empty());
+		when(userRepository.existsById("a@a.com")).thenReturn(Mono.just(true));
+		Mono<User> result = userService.deleteUser("a@a.com");
 		StepVerifier.create(result).expectNext(u).expectComplete().verify();
 	}
 
 	@Test
-	void deleteUserReturnsEmptyIfnoUser() {
-//		User user = new User();
+	void testDeleteUserReturnsEmptyIfnoUser() {
 		Mono<User> noOne = Mono.empty();
-		when(userRepository.findByUsername("a")).thenReturn(Mono.empty());
-		when(userRepository.delete(null)).thenReturn(Mono.empty());
+		when(userRepository.existsById("a")).thenReturn(Mono.just(false));
 		Mono<User> result = userService.deleteUser("a");
 		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
 		StepVerifier.create(comparer).expectNext(true).verifyComplete();
@@ -101,19 +107,43 @@ public class UserServiceTest {
 	void testAddUserAddsUser() {
 		User user = new User();
 		user.setEmail("test@test.com");
-		Mockito.when(userRepository.existsById(user.getEmail())).thenReturn(Mono.just(Boolean.FALSE));
+		user.setPassword("a");
+		User encoded = user;
+		encoded.setPassword("b");
+		Mockito.when(userRepository.existsById(user.getEmail())).thenReturn(Mono.just(Boolean.TRUE));
 		Mockito.when(userRepository.insert(user)).thenReturn(Mono.just(user));
+		Mockito.when(encoder.encode(user.getPassword())).thenReturn("b");
 		Mono<User> result = userService.addUser(user);
-		StepVerifier.create(result).expectNext(user).verifyComplete();
+		StepVerifier.create(result).expectNext(encoded).verifyComplete();
 	}
 
 	@Test
 	void testAddUserFailReturnEmpty() {
 		User user = new User();
-		Mockito.when(userRepository.existsById(user.getEmail())).thenReturn(Mono.just(Boolean.TRUE));
+		Mockito.when(userRepository.existsById(user.getEmail())).thenReturn(Mono.just(Boolean.FALSE));
 		Mockito.when(userRepository.insert(user)).thenReturn(Mono.empty());
 		Mono<User> result = userService.addUser(user);
 		StepVerifier.create(result).verifyComplete();
+	}
+	
+	@Test
+	void testAddUserReturnsEmptyIfNull() {
+		Mono<User> noOne = Mono.empty();
+		Mono<User> result = userService.addUser(null);
+		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
+		StepVerifier.create(comparer).expectNext(true).verifyComplete();
+	}
+	
+	@Test
+	void testAddUserReturnsEmptyIfUserExists() {
+		User user = new User();
+		user.setEmail("a@a.com");
+		Mono<User> noOne = Mono.empty();
+		Mockito.when(userRepository.existsById(user.getEmail())).thenReturn(Mono.just(true));
+//		Mockito.when(userRepository.insert(user)).thenReturn(Mono.empty());
+		Mono<User> result = userService.addUser(null);
+		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
+		StepVerifier.create(comparer).expectNext(true).verifyComplete();
 	}
 
 	@Test
