@@ -1,6 +1,5 @@
 package com.revature.autosurvey.users.services.test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
@@ -45,17 +44,17 @@ public class UserServiceTest {
 	@Autowired
 	UserService userService;
 
-	@Test
-	void userServiceReturnsNull() {
-		User user = new User();
-
+//	@Test
+//	void userServiceReturnsNull() {
+//		User user = new User();
+//
 //		assertThat(userService.addUser(user)).isNull();
 //		assertThat(userService.deleteUser("test")).isNull();
 //		assertThat(userService.getAllUsers()).isNull();
 //		assertThat(userService.getUserById("test")).isNull();
 //		assertThat(userService.getUserByEmail("test")).isNull();
-		assertThat(userService.updateUser(user)).isNull();
-	}
+//		assertThat(userService.updateUser(user)).isNull();
+//	}
 
 	@Test
 	void getAllUsersreturnsFlux() {
