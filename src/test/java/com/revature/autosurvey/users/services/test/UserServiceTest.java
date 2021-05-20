@@ -79,7 +79,6 @@ public class UserServiceTest {
 		User u = new User();
 		u.setEmail("a@a.com");
 		u.setUsername("a");
-<<<<<<< HEAD
 		String email = u.getEmail();
 		
 		when(userRepository.existsById(email)).thenReturn(Mono.just(true));
@@ -90,27 +89,14 @@ public class UserServiceTest {
 		.expectNext(u)
 		.expectComplete()
 		.verify();
-=======
-		
-		when(userRepository.findByUsername(u.getUsername())).thenReturn(Mono.just(u));
-		when(userRepository.delete(u)).thenReturn(Mono.empty());
-		Mono<User> result = userService.deleteUser("a");
-		StepVerifier.create(result).expectNext(u).expectComplete().verify();
->>>>>>> e9162d5fd9732210cb0715fd9a58e5f1a6969a48
 	}
 
 	@Test
 	void deleteUserReturnsEmptyIfnoUser() {
 //		User user = new User();
 		Mono<User> noOne = Mono.empty();
-<<<<<<< HEAD
 		when(userRepository.existsById("a")).thenReturn(Mono.just(false));
 		Mono<User> result = userService.deleteUser("a");	
-=======
-		when(userRepository.findByUsername("a")).thenReturn(Mono.empty());
-		when(userRepository.delete(null)).thenReturn(Mono.empty());
-		Mono<User> result = userService.deleteUser("a");
->>>>>>> e9162d5fd9732210cb0715fd9a58e5f1a6969a48
 		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
 		StepVerifier.create(comparer).expectNext(true).verifyComplete();
 	}
