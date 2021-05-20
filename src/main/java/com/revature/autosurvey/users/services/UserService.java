@@ -1,12 +1,14 @@
 package com.revature.autosurvey.users.services;
 
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.data.UserRepository;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface UserService {
+public interface UserService extends ReactiveUserDetailsService {
 	
 	public void setUserRepo(UserRepository userRepo);
 	
