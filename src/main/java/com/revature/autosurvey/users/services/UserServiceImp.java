@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.data.UserRepository;
+import com.revature.autosurvey.users.errors.NotFoundError;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -32,7 +33,7 @@ public class UserServiceImp implements UserService{
 
 	@Override
 	public Mono<User> addUser(User user) {
-		return Mono.just(user);
+		return userRepository.insert(user);
 	}
 
 	@Override
@@ -60,9 +61,14 @@ public class UserServiceImp implements UserService{
 	}
 
 	@Override
-	public Mono<UserDetails> findByUsername(String username) {
-		// TODO Auto-generated method stub
-		return null;
+	public Mono<UserDetails> findByUsername(String email) {
+		return userRepository.existsByEmail(email).flatMap(bool -> {
+			if (bool) {
+				return userRepository.findByEmail(email);
+			} else {
+				return Mono.empty();
+			}
+		});
 	}
 
 	@Override
@@ -71,7 +77,7 @@ public class UserServiceImp implements UserService{
 			if (correctPw) {
 				return Mono.just(found).cast(User.class);
 			} else {
-				return Mono.error(new UserNotFoundError());
+				return Mono.error(new NotFoundError());
 			}
 		});
 	}
