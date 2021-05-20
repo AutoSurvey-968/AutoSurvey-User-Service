@@ -7,6 +7,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import com.revature.autosurvey.users.beans.User;
+import com.revature.autosurvey.users.security.FirebaseUtil;
 import com.revature.autosurvey.users.services.UserService;
 
 import reactor.core.publisher.Mono;
@@ -15,10 +16,16 @@ import reactor.core.publisher.Mono;
 public class UserHandler {
 	
 	private UserService userService;
+	private FirebaseUtil firebaseUtil;
 
 	@Autowired
 	public void setUserService(UserService userService) {
 		this.userService = userService;
+	}
+	
+	@Autowired
+	public void setFirebaseUtil(FirebaseUtil firebaseUtil) {
+		this.firebaseUtil = firebaseUtil;
 	}
 
 	public Mono<ServerResponse> getUsers(ServerRequest req) {
@@ -36,7 +43,22 @@ public class UserHandler {
 
 
 	public Mono<ServerResponse> login(ServerRequest req) {
-		return null;
+		return req.bodyToMono(User.class)
+				.flatMap(user -> userService.findByUsername(user.getEmail())
+						.flatMap(u -> userService.login(u, user)
+								.flatMap(foundUser -> ServerResponse.ok()
+										.contentType(MediaType.APPLICATION_JSON)
+										.body(foundUser, User.class)))
+								.doOnError(e -> Mono.just(e.getMessage()))
+								.flatMap(s ->  ServerResponse
+										.status(404)
+										.contentType(MediaType.TEXT_PLAIN)
+										.bodyValue(s))
+						.doOnError(e -> Mono.just(e.getMessage()))
+						.flatMap(s ->  ServerResponse
+								.status(404)
+								.contentType(MediaType.TEXT_PLAIN)
+								.bodyValue(s)));
 	}
 
 

@@ -1,6 +1,7 @@
 package com.revature.autosurvey.users.services;
 
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.data.UserRepository;
@@ -23,5 +24,7 @@ public interface UserService extends ReactiveUserDetailsService {
 	Mono<User> deleteUser(String userName);
 
 	Mono<User> getUserByEmail(String email);
+
+	public Mono<User> login(UserDetails found, User given);
 
 }

@@ -65,4 +65,15 @@ public class UserServiceImp implements UserService{
 		return null;
 	}
 
+	@Override
+	public Mono<User> login(UserDetails found, User given) {
+		return Mono.just(found.getPassword().equals(given.getPassword())).flatMap(correctPw -> {
+			if (correctPw) {
+				return Mono.just(found).cast(User.class);
+			} else {
+				return Mono.error(new UserNotFoundError());
+			}
+		});
+	}
+
 }
