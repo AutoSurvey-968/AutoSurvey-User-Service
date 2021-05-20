@@ -1,6 +1,7 @@
 package com.revature.autosurvey.users.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.revature.autosurvey.users.beans.User;
@@ -56,6 +57,12 @@ public class UserServiceImp implements UserService{
 				return Mono.empty();
 			}
 		});
+	}
+
+	@Override
+	public Mono<UserDetails> findByUsername(String username) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

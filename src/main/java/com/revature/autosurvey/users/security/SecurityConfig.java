@@ -7,7 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 import reactor.core.publisher.Mono;
@@ -33,6 +34,11 @@ public class SecurityConfig {
 				.authenticationManager(authenticationManager).securityContextRepository(securityContextRepository)
 				.authorizeExchange().pathMatchers(HttpMethod.OPTIONS).permitAll().pathMatchers(HttpMethod.PUT, "/users")
 				.permitAll().pathMatchers(HttpMethod.POST, "/users").permitAll().anyExchange().authenticated().and().build();
+	}
+	
+	@Bean
+	public PasswordEncoder encoder() {
+	    return new BCryptPasswordEncoder();
 	}
 
 }
