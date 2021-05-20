@@ -16,8 +16,7 @@
 		<version>2.4.5</version>
 	</parent>
 	<properties>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.source>1.8</maven.compiler.source>
+		<java.version>8</java.version>
 		<sonar.projectKey>AutoSurvey-968_AutoSurvey-User-Service</sonar.projectKey>
 		<sonar.organization>autosurvey-968</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -57,10 +56,6 @@
 							<goal>report</goal>
 						</goals>
 						<configuration>
-							<excludes>
-								<exclude>**/com/revature/autoservey/beans/*</exclude>
-								<exclude>**/com/revature/autosurveyaspects/*</exclude>
-							</excludes>
 						</configuration>
 					</execution>
 				</executions>
@@ -166,5 +161,9 @@
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>sqs</artifactId>
         </dependency>
+        <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+		</dependency>
 	</dependencies>
 </project>
