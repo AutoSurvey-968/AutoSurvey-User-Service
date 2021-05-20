@@ -31,10 +31,9 @@ public class User implements UserDetails {
 	
 	@PrimaryKey
 	@Column
-	private String email;
-	@JsonProperty(access=Access.WRITE_ONLY)
+	private int id;
 	@Column
-	private String username;
+	private String email;
 	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private String password;
@@ -60,10 +59,7 @@ public class User implements UserDetails {
 	}
 	@Override
 	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String name) {
-		this.username = name;
+		return email;
 	}
 
 	public String getPassword() {
@@ -82,7 +78,8 @@ public class User implements UserDetails {
 		result = prime * result + (credentialsNonExpired ? 1231 : 1237);
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + (enabled ? 1231 : 1237);
-		result = prime * result + ((username == null) ? 0 : username.hashCode());
+		result = prime * result + id;
+		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		return result;
 	}
 	
@@ -113,18 +110,20 @@ public class User implements UserDetails {
 			return false;
 		if (enabled != other.enabled)
 			return false;
-		if (username == null) {
-			if (other.username != null)
+		if (id != other.id)
+			return false;
+		if (password == null) {
+			if (other.password != null)
 				return false;
-		} else if (!username.equals(other.username))
+		} else if (!password.equals(other.password))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "User [email=" + email + ", username=" + username + ", authorities=" + authorities + ", enabled="
-				+ enabled + ", credentialsNonExpired=" + credentialsNonExpired + ", accountNonLocked="
+		return "User [id=" + id + ", email=" + email + ", password=" + password + ", authorities=" + authorities
+				+ ", enabled=" + enabled + ", credentialsNonExpired=" + credentialsNonExpired + ", accountNonLocked="
 				+ accountNonLocked + ", accountNonExpired=" + accountNonExpired + "]";
 	}
 	@Override
