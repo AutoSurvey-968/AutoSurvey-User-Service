@@ -11,9 +11,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
-
 @Component
 @Table
 public class User implements UserDetails {
@@ -34,40 +31,64 @@ public class User implements UserDetails {
 	private int id;
 	@Column
 	private String email;
-	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private String password;
 	@Column
 	private List<Role> authorities;
 	@Column
 	private boolean enabled;
-	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private boolean credentialsNonExpired;
-	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private boolean accountNonLocked;
-	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private boolean accountNonExpired;
 	
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public String getEmail() {
 		return email;
 	}
+
 	public void setEmail(String email) {
 		this.email = email;
-	}
-	@Override
-	public String getUsername() {
-		return email;
 	}
 
 	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public void setAuthorities(List<Role> authorities) {
+		this.authorities = authorities;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+		this.credentialsNonExpired = credentialsNonExpired;
+	}
+
+	public void setAccountNonLocked(boolean accountNonLocked) {
+		this.accountNonLocked = accountNonLocked;
+	}
+
+	public void setAccountNonExpired(boolean accountNonExpired) {
+		this.accountNonExpired = accountNonExpired;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -146,6 +167,11 @@ public class User implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return this.enabled;
+	}
+
+	@Override
+	public String getUsername() {
+		return this.email;
 	}
 	
 }
