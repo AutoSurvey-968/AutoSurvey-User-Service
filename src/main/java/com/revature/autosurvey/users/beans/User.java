@@ -32,6 +32,10 @@ public class User implements UserDetails {
 	@Column
 	private int id;
 	@Column
+	private String firstName;
+	@Column
+	private String lastName;
+	@Column
 	private String email;
 	@Column
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
