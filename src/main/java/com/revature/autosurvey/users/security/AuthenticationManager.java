@@ -56,9 +56,9 @@ public class AuthenticationManager implements ReactiveAuthenticationManager, Ini
 		try {
 			if (FirebaseApp.getApps().isEmpty()) {
 				FirebaseOptions options = FirebaseOptions.builder()
-						.setCredentials(GoogleCredentials.fromStream(new FileInputStream(
+						.setCredentials(GoogleCredentials.fromStream(
 								new ClassPathResource(credentials)
-										.getFile())))
+										.getInputStream()))
 						.setServiceAccountId(serviceAccountId)
 						.build();
 				FirebaseApp.initializeApp(options);
