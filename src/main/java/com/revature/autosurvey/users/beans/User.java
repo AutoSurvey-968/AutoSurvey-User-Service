@@ -11,9 +11,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
-
 @Component
 @Table
 public class User implements UserDetails {
@@ -31,47 +28,67 @@ public class User implements UserDetails {
 	
 	@PrimaryKey
 	@Column
-	private String email;
-	@JsonProperty(access=Access.WRITE_ONLY)
+	private int id;
 	@Column
-	private String username;
-	@JsonProperty(access=Access.WRITE_ONLY)
+	private String email;
 	@Column
 	private String password;
 	@Column
 	private List<Role> authorities;
 	@Column
 	private boolean enabled;
-	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private boolean credentialsNonExpired;
-	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private boolean accountNonLocked;
-	@JsonProperty(access=Access.WRITE_ONLY)
 	@Column
 	private boolean accountNonExpired;
 	
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public String getEmail() {
 		return email;
 	}
+
 	public void setEmail(String email) {
 		this.email = email;
-	}
-	@Override
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String name) {
-		this.username = name;
 	}
 
 	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public void setAuthorities(List<Role> authorities) {
+		this.authorities = authorities;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+		this.credentialsNonExpired = credentialsNonExpired;
+	}
+
+	public void setAccountNonLocked(boolean accountNonLocked) {
+		this.accountNonLocked = accountNonLocked;
+	}
+
+	public void setAccountNonExpired(boolean accountNonExpired) {
+		this.accountNonExpired = accountNonExpired;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -82,7 +99,8 @@ public class User implements UserDetails {
 		result = prime * result + (credentialsNonExpired ? 1231 : 1237);
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + (enabled ? 1231 : 1237);
-		result = prime * result + ((username == null) ? 0 : username.hashCode());
+		result = prime * result + id;
+		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		return result;
 	}
 	
@@ -113,18 +131,20 @@ public class User implements UserDetails {
 			return false;
 		if (enabled != other.enabled)
 			return false;
-		if (username == null) {
-			if (other.username != null)
+		if (id != other.id)
+			return false;
+		if (password == null) {
+			if (other.password != null)
 				return false;
-		} else if (!username.equals(other.username))
+		} else if (!password.equals(other.password))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "User [email=" + email + ", username=" + username + ", authorities=" + authorities + ", enabled="
-				+ enabled + ", credentialsNonExpired=" + credentialsNonExpired + ", accountNonLocked="
+		return "User [id=" + id + ", email=" + email + ", password=" + password + ", authorities=" + authorities
+				+ ", enabled=" + enabled + ", credentialsNonExpired=" + credentialsNonExpired + ", accountNonLocked="
 				+ accountNonLocked + ", accountNonExpired=" + accountNonExpired + "]";
 	}
 	@Override
@@ -147,6 +167,11 @@ public class User implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return this.enabled;
+	}
+
+	@Override
+	public String getUsername() {
+		return this.email;
 	}
 	
 }

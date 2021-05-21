@@ -20,11 +20,12 @@ public class UserRoutes {
 	
 	@Bean
 	RouterFunction<ServerResponse> routes() {
-		return RouterFunctions.route().path("/users",
+		return RouterFunctions.route().path("/",
 				builder -> builder
-				.GET("/{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getUserById)
-				.DELETE("/{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::deleteUser)
-				.PUT("/{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::updateUser)
+				.GET("id", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getIdTable)
+				.GET("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getUserById)
+				.DELETE("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::deleteUser)
+				.PUT("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::updateUser)
 				.GET(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getUsers)
 				.POST(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::addUser)
 				.PUT(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::login))
