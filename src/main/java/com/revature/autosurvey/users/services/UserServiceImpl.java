@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Mono<User> getUserByEmail(String email) {
-		return userRepository.findById(email);
+		return userRepository.findByEmail(email);
 	}
 
 	@Override
@@ -82,19 +82,20 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Mono<User> getUserById(String Id) {
-		return userRepository.findById(Id);
+	public Mono<User> getUserById(String id) {
+		return userRepository.findById(Integer.parseInt(id)).switchIfEmpty(Mono.error(new NotFoundException()));
 	}
 
 	@Override
 	public Mono<User> deleteUser(String email) {
-		return userRepository.existsById(email).flatMap(bool -> {
+		return userRepository.existsByEmail(email).flatMap(bool -> {
 			if (bool) {
-				Mono<User> user = userRepository.findById(email);
-				userRepository.deleteById(email).subscribe();
-				return user;
+				return userRepository.findByEmail(email).map(user -> {
+					userRepository.deleteById(user.getId()).subscribe();
+					return user;
+				});
 			} else {
-				return Mono.empty();
+				return Mono.error(new NotFoundException());
 			}
 		});
 	}
