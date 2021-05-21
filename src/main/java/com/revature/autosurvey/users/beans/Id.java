@@ -15,7 +15,7 @@ public class Id {
 	@Column
 	private int nextId;
 	
-	enum Name {
+	public enum Name {
 		USER;
 	}
 
