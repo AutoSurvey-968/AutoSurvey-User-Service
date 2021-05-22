@@ -15,11 +15,12 @@ public class SqsQueueSender {
 
 	private final QueueMessagingTemplate queueMessagingTemplate;
 
+	//private final AmazonSQSAsync sqs;
+	
 	@Autowired
 	public SqsQueueSender(AmazonSQSAsync sqs) {
 		this.queueMessagingTemplate = new QueueMessagingTemplate(sqs);
 	}
-	// AmazonSQSAsync is automatically configured using application.properties
 	
 	public void send(String toQueue, Map<UsernamePasswordAuthenticationToken, Boolean> message) {
 		this.queueMessagingTemplate.send(toQueue, MessageBuilder.withPayload(message).build());
