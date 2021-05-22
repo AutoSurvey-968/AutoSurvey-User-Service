@@ -154,9 +154,10 @@ public class UserServiceTest {
 	@Test
 	void testUpdateUser() {
 		User u1 = new User();
+		u1.setId(1);
 		u1.setEmail("text@text.com");
 		u1.setPassword("false");
-		Mockito.when(userRepository.existsByEmail("text@text.com")).thenReturn(Mono.just(Boolean.TRUE));
+		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u1));
 		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
 		u1.setPassword("true");
 		Mono<User> result = userService.updateUser(u1);
