@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Mono<User> updateUser(User user) {
-		return userRepository.save(user);
+		return userRepository.findById(user.getId()).flatMap(found -> userRepository.save(found)).switchIfEmpty(Mono.error(new NotFoundException()));
 	}
 
 	@Override
