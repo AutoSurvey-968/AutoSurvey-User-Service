@@ -145,7 +145,6 @@ public class UserServiceTest {
 		user.setEmail("a@a.com");
 		Mono<User> noOne = Mono.empty();
 		Mockito.when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(true));
-//		Mockito.when(userRepository.insert(user)).thenReturn(Mono.empty());
 		Mono<User> result = userService.addUser(null);
 		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
 		StepVerifier.create(comparer).expectNext(true).verifyComplete();

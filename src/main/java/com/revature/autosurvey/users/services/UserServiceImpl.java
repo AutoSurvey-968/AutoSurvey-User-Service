@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
 			return Mono.empty();
 		}
 		return userRepository.existsByEmail(user.getEmail()).flatMap(bool -> {
-			if (!bool) {
+			if (!bool.booleanValue()) {
 				return idRepository.findById(Name.USER).flatMap(id -> {
 					user.setPassword(encoder.encode(user.getPassword()));
 					user.setId(id.getNextId());
@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Mono<User> deleteUser(String email) {
 		return userRepository.existsByEmail(email).flatMap(bool -> {
-			if (bool) {
+			if (bool.booleanValue()) {
 				return userRepository.findByEmail(email).map(user -> {
 					userRepository.deleteById(user.getId()).subscribe();
 					return user;
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Mono<UserDetails> findByUsername(String email) {
 		return userRepository.existsByEmail(email).flatMap(bool -> {
-			if (bool) {
+			if (bool.booleanValue()) {
 				return userRepository.findByEmail(email);
 			} else {
 				return Mono.empty();
@@ -115,7 +115,7 @@ public class UserServiceImpl implements UserService {
 	public Mono<User> login(UserDetails found, LoginRequest given) {
 		return Mono.just(Boolean.valueOf(encoder.matches(given.getPassword(), found.getPassword())))
 				.flatMap(correctPw -> {
-					if (correctPw) {
+					if (correctPw.booleanValue()) {
 						return Mono.just(found).cast(User.class);
 					} else {
 						return Mono.error(new NotFoundException());
