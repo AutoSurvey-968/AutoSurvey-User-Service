@@ -73,7 +73,6 @@ public class UserServiceImpl implements UserService {
 				return Mono.empty();
 			}
 		});
-
 	}
 
 	@Override

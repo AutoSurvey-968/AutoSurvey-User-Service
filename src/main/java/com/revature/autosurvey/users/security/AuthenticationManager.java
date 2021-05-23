@@ -85,8 +85,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager, Ini
 				.contentType(MediaType.APPLICATION_JSON)
 				.bodyValue(request)
 				.retrieve()
-				.bodyToMono(Map.class)
-				.onErrorReturn(Map.of());
+				.bodyToMono(Map.class);
 
 		return res.flatMap(result -> {
 			FirebaseToken decodedToken;

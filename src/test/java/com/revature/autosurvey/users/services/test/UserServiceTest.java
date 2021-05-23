@@ -87,9 +87,9 @@ public class UserServiceTest {
 		User u = new User();
 		u.setEmail("a@a.com");
 		
-		when(userRepository.findById(u.getEmail())).thenReturn(Mono.just(u));
+		when(userRepository.findByEmail(u.getEmail())).thenReturn(Mono.just(u));
 		when(userRepository.deleteById("a@a.com")).thenReturn(Mono.empty());
-		when(userRepository.existsById("a@a.com")).thenReturn(Mono.just(true));
+		when(userRepository.existsByEmail("a@a.com")).thenReturn(Mono.just(true));
 		Mono<User> result = userService.deleteUser("a@a.com");
 		StepVerifier.create(result).expectNext(u).expectComplete().verify();
 	}
