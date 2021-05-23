@@ -23,7 +23,7 @@ public class SqsQueueListener {
 		String responseQueue = payload.get(token);
 		Boolean authorized;
 		Map<UsernamePasswordAuthenticationToken, Boolean> response = new HashMap<>();
-		if(token.getAuthorities().contains(User.Role.ROLE_ADMIN)) {
+		if(token.getAuthorities().contains(User.Role.ROLE_USER)) {
 			authorized = true;
 		} else {authorized = false;}
 		response.put(token, authorized);
