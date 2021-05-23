@@ -58,6 +58,8 @@ public class UserServiceImpl implements UserService {
 		if (Objects.equal(user, null)) {
 			return Mono.empty();
 		}
+		
+		
 		return userRepository.existsByEmail(user.getEmail()).flatMap(bool -> {
 			if (!bool) {
 				return idRepository.findById(Name.USER).flatMap(id -> {
