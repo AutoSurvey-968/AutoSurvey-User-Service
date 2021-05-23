@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -85,7 +86,8 @@ public class AuthenticationManager implements ReactiveAuthenticationManager, Ini
 				.contentType(MediaType.APPLICATION_JSON)
 				.bodyValue(request)
 				.retrieve()
-				.bodyToMono(Map.class);
+				.bodyToMono(Map.class)
+				.onErrorReturn(Collections.emptyMap());
 
 		return res.flatMap(result -> {
 			FirebaseToken decodedToken;

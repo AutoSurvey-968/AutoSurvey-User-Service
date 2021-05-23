@@ -76,11 +76,13 @@ public class UserHandler {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	public Mono<ServerResponse> getUserById(ServerRequest req) {
-		return null;
+		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+				.body(userService.getUserById(req.pathVariable("id")), User.class);
 	}
 
-	public void getUserEmail() {
-
+	public  Mono<ServerResponse> getUserEmail(ServerRequest req) {
+		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+				.body(userService.getUserById(req.pathVariable("id")), User.class);
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
