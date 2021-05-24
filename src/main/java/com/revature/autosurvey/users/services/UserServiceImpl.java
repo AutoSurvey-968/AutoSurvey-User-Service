@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.datastax.oss.driver.shaded.guava.common.base.Objects;
 import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.LoginRequest;
+import com.revature.autosurvey.users.beans.PasswordChangeRequest;
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.beans.Id.Name;
 import com.revature.autosurvey.users.beans.User.Role;
@@ -126,6 +127,12 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Flux<Id> getIdTable() {
 		return idRepository.findAll();
+	}
+
+	@Override
+	public Mono<Void> updatePassword(PasswordChangeRequest pcr) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

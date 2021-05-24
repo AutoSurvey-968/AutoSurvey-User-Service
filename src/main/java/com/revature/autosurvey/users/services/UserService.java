@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.LoginRequest;
+import com.revature.autosurvey.users.beans.PasswordChangeRequest;
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.data.UserRepository;
 
@@ -30,5 +31,7 @@ public interface UserService extends ReactiveUserDetailsService {
 	public Mono<User> login(UserDetails found, LoginRequest given);
 
 	public Flux<Id> getIdTable();
+
+	public Mono<Void> updatePassword(PasswordChangeRequest pcr);
 
 }

@@ -1,5 +1,7 @@
 package com.revature.autosurvey.users.handlers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -11,7 +13,9 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.LoginRequest;
+import com.revature.autosurvey.users.beans.PasswordChangeRequest;
 import com.revature.autosurvey.users.beans.User;
+import com.revature.autosurvey.users.errors.AuthorizationException;
 import com.revature.autosurvey.users.errors.NotFoundException;
 import com.revature.autosurvey.users.errors.UserAlreadyExistsException;
 import com.revature.autosurvey.users.security.FirebaseUtil;
@@ -25,6 +29,7 @@ public class UserHandler {
 
 	private UserService userService;
 	private FirebaseUtil firebaseUtil;
+	private Logger log = LoggerFactory.getLogger(UserHandler.class);
 
 	@Autowired
 	public void setUserService(UserService userService) {
@@ -59,9 +64,7 @@ public class UserHandler {
 						.flatMap(login -> userService.findByUsername(login.getEmail())
 								.switchIfEmpty(Mono.error(new NotFoundException()))
 								.flatMap(foundUser -> userService.login(foundUser, login).flatMap(loggedUser -> {
-									System.out.println("hello from this flatmap");
 									try {
-										System.out.println("hello from try");
 										req.exchange().getResponse()
 												.addCookie(ResponseCookie
 														.from(SecurityContextRepository.COOKIE_KEY,
@@ -92,7 +95,11 @@ public class UserHandler {
 	
 	@PreAuthorize("hasRole('USER')")
 	public Mono<ServerResponse> updatePassword(ServerRequest req) {
-		return null;
+		if (req.cookies().get("token") == null) {
+			return Mono.error(new AuthorizationException());
+		}
+		req.bodyToMono(PasswordChangeRequest.class).doOnNext(pcr -> userService.updatePassword(pcr)).subscribe();
+		return ServerResponse.noContent().build();
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
