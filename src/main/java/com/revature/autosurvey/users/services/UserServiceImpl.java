@@ -149,12 +149,11 @@ public class UserServiceImpl implements UserService {
 			if (fbt.getClaims().containsKey("roles")) {
 				@SuppressWarnings("unchecked")
 				List<Role> roles = (List<Role>) fbt.getClaims().get("roles");
-				if (roles.contains(Role.ROLE_ADMIN) || fbt.getUid().equals(Integer.toString(foundUser.getId()))) {
-					if (encoder.matches(pcr.getOldPass(), foundUser.getPassword())) {
+				if ((roles.contains(Role.ROLE_ADMIN) || fbt.getUid().equals(Integer.toString(foundUser.getId()))) && encoder.matches(pcr.getOldPass(), foundUser.getPassword())) {
 						foundUser.setPassword(encoder.encode(pcr.getNewPass()));
 						userRepository.save(foundUser).subscribe();
 						return Mono.empty();
-					}
+					
 				}
 			}
 			return Mono.error(new AuthorizationError());
