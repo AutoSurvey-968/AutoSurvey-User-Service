@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
 			return Mono.error(new IllegalPasswordException("Empty password Field"));
 		}
 		
-		Pattern passwordPattern = Pattern.compile(".*(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()]).{8,}");
+		Pattern passwordPattern = Pattern.compile(".*(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()]).{8,20}");
 
 		Matcher passwordMatcher = passwordPattern.matcher(user.getPassword());
 		if (!passwordMatcher.matches()) {
@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
 			return Mono.error(new IllegalPasswordException("Empty password Field"));
 		}
 		
-		Pattern passwordPattern = Pattern.compile(".*(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()]).{8,}");
+		Pattern passwordPattern = Pattern.compile(".*(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()]).{8,20}");
 
 		Matcher passwordMatcher = passwordPattern.matcher(user.getPassword());
 		if (!passwordMatcher.matches()) {
