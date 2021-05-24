@@ -2,7 +2,10 @@ package com.revature.autosurvey.users.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -80,9 +83,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Mono<User> updateUser(User user) {
-		return userRepository.findById(user.getId()).flatMap(found -> userRepository.save(found))
-				.switchIfEmpty(Mono.error(new NotFoundException()));
+	public Mono<User> updateUser(User user, Set<String> props) {
+		return userRepository.findById(user.getId()).flatMap(found -> {
+			BeanWrapper source = PropertyAccessorFactory.forBeanPropertyAccess(user);
+			BeanWrapper target = PropertyAccessorFactory.forBeanPropertyAccess(found);
+			props.forEach(prop -> target.setPropertyValue(prop, source.getPropertyValue(prop)));
+			return Mono.just(found);
+		}).switchIfEmpty(Mono.error(new NotFoundException()));
 	}
 
 	@Override

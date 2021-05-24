@@ -29,9 +29,10 @@ public class UserRoutes {
 		return RouterFunctions.route().path("/",
 				builder -> builder
 				.GET("id", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getIdTable)
-				.GET("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getUserById)
+				.GET("/{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getUserById)
 				.DELETE("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::deleteUser)
 				.PUT("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::updateUser)
+				.GET(RequestPredicates.queryParam("email", t -> true), uh::getUserByEmail)
 				.GET(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getUsers)
 				.POST(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::addUser)
 				.PUT(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::login))
