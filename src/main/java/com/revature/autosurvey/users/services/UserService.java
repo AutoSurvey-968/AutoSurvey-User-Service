@@ -23,7 +23,7 @@ public interface UserService extends ReactiveUserDetailsService {
 	
 	Mono<User> addUser(User user);
 	
-	Mono<User> updateUser(User user, Set<String> props);
+	Mono<User> updateUser(User user, Set<String> updated);
 	
 	Mono<User> getUserById(String id);
 

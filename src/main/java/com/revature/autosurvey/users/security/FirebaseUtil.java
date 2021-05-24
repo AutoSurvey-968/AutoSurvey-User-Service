@@ -50,6 +50,7 @@ public class FirebaseUtil {
 				.doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(5000, TimeUnit.MILLISECONDS))
 						.addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS)));
 		WebClient client = WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)).build();
+		@SuppressWarnings("rawtypes")
 		Mono<Map> res = client.post()
 				.uri("https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=" + firebaseKey)
 				.contentType(MediaType.APPLICATION_JSON).bodyValue(request).retrieve().bodyToMono(Map.class)

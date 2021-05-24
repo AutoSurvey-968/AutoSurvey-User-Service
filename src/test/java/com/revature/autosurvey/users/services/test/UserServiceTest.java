@@ -2,6 +2,9 @@ package com.revature.autosurvey.users.services.test;
 
 import static org.mockito.Mockito.when;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -159,7 +162,9 @@ public class UserServiceTest {
 		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u1));
 		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
 		u1.setPassword("true");
-		Mono<User> result = userService.updateUser(u1);
+		Set<String> update = new HashSet<>();
+		update.add("password");
+		Mono<User> result = userService.updateUser(u1, update);
 		StepVerifier.create(result).expectNextMatches(u -> u.getPassword().equals("true")).verifyComplete();
 	}
 

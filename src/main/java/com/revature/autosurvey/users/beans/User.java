@@ -59,13 +59,13 @@ public class User implements UserDetails {
 	@Column
 	private List<Role> authorities;
 	@Column
-	private Boolean enabled;
+	private boolean enabled;
 	@Column
-	private Boolean credentialsNonExpired;
+	private boolean credentialsNonExpired;
 	@Column
-	private Boolean accountNonLocked;
+	private boolean accountNonLocked;
 	@Column
-	private Boolean accountNonExpired;
+	private boolean accountNonExpired;
 	
 	
 	public int getId() {
@@ -96,7 +96,7 @@ public class User implements UserDetails {
 		this.authorities = authorities;
 	}
 
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
@@ -105,6 +105,7 @@ public class User implements UserDetails {
 	}
 
 	public void setAccountNonLocked(boolean accountNonLocked) {
+		
 		this.accountNonLocked = accountNonLocked;
 	}
 

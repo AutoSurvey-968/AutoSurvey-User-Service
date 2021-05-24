@@ -1,10 +1,7 @@
 package com.revature.autosurvey.users.handlers;
 
-import java.util.Arrays;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -101,11 +98,12 @@ public class UserHandler {
 		return ServerResponse
 				.ok().contentType(
 						MediaType.APPLICATION_JSON)
-				.body(req.bodyToMono(JsonObject.class).flatMap(jUser -> req.bodyToMono(User.class)
+				.body(req.bodyToMono(User.class)
 						.flatMap(user -> {
+							log.debug("request with attributes: {}", req.attributes());
 							user.setId(Integer.parseInt(req.pathVariable("id")));
-							return userService.updateUser(user, jUser.keySet());
-						})), User.class);
+							return Mono.just(user);
+						}), User.class);
 	}
 
 	@PreAuthorize("hasRole('USER')")

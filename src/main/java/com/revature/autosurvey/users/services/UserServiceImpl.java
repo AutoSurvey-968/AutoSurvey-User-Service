@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.tinkerpop.shaded.minlog.Log;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,10 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Mono<User> updateUser(User user, Set<String> props) {
 		return userRepository.findById(user.getId()).flatMap(found -> {
+			if (user.getPassword() != null) {
+				user.setPassword(encoder.encode(user.getPassword()));
+			}
+			
 			BeanWrapper source = PropertyAccessorFactory.forBeanPropertyAccess(user);
 			BeanWrapper target = PropertyAccessorFactory.forBeanPropertyAccess(found);
 			props.forEach(prop -> target.setPropertyValue(prop, source.getPropertyValue(prop)));
