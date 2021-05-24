@@ -136,13 +136,13 @@ public class UserHandlerTest {
 	}
 	
 	@Test
-	void testGetUserEmail() {
+	void testGetUserByEmail() {
 		User userMock = new User();
 		userMock.setId(1);
 		userMock.setPassword("password");
 		userMock.setEmail("text@hotmail.com");
 		Mockito.when(userService.getUserByEmail(userMock.getEmail())).thenReturn(Mono.just(userMock));
-		ServerRequest req = MockServerRequest.builder().body(Mono.just(userMock));
+		ServerRequest req = MockServerRequest.builder().queryParam("email", "text@hotmail.com").build();
 		Mono<ServerResponse> result = userHandler.getUserByEmail(req);
 		StepVerifier.create(result).expectNextMatches(r -> HttpStatus.OK.equals(r.statusCode()))
 		.expectComplete().verify();
