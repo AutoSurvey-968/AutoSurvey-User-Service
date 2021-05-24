@@ -1,5 +1,7 @@
 package com.revature.autosurvey.users.routes;
 
+import java.util.NoSuchElementException;
+
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +34,7 @@ public class UserRoutes {
 				.GET("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getUserById)
 				.DELETE("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::deleteUser)
 				.PUT("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::updateUser)
+				.PUT("{id}/password", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::updatePassword)
 				.GET(RequestPredicates.queryParam("email", t -> true), uh::getUserByEmail)
 				.GET(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getUsers)
 				.POST(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::addUser)
@@ -52,9 +55,14 @@ public class UserRoutes {
 					response.setRawStatusCode(HttpStatus.SC_CONFLICT);
 					return response.setComplete();
 				})
-				.onErrorResume(FirebaseAuthException.class, e-> {
+				.onErrorResume(FirebaseAuthException.class, e -> {
 					ServerHttpResponse response = exchange.getResponse();
 					response.setRawStatusCode(HttpStatus.SC_FORBIDDEN);
+					return response.setComplete();
+				})
+				.onErrorResume(NoSuchElementException.class, e -> {
+					ServerHttpResponse response = exchange.getResponse();
+					response.setRawStatusCode(HttpStatus.SC_BAD_REQUEST);
 					return response.setComplete();
 				});
 	}

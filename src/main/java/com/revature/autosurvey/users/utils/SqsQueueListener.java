@@ -2,14 +2,13 @@ package com.revature.autosurvey.users.utils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.aws.messaging.listener.SqsMessageDeletionPolicy;
 import org.springframework.cloud.aws.messaging.listener.annotation.SqsListener;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.security.FirebaseUtil;
 
 @Component
@@ -23,14 +22,15 @@ public class SqsQueueListener {
 	
 	@SqsListener(value="usersQueue", deletionPolicy=SqsMessageDeletionPolicy.ON_SUCCESS)
 	public void queueListener(Map<String, String> payload) {
-		String token = payload.keySet().stream().findFirst().get();
-		String responseQueue = payload.get(token);
-		Map<String, Boolean> response = new HashMap<>();
-		firebaseUtil.getDetailsFromCustomToken(token).doOnSuccess(verified -> {
-			response.put(token, Boolean.valueOf(verified != null));
-			queueSender.send(responseQueue, response);
-		});
-		
+		Optional<String> token = payload.keySet().stream().findFirst();
+		if (token.isPresent()) {
+			String responseQueue = payload.get(token.get());
+			Map<String, Boolean> response = new HashMap<>();
+			firebaseUtil.getDetailsFromCustomToken(token.get()).doOnSuccess(verified -> {
+				response.put(token.get(), Boolean.valueOf(verified != null));
+				queueSender.send(responseQueue, response);
+			});
+		}
 	}
 
 	// queueListener listens to the usersQueue for authentication requests received from other services
