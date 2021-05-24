@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
 				return Mono.empty();
 			}
 		});
-}
+	}
 
 	@Override
 	public Mono<User> updateUser(User user) {
