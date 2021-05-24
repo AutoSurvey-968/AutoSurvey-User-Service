@@ -97,9 +97,12 @@ public class UserHandlerTest {
 	void testAddUser() {
 		User userMock = new User();
 		userMock.setEmail("taco@hotmail.com");
+		userMock.setPassword("password");
+		Mockito.when(userService.addUser(userMock)).thenReturn(Mono.just(userMock));
 		ServerRequest req = MockServerRequest.builder().body(Mono.just(userMock));
 		Mono<ServerResponse> result = userHandler.addUser(req);
-		StepVerifier.create(result).verifyComplete();
+		StepVerifier.create(result).expectNextMatches(r -> HttpStatus.OK.equals(r.statusCode()))
+		.expectComplete().verify();
 	}
 	
 	
