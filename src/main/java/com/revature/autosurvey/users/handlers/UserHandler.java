@@ -82,7 +82,7 @@ public class UserHandler {
 
 	public  Mono<ServerResponse> getUserEmail(ServerRequest req) {
 		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-				.body(userService.getUserById(req.pathVariable("id")), User.class);
+				.body(userService.getUserByEmail(req.pathVariable("email")), User.class);
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
@@ -97,7 +97,9 @@ public class UserHandler {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	public Mono<ServerResponse> deleteUser(ServerRequest req) {
-		return null;
-
+		return req.bodyToMono(User.class)
+				.flatMap(u -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+						.body(userService.deleteUser(u.getEmail())  , User.class))
+				.doOnError(e -> ServerResponse.badRequest().body(e.getMessage(), String.class));
 	}
 }
