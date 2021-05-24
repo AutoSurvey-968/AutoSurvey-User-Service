@@ -2,6 +2,8 @@ package com.revature.autosurvey.users.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,12 +12,14 @@ import org.springframework.stereotype.Service;
 
 import com.datastax.oss.driver.shaded.guava.common.base.Objects;
 import com.revature.autosurvey.users.beans.Id;
+import com.revature.autosurvey.users.beans.Id.Name;
 import com.revature.autosurvey.users.beans.LoginRequest;
 import com.revature.autosurvey.users.beans.User;
-import com.revature.autosurvey.users.beans.Id.Name;
 import com.revature.autosurvey.users.beans.User.Role;
 import com.revature.autosurvey.users.data.IdRepository;
 import com.revature.autosurvey.users.data.UserRepository;
+import com.revature.autosurvey.users.errors.IllegalEmailException;
+import com.revature.autosurvey.users.errors.IllegalPasswordException;
 import com.revature.autosurvey.users.errors.NotFoundException;
 
 import reactor.core.publisher.Flux;
@@ -59,6 +63,28 @@ public class UserServiceImpl implements UserService {
 			return Mono.empty();
 		}
 		
+		if (user.getEmail() == null) {
+			return Mono.error(new IllegalEmailException("Empty Email Field"));
+		}
+		
+		Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
+		
+		Matcher emailMatcher = emailPattern.matcher(user.getEmail());
+		if (!emailMatcher.matches()) {
+			return Mono.error(new IllegalPasswordException("Entry is not an Email"));
+		}
+		
+		
+		if (user.getPassword() == null) {
+			return Mono.error(new IllegalPasswordException("Empty password Field"));
+		}
+		
+		Pattern passwordPattern = Pattern.compile(".*(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()]).{8,}");
+
+		Matcher passwordMatcher = passwordPattern.matcher(user.getPassword());
+		if (!passwordMatcher.matches()) {
+			return Mono.error(new IllegalPasswordException("Invalid Password"));
+		}
 		
 		return userRepository.existsByEmail(user.getEmail()).flatMap(bool -> {
 			if (!bool) {
@@ -75,7 +101,7 @@ public class UserServiceImpl implements UserService {
 				return Mono.empty();
 			}
 		});
-	}
+}
 
 	@Override
 	public Mono<User> updateUser(User user) {

@@ -2,6 +2,9 @@ package com.revature.autosurvey.users.services.test;
 
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -14,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.Id.Name;
+import com.revature.autosurvey.users.beans.User.Role;
 import com.revature.autosurvey.users.data.IdRepository;
 import com.revature.autosurvey.users.data.UserRepository;
 import com.revature.autosurvey.users.errors.NotFoundException;
@@ -109,10 +113,15 @@ public class UserServiceTest {
 	void testAddUserAddsUser() {
 		User user = new User();
 		user.setEmail("test@test.com");
-		user.setPassword("a");
+		user.setPassword("P4$$w0rd");
 		user.setId(0);
-		User encoded = user;
+		User encoded = new User();
+		encoded.setEmail("test@test.com");
 		encoded.setPassword("b");
+		encoded.setId(0);
+		List<Role> perms = new ArrayList<>();
+		perms.add(Role.ROLE_USER);
+		encoded.setAuthorities(perms);
 		Mockito.when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(Boolean.FALSE));
 		Mockito.when(idRepository.findById(Name.USER)).thenReturn(Mono.just(new Id()));
 		Mockito.when(idRepository.save(Mockito.any())).thenReturn(Mono.just(new Id()));
@@ -121,6 +130,139 @@ public class UserServiceTest {
 		Mono<User> result = userService.addUser(user);
 		StepVerifier.create(result).expectNext(encoded).verifyComplete();
 	}
+	
+	@Test
+	void testAddUserReturnsErrorOnNoPassword() {
+		User user1 = new User();
+		user1.setEmail("test@test.com");
+		user1.setPassword("P$$wrdaa");
+		User user2 = new User();
+		user2.setEmail("test@test.com");
+		user2.setPassword("P4$$w0r");
+		User user3 = new User();
+		user3.setEmail("test@test.com");
+		user3.setPassword("P4w0rdaa");
+		User user4 = new User();
+		user4.setEmail("test@test.com");
+		user4.setPassword("P4$$0000");
+		User user5 = new User();
+		user5.setEmail("test@test.com");
+		user5.setPassword("p4$$w0rd");
+		User user6 = new User();
+		user5.setEmail("test@test.com");
+		
+		Mono<User> result1 = userService.addUser(user1);
+		Mono<User> result2 = userService.addUser(user2);
+		Mono<User> result3 = userService.addUser(user3);
+		Mono<User> result4 = userService.addUser(user4);
+		Mono<User> result5 = userService.addUser(user5);
+		Mono<User> result6 = userService.addUser(user6);
+		
+		StepVerifier.create(result1).expectError();
+		StepVerifier.create(result2).expectError();
+		StepVerifier.create(result3).expectError();
+		StepVerifier.create(result4).expectError();
+		StepVerifier.create(result5).expectError();
+		StepVerifier.create(result6).expectError();
+	}
+
+	@Test
+	void testAddUserReturnsErrorOnNoNumberPassword() {
+		User user = new User();
+		user.setEmail("test@test.com");
+		user.setPassword("P$$wrdaa");
+		
+		Mono<User> result = userService.addUser(user);
+		
+		StepVerifier.create(result).expectError();
+	}
+	
+	
+	@Test
+	void testAddUserReturnsErrorOnShortPassword() {
+		User user = new User();
+		user.setEmail("test@test.com");
+		
+		Mono<User> result = userService.addUser(user);
+		
+		StepVerifier.create(result).expectError();
+	}
+	
+	@Test
+	void testAddUserReturnsErrorOnNoSymbolPassword() {
+		User user = new User();
+		user.setEmail("test@test.com");
+		user.setPassword("P4w0rdaa");
+		
+		Mono<User> result = userService.addUser(user);
+		
+		StepVerifier.create(result).expectError();
+	}
+	
+	@Test
+	void testAddUserReturnsErrorOnNoLowercasePassword() {
+		User user = new User();
+		user.setEmail("test@test.com");
+		user.setPassword("P4$$0000");
+		
+		Mono<User> result = userService.addUser(user);
+		
+		StepVerifier.create(result).expectError();
+	}
+	
+	@Test
+	void testAddUserReturnsErrorOnNoUppercasePassword() {
+		User user5 = new User();
+		user5.setEmail("test@test.com");
+		user5.setPassword("p4$$w0rd");
+		User user6 = new User();
+		user5.setEmail("test@test.com");
+		
+		Mono<User> result5 = userService.addUser(user5);
+		Mono<User> result6 = userService.addUser(user6);
+		
+		StepVerifier.create(result5).expectError();
+		StepVerifier.create(result6).expectError();
+	}
+	
+	@Test
+	void testAddUserReturnsErrorOnNoDomainEmail() {
+		User user = new User();
+		user.setEmail("test@");
+		
+		Mono<User> result = userService.addUser(user);
+		
+		StepVerifier.create(result).expectError();
+	}
+	
+	@Test
+	void testAddUserReturnsErrorOnNoAtEmail() {
+		User user = new User();
+		user.setEmail("testtest.com");
+		
+		Mono<User> result = userService.addUser(user);
+		
+		StepVerifier.create(result).expectError();
+	}
+	
+	@Test
+	void testAddUserReturnsErrorOnNoUserNameEmail() {
+		User user = new User();
+		user.setEmail("@test.com");
+		
+		Mono<User> result = userService.addUser(user);
+		
+		StepVerifier.create(result).expectError();
+	}
+	
+	@Test
+	void testAddUserReturnsErrorOnNoEmail() {
+		User user = new User();
+		
+		Mono<User> result = userService.addUser(user);
+		
+		StepVerifier.create(result).expectError();
+	}
 
 	@Test
 	void testAddUserFailReturnEmpty() {
@@ -128,7 +270,7 @@ public class UserServiceTest {
 		Mockito.when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(Boolean.FALSE));
 		Mockito.when(userRepository.insert(user)).thenReturn(Mono.empty());
 		Mono<User> result = userService.addUser(user);
-		StepVerifier.create(result).verifyComplete();
+		StepVerifier.create(result).expectError();
 	}
 	
 	@Test
@@ -143,10 +285,11 @@ public class UserServiceTest {
 	void testAddUserReturnsEmptyIfUserExists() {
 		User user = new User();
 		user.setEmail("a@a.com");
+		user.setPassword("P4$$w0rd");
 		Mono<User> noOne = Mono.empty();
 		Mockito.when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(true));
 //		Mockito.when(userRepository.insert(user)).thenReturn(Mono.empty());
-		Mono<User> result = userService.addUser(null);
+		Mono<User> result = userService.addUser(user);
 		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
 		StepVerifier.create(comparer).expectNext(true).verifyComplete();
 	}
