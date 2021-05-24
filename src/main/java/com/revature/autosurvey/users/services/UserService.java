@@ -1,7 +1,5 @@
 package com.revature.autosurvey.users.services;
 
-import java.util.Set;
-
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -23,7 +21,7 @@ public interface UserService extends ReactiveUserDetailsService {
 	
 	Mono<User> addUser(User user);
 	
-	Mono<User> updateUser(User user, Set<String> updated);
+	Mono<User> updateUser(User user);
 	
 	Mono<User> getUserById(String id);
 

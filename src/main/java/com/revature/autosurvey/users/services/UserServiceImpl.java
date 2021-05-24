@@ -2,11 +2,9 @@ package com.revature.autosurvey.users.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import org.apache.tinkerpop.shaded.minlog.Log;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,6 +32,8 @@ public class UserServiceImpl implements UserService {
 	private UserRepository userRepository;
 	private PasswordEncoder encoder;
 	private IdRepository idRepository;
+	
+	private Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	@Autowired
 	public void setUserRepo(UserRepository userRepository) {
@@ -84,16 +84,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Mono<User> updateUser(User user, Set<String> props) {
+	public Mono<User> updateUser(User user) {
 		return userRepository.findById(user.getId()).flatMap(found -> {
 			if (user.getPassword() != null) {
 				user.setPassword(encoder.encode(user.getPassword()));
+			} else {
+				user.setPassword(found.getPassword());
 			}
-			
-			BeanWrapper source = PropertyAccessorFactory.forBeanPropertyAccess(user);
-			BeanWrapper target = PropertyAccessorFactory.forBeanPropertyAccess(found);
-			props.forEach(prop -> target.setPropertyValue(prop, source.getPropertyValue(prop)));
-			return Mono.just(found);
+			log.debug("password: {}", user.getPassword());
+			return userRepository.save(user);
 		}).switchIfEmpty(Mono.error(new NotFoundException()));
 	}
 

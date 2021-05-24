@@ -162,9 +162,7 @@ public class UserServiceTest {
 		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u1));
 		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
 		u1.setPassword("true");
-		Set<String> update = new HashSet<>();
-		update.add("password");
-		Mono<User> result = userService.updateUser(u1, update);
+		Mono<User> result = userService.updateUser(u1);
 		StepVerifier.create(result).expectNextMatches(u -> u.getPassword().equals("true")).verifyComplete();
 	}
 

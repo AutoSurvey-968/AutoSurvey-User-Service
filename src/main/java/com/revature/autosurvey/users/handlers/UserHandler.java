@@ -11,7 +11,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.gson.JsonObject;
 import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.LoginRequest;
 import com.revature.autosurvey.users.beans.PasswordChangeRequest;
@@ -100,9 +99,8 @@ public class UserHandler {
 						MediaType.APPLICATION_JSON)
 				.body(req.bodyToMono(User.class)
 						.flatMap(user -> {
-							log.debug("request with attributes: {}", req.attributes());
 							user.setId(Integer.parseInt(req.pathVariable("id")));
-							return Mono.just(user);
+							return userService.updateUser(user);
 						}), User.class);
 	}
 
