@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -141,90 +143,29 @@ public class UserServiceTest {
 		StepVerifier.create(result).expectError().verify();
 	}
 
-	@Test
-	void testAddUserReturnsErrorOnNoNumberPassword() {
+	@ParameterizedTest
+	@ValueSource(strings = {"4Nother1", "@Notherone", "@NOTHER1", "@nother1", "@Nother1"})
+	void testAddUserReturnsErrorOnBadPassword(String password) {
 		User user = new User();
 		user.setEmail("test@test.com");
-		user.setPassword("P$$wrdaa");
+		user.setPassword(password);
 		
 		Mono<User> result = userService.addUser(user);
 		
 		StepVerifier.create(result).expectError().verify();
 	}
 	
-	@Test
-	void testAddUserReturnsErrorOnShortPassword() {
+	@ParameterizedTest
+	@ValueSource(strings = { "test@", "testtest.com", "@test.com"})
+	void testAddUserReturnsErrorOnBadEmail(String email) {
 		User user = new User();
-		user.setEmail("test@test.com");
+		user.setEmail(email);
 		
 		Mono<User> result = userService.addUser(user);
 		
 		StepVerifier.create(result).expectError().verify();
 	}
-	
-	@Test
-	void testAddUserReturnsErrorOnNoSymbolPassword() {
-		User user = new User();
-		user.setEmail("test@test.com");
-		user.setPassword("P4w0rdaa");
-		
-		Mono<User> result = userService.addUser(user);
-		
-		StepVerifier.create(result).expectError().verify();
-	}
-	
-	@Test
-	void testAddUserReturnsErrorOnNoLowercasePassword() {
-		User user = new User();
-		user.setEmail("test@test.com");
-		user.setPassword("P4$$0000");
-		
-		Mono<User> result = userService.addUser(user);
-		
-		StepVerifier.create(result).expectError().verify();
-	}
-	
-	@Test
-	void testAddUserReturnsErrorOnNoUppercasePassword() {
-		User user5 = new User();
-		user5.setEmail("test@test.com");
-		user5.setPassword("p4$$w0rd");
-		
-		Mono<User> result5 = userService.addUser(user5);
-		
-		StepVerifier.create(result5).expectError();
-	}
-	
-	@Test
-	void testAddUserReturnsErrorOnNoDomainEmail() {
-		User user = new User();
-		user.setEmail("test@");
-		
-		Mono<User> result = userService.addUser(user);
-		
-		StepVerifier.create(result).expectError().verify();
-	}
-	
-	@Test
-	void testAddUserReturnsErrorOnNoAtEmail() {
-		User user = new User();
-		user.setEmail("testtest.com");
-		
-		Mono<User> result = userService.addUser(user);
-		
-		StepVerifier.create(result).expectError().verify();
-	}
-	
-	@Test
-	void testAddUserReturnsErrorOnNoUserNameEmail() {
-		User user = new User();
-		user.setEmail("@test.com");
-		
-		Mono<User> result = userService.addUser(user);
-		
-		StepVerifier.create(result).expectError().verify();
-	}
-	
+
 	@Test
 	void testAddUserReturnsErrorOnNoEmail() {
 		User user = new User();
@@ -277,15 +218,16 @@ public class UserServiceTest {
 		StepVerifier.create(result).expectNextMatches(u -> u.getPassword().equals("@Nother1")).verifyComplete();
 	}
 	
-	@Test
-	void testUpdateUserReturnsErrorOnBadPassword() {
+	@ParameterizedTest
+	@ValueSource(strings = {"4Nother1", "@Notherone", "@NOTHER1", "@nother1", "@Nother"})
+	void testUpdateUserReturnsErrorOnBadPassword(String password) {
 		User u1 = new User();
 		u1.setId(1);
 		u1.setEmail("text@text.com");
 		u1.setPassword("P4$$w0rd");
 		when(userRepository.findById(1)).thenReturn(Mono.just(u1));
 		when(userRepository.save(u1)).thenReturn(Mono.just(u1));
-		u1.setPassword("4Nother");
+		u1.setPassword(password);
 		Mono<User> result = userService.updateUser(u1);
 		StepVerifier.create(result).expectError().verify();
 	}

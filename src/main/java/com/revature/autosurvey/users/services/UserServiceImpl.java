@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService {
 		Pattern passwordPattern = Pattern.compile(".*(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()]).{8,20}");
 
 		Matcher passwordMatcher = passwordPattern.matcher(user.getPassword());
-		if (!passwordMatcher.matches()) {
+		if (!passwordMatcher.matches()) {	
 			return Mono.error(new IllegalPasswordException("Invalid Password"));
 		}
 		
