@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -78,6 +79,11 @@ public class UserHandler {
 									return Mono.just(loggedUser);
 								}))),
 						User.class);
+	}
+	
+	public Mono<ServerResponse> logout(ServerRequest req, @CookieValue String token) {
+		log.debug(token);
+		return ServerResponse.noContent().build();
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")

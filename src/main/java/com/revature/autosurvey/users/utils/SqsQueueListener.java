@@ -11,16 +11,16 @@ import org.springframework.stereotype.Component;
 
 import com.revature.autosurvey.users.security.FirebaseUtil;
 
-@Component
+//@Component
 public class SqsQueueListener {
 
-	@Autowired
+	//@Autowired
 	private SqsQueueSender queueSender;
 	
-	@Autowired
+	//@Autowired
 	private FirebaseUtil firebaseUtil;
 	
-	@SqsListener(value="usersQueue", deletionPolicy=SqsMessageDeletionPolicy.ON_SUCCESS)
+	//@SqsListener(value="usersQueue", deletionPolicy=SqsMessageDeletionPolicy.ON_SUCCESS)
 	public void queueListener(Map<String, String> payload) {
 		Optional<String> token = payload.keySet().stream().findFirst();
 		if (token.isPresent()) {

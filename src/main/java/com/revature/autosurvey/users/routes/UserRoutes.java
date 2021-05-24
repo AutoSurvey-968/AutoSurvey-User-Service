@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.WebFilter;
 
 import com.google.firebase.auth.FirebaseAuthException;
+import com.revature.autosurvey.users.errors.AuthorizationError;
 import com.revature.autosurvey.users.errors.NotFoundError;
 import com.revature.autosurvey.users.errors.UserAlreadyExistsError;
 import com.revature.autosurvey.users.handlers.UserHandler;
@@ -53,6 +54,11 @@ public class UserRoutes {
 				.onErrorResume(UserAlreadyExistsError.class, e -> {
 					ServerHttpResponse response = exchange.getResponse();
 					response.setRawStatusCode(HttpStatus.SC_CONFLICT);
+					return response.setComplete();
+				})
+				.onErrorResume(AuthorizationError.class, e -> {
+					ServerHttpResponse response = exchange.getResponse();
+					response.setRawStatusCode(HttpStatus.SC_FORBIDDEN);
 					return response.setComplete();
 				})
 				.onErrorResume(FirebaseAuthException.class, e -> {

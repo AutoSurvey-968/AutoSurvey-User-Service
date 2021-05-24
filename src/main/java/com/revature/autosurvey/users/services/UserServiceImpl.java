@@ -147,14 +147,17 @@ public class UserServiceImpl implements UserService {
 	public Mono<Void> updatePassword(PasswordChangeRequest pcr, FirebaseToken fbt) {
 		return userRepository.findById(pcr.getUserId()).flatMap(foundUser -> {
 			if (fbt.getClaims().containsKey("roles")) {
+				log.debug("password change request: {}", pcr);
 				@SuppressWarnings("unchecked")
 				List<Role> roles = (List<Role>) fbt.getClaims().get("roles");
-				if ((roles.contains(Role.ROLE_ADMIN) || fbt.getUid().equals(Integer.toString(foundUser.getId()))) && encoder.matches(pcr.getOldPass(), foundUser.getPassword())) {
+				log.debug(fbt.getUid());
+				if ((roles.contains(Role.ROLE_ADMIN) || fbt.getUid().equals(foundUser.getEmail()) && encoder.matches(pcr.getOldPass(), foundUser.getPassword()))) {
 						foundUser.setPassword(encoder.encode(pcr.getNewPass()));
 						userRepository.save(foundUser).subscribe();
 						return Mono.empty();
 					
 				}
+				log.debug("Not authorized for user: {}", foundUser);
 			}
 			return Mono.error(new AuthorizationError());
 		});
