@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Component;
 
 import com.revature.autosurvey.users.beans.User;
+import com.revature.autosurvey.users.security.FirebaseUtil;
 
 @Component
 public class SqsQueueListener {
@@ -17,17 +18,19 @@ public class SqsQueueListener {
 	@Autowired
 	private SqsQueueSender queueSender;
 	
+	@Autowired
+	private FirebaseUtil firebaseUtil;
+	
 	@SqsListener(value="usersQueue", deletionPolicy=SqsMessageDeletionPolicy.ON_SUCCESS)
-	public void queueListener(Map<UsernamePasswordAuthenticationToken, String> payload) {
-		UsernamePasswordAuthenticationToken token = payload.keySet().stream().findFirst().get();
+	public void queueListener(Map<String, String> payload) {
+		String token = payload.keySet().stream().findFirst().get();
 		String responseQueue = payload.get(token);
-		Boolean authorized;
-		Map<UsernamePasswordAuthenticationToken, Boolean> response = new HashMap<>();
-		if(token.getAuthorities().contains(User.Role.ROLE_USER)) {
-			authorized = true;
-		} else {authorized = false;}
-		response.put(token, authorized);
-		queueSender.send(responseQueue, response);
+		Map<String, Boolean> response = new HashMap<>();
+		firebaseUtil.getDetailsFromCustomToken(token).doOnSuccess(verified -> {
+			response.put(token, Boolean.valueOf(verified != null));
+			queueSender.send(responseQueue, response);
+		});
+		
 	}
 
 	// queueListener listens to the usersQueue for authentication requests received from other services

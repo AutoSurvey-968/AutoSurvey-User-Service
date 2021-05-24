@@ -22,7 +22,7 @@ public class SqsQueueSender {
 		this.queueMessagingTemplate = new QueueMessagingTemplate(sqs);
 	}
 	
-	public void send(String toQueue, Map<UsernamePasswordAuthenticationToken, Boolean> message) {
+	public void send(String toQueue, Map<String, Boolean> message) {
 		this.queueMessagingTemplate.send(toQueue, MessageBuilder.withPayload(message).build());
 	}
 	// send method will return the received token for confirmation purposes, along with a boolean verifying the user's authentication
