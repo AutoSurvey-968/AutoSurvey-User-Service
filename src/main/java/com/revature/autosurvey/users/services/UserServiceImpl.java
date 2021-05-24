@@ -21,6 +21,7 @@ import com.revature.autosurvey.users.data.UserRepository;
 import com.revature.autosurvey.users.errors.IllegalEmailException;
 import com.revature.autosurvey.users.errors.IllegalPasswordException;
 import com.revature.autosurvey.users.errors.NotFoundException;
+import com.revature.autosurvey.users.errors.UserAlreadyExistsException;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -74,15 +75,11 @@ public class UserServiceImpl implements UserService {
 			return Mono.error(new IllegalPasswordException("Entry is not an Email"));
 		}
 		
-		
 		if (user.getPassword() == null) {
 			return Mono.error(new IllegalPasswordException("Empty password Field"));
 		}
 		
-		Pattern passwordPattern = Pattern.compile(".*(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()]).{8,20}");
-
-		Matcher passwordMatcher = passwordPattern.matcher(user.getPassword());
-		if (!passwordMatcher.matches()) {
+		if (validatePassword(user.getPassword())) {
 			return Mono.error(new IllegalPasswordException("Invalid Password"));
 		}
 		
@@ -98,7 +95,7 @@ public class UserServiceImpl implements UserService {
 					return idRepository.save(id).flatMap(nextId -> userRepository.insert(user));
 				});
 			} else {
-				return Mono.empty();
+				return Mono.error(new UserAlreadyExistsException());
 			}
 		});
 	}
@@ -170,4 +167,32 @@ public class UserServiceImpl implements UserService {
 		return idRepository.findAll();
 	}
 
+	public boolean validatePassword(String password) {
+		Pattern pattern = Pattern.compile(".*(?=.*[0-9])*");
+		
+		boolean bool = false;
+		for(int i = 0; i < 5; i++){
+			Matcher matcher = pattern.matcher(password);
+			
+			if (matcher.matches()) {
+				bool = false;
+
+				switch (i) {
+				case 1:
+					pattern = Pattern.compile(".*(?=.*[a-z]).*");
+					break;
+				case 2:
+					pattern = Pattern.compile(".*(?=.*[A-Z]).*");
+				case 3:
+					pattern = Pattern.compile(".*(?=.*[@#$%^&-+=()]).*");
+				}
+			}
+			else {
+				bool = true;
+				break;
+			}
+		}
+		
+		return bool;
+	}
 }

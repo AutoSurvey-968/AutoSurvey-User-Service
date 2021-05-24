@@ -197,12 +197,10 @@ public class UserServiceTest {
 		User user = new User();
 		user.setEmail("a@a.com");
 		user.setPassword("P4$$w0rd");
-		Mono<User> noOne = Mono.empty();
 		when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(true));
 //		Mockito.when(userRepository.insert(user)).thenReturn(Mono.empty());
 		Mono<User> result = userService.addUser(user);
-		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
-		StepVerifier.create(comparer).expectNext(true).verifyComplete();
+		StepVerifier.create(result).expectError().verify();
 	}
 
 	@Test
