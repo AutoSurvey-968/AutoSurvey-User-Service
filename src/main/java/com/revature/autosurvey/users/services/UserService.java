@@ -3,6 +3,7 @@ package com.revature.autosurvey.users.services;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.google.firebase.auth.FirebaseToken;
 import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.LoginRequest;
 import com.revature.autosurvey.users.beans.PasswordChangeRequest;
@@ -32,6 +33,6 @@ public interface UserService extends ReactiveUserDetailsService {
 
 	public Flux<Id> getIdTable();
 
-	public Mono<Void> updatePassword(PasswordChangeRequest pcr);
+	public Mono<Void> updatePassword(PasswordChangeRequest pcr, FirebaseToken fbt);
 
 }

@@ -59,13 +59,13 @@ public class User implements UserDetails {
 	@Column
 	private List<Role> authorities;
 	@Column
-	private boolean enabled;
+	private Boolean enabled;
 	@Column
-	private boolean credentialsNonExpired;
+	private Boolean credentialsNonExpired;
 	@Column
-	private boolean accountNonLocked;
+	private Boolean accountNonLocked;
 	@Column
-	private boolean accountNonExpired;
+	private Boolean accountNonExpired;
 	
 	
 	public int getId() {

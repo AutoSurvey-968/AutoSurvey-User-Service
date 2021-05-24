@@ -40,7 +40,7 @@ public class UserHandler {
 	public void setFirebaseUtil(FirebaseUtil firebaseUtil) {
 		this.firebaseUtil = firebaseUtil;
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	public Mono<ServerResponse> getUsers(ServerRequest req) {
 		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(userService.getAllUsers(), User.class);
@@ -50,11 +50,13 @@ public class UserHandler {
 	public Mono<ServerResponse> getIdTable(ServerRequest req) {
 		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(userService.getIdTable(), Id.class);
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	public Mono<ServerResponse> addUser(ServerRequest req) {
-		return req.bodyToMono(User.class).flatMap(user -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-				.body(userService.addUser(user).switchIfEmpty(Mono.error(new UserAlreadyExistsException())), User.class));
+		return req.bodyToMono(User.class)
+				.flatMap(user -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(
+						userService.addUser(user).switchIfEmpty(Mono.error(new UserAlreadyExistsException())),
+						User.class));
 
 	}
 
@@ -74,7 +76,8 @@ public class UserHandler {
 										return Mono.error(fae);
 									}
 									return Mono.just(loggedUser);
-								}))), User.class);
+								}))),
+						User.class);
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
@@ -83,23 +86,29 @@ public class UserHandler {
 				.body(userService.getUserById(req.pathVariable("id")), User.class);
 	}
 
-	public  Mono<ServerResponse> getUserEmail(ServerRequest req) {
+	public Mono<ServerResponse> getUserEmail(ServerRequest req) {
 		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
 				.body(userService.getUserById(req.pathVariable("id")), User.class);
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	public Mono<ServerResponse> updateUser(ServerRequest req) {
 		return null;
 	}
-	
+
 	@PreAuthorize("hasRole('USER')")
 	public Mono<ServerResponse> updatePassword(ServerRequest req) {
-		if (req.cookies().get("token") == null) {
+		if (req.cookies().getFirst(SecurityContextRepository.COOKIE_KEY) == null) {
 			return Mono.error(new AuthorizationException());
 		}
-		req.bodyToMono(PasswordChangeRequest.class).doOnNext(pcr -> userService.updatePassword(pcr)).subscribe();
-		return ServerResponse.noContent().build();
+		return ServerResponse
+				.status(204).body(
+						req.bodyToMono(PasswordChangeRequest.class)
+								.flatMap(pcr -> firebaseUtil
+										.getDetailsFromCustomToken(
+												req.cookies().getFirst(SecurityContextRepository.COOKIE_KEY).getValue())
+										.flatMap(decodedToken -> userService.updatePassword(pcr, decodedToken))),
+						Object.class);
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")

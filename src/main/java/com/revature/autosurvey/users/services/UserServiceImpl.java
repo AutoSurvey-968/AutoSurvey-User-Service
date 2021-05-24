@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.datastax.oss.driver.shaded.guava.common.base.Objects;
+import com.google.firebase.auth.FirebaseToken;
 import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.LoginRequest;
 import com.revature.autosurvey.users.beans.PasswordChangeRequest;
@@ -17,6 +18,7 @@ import com.revature.autosurvey.users.beans.Id.Name;
 import com.revature.autosurvey.users.beans.User.Role;
 import com.revature.autosurvey.users.data.IdRepository;
 import com.revature.autosurvey.users.data.UserRepository;
+import com.revature.autosurvey.users.errors.AuthorizationException;
 import com.revature.autosurvey.users.errors.NotFoundException;
 
 import reactor.core.publisher.Flux;
@@ -79,7 +81,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Mono<User> updateUser(User user) {
-		return userRepository.findById(user.getId()).flatMap(found -> userRepository.save(found)).switchIfEmpty(Mono.error(new NotFoundException()));
+		return userRepository.findById(user.getId()).flatMap(found -> userRepository.save(found))
+				.switchIfEmpty(Mono.error(new NotFoundException()));
 	}
 
 	@Override
@@ -130,9 +133,21 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Mono<Void> updatePassword(PasswordChangeRequest pcr) {
-		// TODO Auto-generated method stub
-		return null;
+	public Mono<Void> updatePassword(PasswordChangeRequest pcr, FirebaseToken fbt) {
+		return userRepository.findById(pcr.getUserId()).flatMap(foundUser -> {
+			if (fbt.getClaims().containsKey("roles")) {
+				@SuppressWarnings("unchecked")
+				List<Role> roles = (List<Role>) fbt.getClaims().get("roles");
+				if (roles.contains(Role.ROLE_ADMIN) || fbt.getUid().equals(Integer.toString(foundUser.getId()))) {
+					if (encoder.matches(pcr.getOldPass(), foundUser.getPassword())) {
+						foundUser.setPassword(encoder.encode(pcr.getNewPass()));
+						userRepository.save(foundUser).subscribe();
+						return Mono.empty();
+					}
+				}
+			}
+			return Mono.error(new AuthorizationException());
+		});
 	}
 
 }
