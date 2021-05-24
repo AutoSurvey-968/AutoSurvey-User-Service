@@ -105,7 +105,21 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Mono<User> updateUser(User user) {
-		return userRepository.findById(user.getId()).flatMap(found -> userRepository.save(found)).switchIfEmpty(Mono.error(new NotFoundException()));
+		
+		if (user.getPassword() == null) {
+			return Mono.error(new IllegalPasswordException("Empty password Field"));
+		}
+		
+		Pattern passwordPattern = Pattern.compile(".*(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()]).{8,}");
+
+		Matcher passwordMatcher = passwordPattern.matcher(user.getPassword());
+		if (!passwordMatcher.matches()) {
+			return Mono.error(new IllegalPasswordException("Invalid Password"));
+		}
+		
+		return userRepository.findById(user.getId())
+				.flatMap(found -> userRepository.save(found))
+				.switchIfEmpty(Mono.error(new NotFoundException()));
 	}
 
 	@Override

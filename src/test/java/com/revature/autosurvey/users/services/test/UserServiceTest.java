@@ -133,37 +133,12 @@ public class UserServiceTest {
 	
 	@Test
 	void testAddUserReturnsErrorOnNoPassword() {
-		User user1 = new User();
-		user1.setEmail("test@test.com");
-		user1.setPassword("P$$wrdaa");
-		User user2 = new User();
-		user2.setEmail("test@test.com");
-		user2.setPassword("P4$$w0r");
-		User user3 = new User();
-		user3.setEmail("test@test.com");
-		user3.setPassword("P4w0rdaa");
-		User user4 = new User();
-		user4.setEmail("test@test.com");
-		user4.setPassword("P4$$0000");
-		User user5 = new User();
-		user5.setEmail("test@test.com");
-		user5.setPassword("p4$$w0rd");
-		User user6 = new User();
-		user5.setEmail("test@test.com");
+		User user = new User();
+		user.setEmail("test@test.com");
 		
-		Mono<User> result1 = userService.addUser(user1);
-		Mono<User> result2 = userService.addUser(user2);
-		Mono<User> result3 = userService.addUser(user3);
-		Mono<User> result4 = userService.addUser(user4);
-		Mono<User> result5 = userService.addUser(user5);
-		Mono<User> result6 = userService.addUser(user6);
+		Mono<User> result = userService.addUser(user);
 		
-		StepVerifier.create(result1).expectError();
-		StepVerifier.create(result2).expectError();
-		StepVerifier.create(result3).expectError();
-		StepVerifier.create(result4).expectError();
-		StepVerifier.create(result5).expectError();
-		StepVerifier.create(result6).expectError();
+		StepVerifier.create(result).expectError().verify();
 	}
 
 	@Test
@@ -174,7 +149,7 @@ public class UserServiceTest {
 		
 		Mono<User> result = userService.addUser(user);
 		
-		StepVerifier.create(result).expectError();
+		StepVerifier.create(result).expectError().verify();
 	}
 	
 	
@@ -185,7 +160,7 @@ public class UserServiceTest {
 		
 		Mono<User> result = userService.addUser(user);
 		
-		StepVerifier.create(result).expectError();
+		StepVerifier.create(result).expectError().verify();
 	}
 	
 	@Test
@@ -196,7 +171,7 @@ public class UserServiceTest {
 		
 		Mono<User> result = userService.addUser(user);
 		
-		StepVerifier.create(result).expectError();
+		StepVerifier.create(result).expectError().verify();
 	}
 	
 	@Test
@@ -207,7 +182,7 @@ public class UserServiceTest {
 		
 		Mono<User> result = userService.addUser(user);
 		
-		StepVerifier.create(result).expectError();
+		StepVerifier.create(result).expectError().verify();
 	}
 	
 	@Test
@@ -215,14 +190,10 @@ public class UserServiceTest {
 		User user5 = new User();
 		user5.setEmail("test@test.com");
 		user5.setPassword("p4$$w0rd");
-		User user6 = new User();
-		user5.setEmail("test@test.com");
 		
 		Mono<User> result5 = userService.addUser(user5);
-		Mono<User> result6 = userService.addUser(user6);
 		
 		StepVerifier.create(result5).expectError();
-		StepVerifier.create(result6).expectError();
 	}
 	
 	@Test
@@ -232,7 +203,7 @@ public class UserServiceTest {
 		
 		Mono<User> result = userService.addUser(user);
 		
-		StepVerifier.create(result).expectError();
+		StepVerifier.create(result).expectError().verify();
 	}
 	
 	@Test
@@ -242,7 +213,7 @@ public class UserServiceTest {
 		
 		Mono<User> result = userService.addUser(user);
 		
-		StepVerifier.create(result).expectError();
+		StepVerifier.create(result).expectError().verify();
 	}
 	
 	@Test
@@ -252,7 +223,7 @@ public class UserServiceTest {
 		
 		Mono<User> result = userService.addUser(user);
 		
-		StepVerifier.create(result).expectError();
+		StepVerifier.create(result).expectError().verify();
 	}
 	
 	@Test
@@ -261,7 +232,7 @@ public class UserServiceTest {
 		
 		Mono<User> result = userService.addUser(user);
 		
-		StepVerifier.create(result).expectError();
+		StepVerifier.create(result).expectError().verify();
 	}
 
 	@Test
@@ -270,7 +241,7 @@ public class UserServiceTest {
 		Mockito.when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(Boolean.FALSE));
 		Mockito.when(userRepository.insert(user)).thenReturn(Mono.empty());
 		Mono<User> result = userService.addUser(user);
-		StepVerifier.create(result).expectError();
+		StepVerifier.create(result).expectError().verify();
 	}
 	
 	@Test
@@ -299,12 +270,51 @@ public class UserServiceTest {
 		User u1 = new User();
 		u1.setId(1);
 		u1.setEmail("text@text.com");
-		u1.setPassword("false");
+		u1.setPassword("P4$$w0rd");
 		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u1));
 		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
-		u1.setPassword("true");
+		u1.setPassword("@Nother1");
 		Mono<User> result = userService.updateUser(u1);
-		StepVerifier.create(result).expectNextMatches(u -> u.getPassword().equals("true")).verifyComplete();
+		StepVerifier.create(result).expectNextMatches(u -> u.getPassword().equals("@Nother1")).verifyComplete();
+	}
+	
+	@Test
+	void testUpdateUserReturnsErrorOnBadPassword() {
+		User u1 = new User();
+		u1.setId(1);
+		u1.setEmail("text@text.com");
+		u1.setPassword("P4$$w0rd");
+		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u1));
+		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
+		u1.setPassword("4Nother");
+		Mono<User> result = userService.updateUser(u1);
+		StepVerifier.create(result).expectError().verify();
+	}
+	
+	@Test
+	void testUpdateUserReturnsErrorOnNoPassword() {
+		User u1 = new User();
+		u1.setId(1);
+		u1.setEmail("text@text.com");
+		u1.setPassword("P4$$w0rd");
+		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u1));
+		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
+		u1.setPassword(null);
+		Mono<User> result = userService.updateUser(u1);
+		StepVerifier.create(result).expectError().verify();
+	}
+	
+	@Test
+	void testUpdateUserReturnsErrorOnNonExistingUser() {
+		User u1 = new User();
+		u1.setId(1);
+		u1.setEmail("text@text.com");
+		u1.setPassword("P4$$w0rd");
+		Mockito.when(userRepository.findById(1)).thenReturn(Mono.empty());
+//		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
+		u1.setPassword("4Nother1");
+		Mono<User> result = userService.updateUser(u1);
+		StepVerifier.create(result).expectError().verify();
 	}
 
 	@Test
