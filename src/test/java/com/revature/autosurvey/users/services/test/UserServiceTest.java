@@ -11,12 +11,14 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.Id.Name;
+import com.revature.autosurvey.users.beans.LoginRequest;
 import com.revature.autosurvey.users.beans.User.Role;
 import com.revature.autosurvey.users.data.IdRepository;
 import com.revature.autosurvey.users.data.UserRepository;
@@ -81,7 +83,7 @@ public class UserServiceTest {
 		User[] uArr = { u, u2 };
 		Flux<User> uFlux = Flux.fromArray(uArr);
 
-		Mockito.when(userRepository.findAll()).thenReturn(uFlux);
+		when(userRepository.findAll()).thenReturn(uFlux);
 		Flux<User> resultFlux = userService.getAllUsers();
 
 		StepVerifier.create(resultFlux).expectNext(u).expectNext(u2).verifyComplete();
@@ -101,12 +103,10 @@ public class UserServiceTest {
 	}
 
 	@Test
-	void testDeleteUserReturnsEmptyIfnoUser() {
-		Mono<User> noOne = Mono.empty();
+	void testDeleteUserReturnsErrorIfnoUser() {
 		when(userRepository.existsByEmail("a")).thenReturn(Mono.just(false));
 		Mono<User> result = userService.deleteUser("a");
-		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
-		StepVerifier.create(comparer).expectError(NotFoundException.class);
+		StepVerifier.create(result).expectError(NotFoundException.class).verify();
 	}
 
 	@Test
@@ -122,11 +122,11 @@ public class UserServiceTest {
 		List<Role> perms = new ArrayList<>();
 		perms.add(Role.ROLE_USER);
 		encoded.setAuthorities(perms);
-		Mockito.when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(Boolean.FALSE));
-		Mockito.when(idRepository.findById(Name.USER)).thenReturn(Mono.just(new Id()));
-		Mockito.when(idRepository.save(Mockito.any())).thenReturn(Mono.just(new Id()));
-		Mockito.when(userRepository.insert(user)).thenReturn(Mono.just(user));
-		Mockito.when(encoder.encode(user.getPassword())).thenReturn("b");
+		when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(Boolean.FALSE));
+		when(idRepository.findById(Name.USER)).thenReturn(Mono.just(new Id()));
+		when(idRepository.save(Mockito.any())).thenReturn(Mono.just(new Id()));
+		when(userRepository.insert(user)).thenReturn(Mono.just(user));
+		when(encoder.encode(user.getPassword())).thenReturn("b");
 		Mono<User> result = userService.addUser(user);
 		StepVerifier.create(result).expectNext(encoded).verifyComplete();
 	}
@@ -151,7 +151,6 @@ public class UserServiceTest {
 		
 		StepVerifier.create(result).expectError().verify();
 	}
-	
 	
 	@Test
 	void testAddUserReturnsErrorOnShortPassword() {
@@ -238,8 +237,8 @@ public class UserServiceTest {
 	@Test
 	void testAddUserFailReturnEmpty() {
 		User user = new User();
-		Mockito.when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(Boolean.FALSE));
-		Mockito.when(userRepository.insert(user)).thenReturn(Mono.empty());
+		when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(Boolean.FALSE));
+		when(userRepository.insert(user)).thenReturn(Mono.empty());
 		Mono<User> result = userService.addUser(user);
 		StepVerifier.create(result).expectError().verify();
 	}
@@ -258,7 +257,7 @@ public class UserServiceTest {
 		user.setEmail("a@a.com");
 		user.setPassword("P4$$w0rd");
 		Mono<User> noOne = Mono.empty();
-		Mockito.when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(true));
+		when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(true));
 //		Mockito.when(userRepository.insert(user)).thenReturn(Mono.empty());
 		Mono<User> result = userService.addUser(user);
 		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
@@ -271,8 +270,8 @@ public class UserServiceTest {
 		u1.setId(1);
 		u1.setEmail("text@text.com");
 		u1.setPassword("P4$$w0rd");
-		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u1));
-		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
+		when(userRepository.findById(1)).thenReturn(Mono.just(u1));
+		when(userRepository.save(u1)).thenReturn(Mono.just(u1));
 		u1.setPassword("@Nother1");
 		Mono<User> result = userService.updateUser(u1);
 		StepVerifier.create(result).expectNextMatches(u -> u.getPassword().equals("@Nother1")).verifyComplete();
@@ -284,8 +283,8 @@ public class UserServiceTest {
 		u1.setId(1);
 		u1.setEmail("text@text.com");
 		u1.setPassword("P4$$w0rd");
-		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u1));
-		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
+		when(userRepository.findById(1)).thenReturn(Mono.just(u1));
+		when(userRepository.save(u1)).thenReturn(Mono.just(u1));
 		u1.setPassword("4Nother");
 		Mono<User> result = userService.updateUser(u1);
 		StepVerifier.create(result).expectError().verify();
@@ -297,8 +296,8 @@ public class UserServiceTest {
 		u1.setId(1);
 		u1.setEmail("text@text.com");
 		u1.setPassword("P4$$w0rd");
-		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u1));
-		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
+		when(userRepository.findById(1)).thenReturn(Mono.just(u1));
+		when(userRepository.save(u1)).thenReturn(Mono.just(u1));
 		u1.setPassword(null);
 		Mono<User> result = userService.updateUser(u1);
 		StepVerifier.create(result).expectError().verify();
@@ -310,7 +309,7 @@ public class UserServiceTest {
 		u1.setId(1);
 		u1.setEmail("text@text.com");
 		u1.setPassword("P4$$w0rd");
-		Mockito.when(userRepository.findById(1)).thenReturn(Mono.empty());
+		when(userRepository.findById(1)).thenReturn(Mono.empty());
 //		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
 		u1.setPassword("4Nother1");
 		Mono<User> result = userService.updateUser(u1);
@@ -321,17 +320,122 @@ public class UserServiceTest {
 	void testGetUserByEmailGetsUserByEmail() {
 		User user = new User();
 		user.setEmail("test@test.com");
-		Mockito.when(userRepository.existsByEmail("test@test.com")).thenReturn(Mono.just(Boolean.TRUE));
-		Mockito.when(userRepository.findByEmail(user.getEmail())).thenReturn(Mono.just(user));
+		when(userRepository.existsByEmail("test@test.com")).thenReturn(Mono.just(Boolean.TRUE));
+		when(userRepository.findByEmail(user.getEmail())).thenReturn(Mono.just(user));
 		Mono<User> result = userService.getUserByEmail("test@test.com");
 		StepVerifier.create(result).expectNext(user).verifyComplete();
 	}
 
 	@Test
 	void testGetUserByEmailFailReturnsEmpty() {
-		Mockito.when(userRepository.existsByEmail("test@test.com")).thenReturn(Mono.just(Boolean.FALSE));
-		Mockito.when(userRepository.findByEmail("test@test.com")).thenReturn(Mono.empty());
+		when(userRepository.existsByEmail("test@test.com")).thenReturn(Mono.just(Boolean.FALSE));
+		when(userRepository.findByEmail("test@test.com")).thenReturn(Mono.empty());
 		Mono<User> result = userService.getUserByEmail("test@test.com");
 		StepVerifier.create(result).verifyComplete();
+	}
+	
+	@Test
+	void testGetUserIdGetsAUser() {
+		User user = new User();
+		user.setId(0);
+		String id = "0";
+		when(userRepository.findById(Integer.parseInt(id))).thenReturn(Mono.just(user));
+		
+		Mono<User> result = userService.getUserById("0");
+		
+		StepVerifier.create(result).expectNext(user).verifyComplete();
+	}
+	
+	@Test
+	void testGetUserIdReturnsErrorWhenEmpty() {
+		String id = "0";
+		when(userRepository.findById(Integer.parseInt(id))).thenReturn(Mono.empty());
+		
+		Mono<User> result = userService.getUserById("0");
+		
+		StepVerifier.create(result).expectError().verify();
+	}
+	
+	@Test
+	void testFindByUserNameFindsUser() {
+		String email = "a";
+		User u = new User();
+		u.setEmail(email);
+		
+		when(userRepository.existsByEmail(email)).thenReturn(Mono.just(Boolean.TRUE));
+		when(userRepository.findByEmail(email)).thenReturn(Mono.just(u));
+		
+		Mono<UserDetails> result = userService.findByUsername(email);
+		
+		StepVerifier.create(result).expectNext(u).verifyComplete();
+	}
+	
+	@Test
+	void testFindByUserNameReturnsErrorWhenNoUser() {
+		String email = "a";
+		User u = new User();
+		u.setEmail(email);
+		
+		when(userRepository.existsByEmail(email)).thenReturn(Mono.just(Boolean.FALSE));
+		
+		Mono<UserDetails> result = userService.findByUsername(email);
+		
+		StepVerifier.create(result).expectError().verify();
+	}
+	
+	@Test
+	void testloginReturnsUser() {
+		User user = new User();
+		user.setEmail("a");
+		user.setPassword("b");
+		UserDetails found = user;
+		LoginRequest given = new LoginRequest();
+		given.setEmail("a");
+		given.setPassword("b");
+		
+		when(encoder.matches(given.getPassword(), found.getPassword())).thenReturn(true);
+		
+		Mono<User> result = userService.login(found, given);
+		
+		StepVerifier.create(result).expectNext(user).verifyComplete();
+	}
+	
+	@Test
+	void testLoginReturnsErrorOnNoUser() {
+		User user = new User();
+		user.setEmail("a");
+		user.setPassword("b");
+		UserDetails found = user;
+		LoginRequest given = new LoginRequest();
+		given.setEmail("b");
+		given.setPassword("a");
+		
+		when(encoder.matches(given.getPassword(), found.getPassword())).thenReturn(false);
+		
+		Mono<User> result = userService.login(found, given);
+		
+		StepVerifier.create(result).expectError().verify();
+	}
+	
+	@Test
+	void testGetIdTableFindsAll() {
+		Id id1 = new Id();
+		id1.setName(Name.USER);
+		id1.setNextId(2);
+		Id id2 = new Id();
+		id2.setName(Name.USER);
+		id2.setNextId(3);
+		Id id3 = new Id();
+		id3.setName(Name.USER);
+		id3.setNextId(4);
+		Id id4 = new Id();
+		id4.setName(Name.USER);
+		id4.setNextId(5);
+		
+		when(idRepository.findAll()).thenReturn(Flux.just(id1,id2,id3,id4));
+		
+		Flux<Id> result = userService.getIdTable();
+		
+		StepVerifier.create(result).expectNext(id1,id2,id3,id4);
 	}
 }

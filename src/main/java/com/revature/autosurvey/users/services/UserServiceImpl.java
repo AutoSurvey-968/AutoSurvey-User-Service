@@ -124,7 +124,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Mono<User> getUserById(String id) {
-		return userRepository.findById(Integer.parseInt(id)).switchIfEmpty(Mono.error(new NotFoundException()));
+		return userRepository.findById(Integer.parseInt(id))
+				.switchIfEmpty(Mono.error(new NotFoundException()));
 	}
 
 	@Override
@@ -147,7 +148,7 @@ public class UserServiceImpl implements UserService {
 			if (bool) {
 				return userRepository.findByEmail(email);
 			} else {
-				return Mono.empty();
+				return Mono.error(new NotFoundException());
 			}
 		});
 	}
