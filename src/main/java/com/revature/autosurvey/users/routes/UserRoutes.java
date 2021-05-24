@@ -15,8 +15,8 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.WebFilter;
 
 import com.google.firebase.auth.FirebaseAuthException;
-import com.revature.autosurvey.users.errors.NotFoundException;
-import com.revature.autosurvey.users.errors.UserAlreadyExistsException;
+import com.revature.autosurvey.users.errors.NotFoundError;
+import com.revature.autosurvey.users.errors.UserAlreadyExistsError;
 import com.revature.autosurvey.users.handlers.UserHandler;
 
 
@@ -45,12 +45,12 @@ public class UserRoutes {
 	@Bean
 	WebFilter exceptionToErrorCode() {
 		return (exchange, next) -> next.filter(exchange)
-				.onErrorResume(NotFoundException.class, e -> {
+				.onErrorResume(NotFoundError.class, e -> {
 					ServerHttpResponse response = exchange.getResponse();
 					response.setRawStatusCode(HttpStatus.SC_NOT_FOUND);
 					return response.setComplete();
 				})
-				.onErrorResume(UserAlreadyExistsException.class, e -> {
+				.onErrorResume(UserAlreadyExistsError.class, e -> {
 					ServerHttpResponse response = exchange.getResponse();
 					response.setRawStatusCode(HttpStatus.SC_CONFLICT);
 					return response.setComplete();

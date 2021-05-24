@@ -16,7 +16,7 @@ import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.Id.Name;
 import com.revature.autosurvey.users.data.IdRepository;
 import com.revature.autosurvey.users.data.UserRepository;
-import com.revature.autosurvey.users.errors.NotFoundException;
+import com.revature.autosurvey.users.errors.NotFoundError;
 import com.revature.autosurvey.users.services.UserService;
 import com.revature.autosurvey.users.services.UserServiceImpl;
 
@@ -102,7 +102,7 @@ public class UserServiceTest {
 		when(userRepository.existsByEmail("a")).thenReturn(Mono.just(false));
 		Mono<User> result = userService.deleteUser("a");
 		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
-		StepVerifier.create(comparer).expectError(NotFoundException.class);
+		StepVerifier.create(comparer).expectError(NotFoundError.class);
 	}
 
 	@Test

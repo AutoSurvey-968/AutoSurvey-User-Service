@@ -15,9 +15,9 @@ import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.LoginRequest;
 import com.revature.autosurvey.users.beans.PasswordChangeRequest;
 import com.revature.autosurvey.users.beans.User;
-import com.revature.autosurvey.users.errors.AuthorizationException;
-import com.revature.autosurvey.users.errors.NotFoundException;
-import com.revature.autosurvey.users.errors.UserAlreadyExistsException;
+import com.revature.autosurvey.users.errors.AuthorizationError;
+import com.revature.autosurvey.users.errors.NotFoundError;
+import com.revature.autosurvey.users.errors.UserAlreadyExistsError;
 import com.revature.autosurvey.users.security.FirebaseUtil;
 import com.revature.autosurvey.users.security.SecurityContextRepository;
 import com.revature.autosurvey.users.services.UserService;
@@ -55,7 +55,7 @@ public class UserHandler {
 	public Mono<ServerResponse> addUser(ServerRequest req) {
 		return req.bodyToMono(User.class)
 				.flatMap(user -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(
-						userService.addUser(user).switchIfEmpty(Mono.error(new UserAlreadyExistsException())),
+						userService.addUser(user).switchIfEmpty(Mono.error(new UserAlreadyExistsError())),
 						User.class));
 
 	}
@@ -64,7 +64,7 @@ public class UserHandler {
 		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
 				.body(req.bodyToMono(LoginRequest.class)
 						.flatMap(login -> userService.findByUsername(login.getEmail())
-								.switchIfEmpty(Mono.error(new NotFoundException()))
+								.switchIfEmpty(Mono.error(new NotFoundError()))
 								.flatMap(foundUser -> userService.login(foundUser, login).flatMap(loggedUser -> {
 									try {
 										req.exchange().getResponse()
@@ -107,7 +107,7 @@ public class UserHandler {
 	@PreAuthorize("hasRole('USER')")
 	public Mono<ServerResponse> updatePassword(ServerRequest req) {
 		if (req.cookies().getFirst(SecurityContextRepository.COOKIE_KEY) == null) {
-			return Mono.error(new AuthorizationException());
+			return Mono.error(new AuthorizationError());
 		}
 		return ServerResponse
 				.status(204).body(

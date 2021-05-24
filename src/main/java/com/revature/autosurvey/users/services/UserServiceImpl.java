@@ -20,8 +20,8 @@ import com.revature.autosurvey.users.beans.Id.Name;
 import com.revature.autosurvey.users.beans.User.Role;
 import com.revature.autosurvey.users.data.IdRepository;
 import com.revature.autosurvey.users.data.UserRepository;
-import com.revature.autosurvey.users.errors.AuthorizationException;
-import com.revature.autosurvey.users.errors.NotFoundException;
+import com.revature.autosurvey.users.errors.AuthorizationError;
+import com.revature.autosurvey.users.errors.NotFoundError;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -93,12 +93,12 @@ public class UserServiceImpl implements UserService {
 			}
 			log.debug("password: {}", user.getPassword());
 			return userRepository.save(user);
-		}).switchIfEmpty(Mono.error(new NotFoundException()));
+		}).switchIfEmpty(Mono.error(new NotFoundError()));
 	}
 
 	@Override
 	public Mono<User> getUserById(String id) {
-		return userRepository.findById(Integer.parseInt(id)).switchIfEmpty(Mono.error(new NotFoundException()));
+		return userRepository.findById(Integer.parseInt(id)).switchIfEmpty(Mono.error(new NotFoundError()));
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
 					return user;
 				});
 			} else {
-				return Mono.error(new NotFoundException());
+				return Mono.error(new NotFoundError());
 			}
 		});
 	}
@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
 					if (correctPw.booleanValue()) {
 						return Mono.just(found).cast(User.class);
 					} else {
-						return Mono.error(new NotFoundException());
+						return Mono.error(new NotFoundError());
 					}
 				});
 	}
@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
 					}
 				}
 			}
-			return Mono.error(new AuthorizationException());
+			return Mono.error(new AuthorizationError());
 		});
 	}
 
