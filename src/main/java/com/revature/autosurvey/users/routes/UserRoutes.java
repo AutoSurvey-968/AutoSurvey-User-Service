@@ -71,6 +71,11 @@ public class UserRoutes {
 					ServerHttpResponse response = exchange.getResponse();
 					response.setRawStatusCode(HttpStatus.SC_BAD_REQUEST);
 					return response.setComplete();
+				})
+				.onErrorResume(NumberFormatException.class, e -> {
+					ServerHttpResponse response = exchange.getResponse();
+					response.setRawStatusCode(HttpStatus.SC_BAD_REQUEST);
+					return response.setComplete();
 				});
 	}
 }
