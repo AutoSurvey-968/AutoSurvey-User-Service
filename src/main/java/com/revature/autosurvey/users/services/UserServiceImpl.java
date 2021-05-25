@@ -182,11 +182,7 @@ public class UserServiceImpl implements UserService {
 			return true;
 		}
 		
-		if(!patternMatcher(".{8,}", password)) {
-			return true;
-		}
-		
-		return false;
+		return !patternMatcher(".{8,}", password);
 	}
 	
 	public boolean patternMatcher(String patternStr, String password) {
