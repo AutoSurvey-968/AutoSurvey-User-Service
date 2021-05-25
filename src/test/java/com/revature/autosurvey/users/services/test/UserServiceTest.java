@@ -217,12 +217,12 @@ public class UserServiceTest {
 	}
 	
 	@ParameterizedTest
-	@ValueSource(strings = {"4Nother1", "@Notherone", "@NOTHER1", "@nother1", "@Nother"})
+	@ValueSource(strings = {"4Nother1", "@Notherone", "@NOTHER1", "@nother1", "@N0ther"})
 	void testUpdateUserReturnsErrorOnBadPassword(String password) {
 		User u1 = new User();
 		u1.setId(1);
 		u1.setEmail("text@text.com");
-		u1.setPassword("P4$$w0rd");
+		u1.setPassword(password);
 		when(userRepository.findById(1)).thenReturn(Mono.just(u1));
 		when(userRepository.save(u1)).thenReturn(Mono.just(u1));
 		u1.setPassword(password);
@@ -251,7 +251,7 @@ public class UserServiceTest {
 		u1.setPassword("P4$$w0rd");
 		when(userRepository.findById(1)).thenReturn(Mono.empty());
 //		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
-		u1.setPassword("4Nother1");
+		u1.setPassword("@Nother1");
 		Mono<User> result = userService.updateUser(u1);
 		StepVerifier.create(result).expectError().verify();
 	}

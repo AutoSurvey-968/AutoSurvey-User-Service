@@ -107,10 +107,7 @@ public class UserServiceImpl implements UserService {
 			return Mono.error(new IllegalPasswordException("Empty password Field"));
 		}
 		
-		Pattern passwordPattern = Pattern.compile(".*(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()]).{8,20}");
-
-		Matcher passwordMatcher = passwordPattern.matcher(user.getPassword());
-		if (!passwordMatcher.matches()) {	
+		if (validatePassword(user.getPassword())) {	
 			return Mono.error(new IllegalPasswordException("Invalid Password"));
 		}
 		
@@ -168,31 +165,34 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public boolean validatePassword(String password) {
-		Pattern pattern = Pattern.compile(".*(?=.*[0-9])*");
 		
-		boolean bool = false;
-		for(int i = 0; i < 5; i++){
-			Matcher matcher = pattern.matcher(password);
-			
-			if (matcher.matches()) {
-				bool = false;
-
-				switch (i) {
-				case 1:
-					pattern = Pattern.compile(".*(?=.*[a-z]).*");
-					break;
-				case 2:
-					pattern = Pattern.compile(".*(?=.*[A-Z]).*");
-				case 3:
-					pattern = Pattern.compile(".*(?=.*[@#$%^&-+=()]).*");
-				}
-			}
-			else {
-				bool = true;
-				break;
-			}
+		if(!patternMatcher(".*(?=.*[0-9]).*", password)) {
+			return true;
 		}
 		
-		return bool;
+		if(!patternMatcher(".*(?=.*[a-z]).*", password)) {
+			return true;
+		}
+		
+		if(!patternMatcher(".*(?=.*[A-Z]).*", password)) {
+			return true;
+		}
+		
+		if(!patternMatcher(".*(?=.*[@#$%^&\\-+=()]).*", password)) {
+			return true;
+		}
+		
+		if(!patternMatcher(".{8,}", password)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean patternMatcher(String patternStr, String password) {
+		
+		Pattern pattern = Pattern.compile(patternStr);
+		Matcher matcher = pattern.matcher(password);
+		return matcher.matches();
 	}
 }
