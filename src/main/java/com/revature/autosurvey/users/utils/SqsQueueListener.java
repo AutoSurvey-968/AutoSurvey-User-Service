@@ -47,6 +47,8 @@ public class SqsQueueListener {
 //			Pair<String, Boolean> response = Pair.of(token, Boolean.valueOf(verified != null));
 //			queueSender.send(responseQueue, response);
 //		});
+		
+		log.debug(payload);
 		@SuppressWarnings("unchecked")
 		Map<String, String> mip = Jackson.fromJsonString(payload, Map.class);
 		log.debug(mip.keySet().toString());
