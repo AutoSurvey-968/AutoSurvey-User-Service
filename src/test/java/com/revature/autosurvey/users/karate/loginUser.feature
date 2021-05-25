@@ -21,8 +21,10 @@ Feature: Login as User - PUT to /com.revature.autosurvey.users.karate
 
   @tag1
   Scenario: Send a request and login successfully
-    Given url 'http://localhost:57323/'
-    And request { email: 'test2', password: 'test3' }
+    Given url 'http://localhost:8080/'
+    And request {"password":"hunter2","email":"admin@admin.admin"}
     When method put
     Then status 200
-    And match response == { username: '#notnull', email: '#notnull' }
+    And match response == {"firstName":null,"lastName":null,"credentialsNonExpired":false,"accountNonExpired":false,"id":4,"email":"admin@admin.admin","authorities":["ROLE_USER","ROLE_ADMIN","ROLE_SUPER_ADMIN"],"enabled":false,"accountNonLocked":false,"username":"admin@admin.admin"}
+		And match responseCookies contains { token: '#notnull' }
+		And def authToken = responseCookies.token
