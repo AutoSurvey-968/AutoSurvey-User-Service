@@ -28,6 +28,7 @@ public class UserRoutes {
 	RouterFunction<ServerResponse> routes(UserHandler uh) {
 		return RouterFunctions.route().path("/",
 				builder -> builder
+				.POST("/message", RequestPredicates.accept(MediaType.APPLICATION_FORM_URLENCODED), uh::sendMessage)
 				.GET("id", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getIdTable)
 				.GET("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getUserById)
 				.PUT("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::updateUser)

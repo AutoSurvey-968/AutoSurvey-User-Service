@@ -1,8 +1,12 @@
 package com.revature.autosurvey.users.handlers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +25,7 @@ import com.revature.autosurvey.users.errors.UserAlreadyExistsError;
 import com.revature.autosurvey.users.security.FirebaseUtil;
 import com.revature.autosurvey.users.security.SecurityContextRepository;
 import com.revature.autosurvey.users.services.UserService;
+import com.revature.autosurvey.users.utils.SqsQueueSender;
 
 import reactor.core.publisher.Mono;
 
@@ -30,6 +35,7 @@ public class UserHandler {
 	private UserService userService;
 	private FirebaseUtil firebaseUtil;
 	private Logger log = LoggerFactory.getLogger(UserHandler.class);
+	private SqsQueueSender sqsQueueSender;
 
 	@Autowired
 	public void setUserService(UserService userService) {
@@ -39,6 +45,22 @@ public class UserHandler {
 	@Autowired
 	public void setFirebaseUtil(FirebaseUtil firebaseUtil) {
 		this.firebaseUtil = firebaseUtil;
+	}
+	
+	@Autowired
+	public void setSqsQueueSender(SqsQueueSender sqs) {
+		this.sqsQueueSender = sqs;
+	}
+	
+	public Mono<ServerResponse> sendMessage(ServerRequest req) {
+		req.formData().doOnNext(map -> {
+			log.debug(map.getFirst("sender"));
+			log.debug(map.getFirst("message"));
+			Map<String, String> mappity = new HashMap<>();
+			mappity.put(map.getFirst("sender"), map.getFirst("message"));
+			sqsQueueSender.send(mappity);
+		}).subscribe();
+		return ServerResponse.noContent().build();
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
