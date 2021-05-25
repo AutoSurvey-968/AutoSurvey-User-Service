@@ -1,10 +1,10 @@
 package com.revature.autosurvey.users.beans;
 
-public class TokenVerifier {
+public class TokenVerifierRequest {
 	private String token;
 	private boolean returnSecureToken;
 	
-	public TokenVerifier() {
+	public TokenVerifierRequest() {
 		super();
 	}
 

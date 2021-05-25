@@ -1,5 +1,7 @@
 package com.revature.autosurvey.users.handlers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -11,9 +13,11 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.LoginRequest;
+import com.revature.autosurvey.users.beans.PasswordChangeRequest;
 import com.revature.autosurvey.users.beans.User;
-import com.revature.autosurvey.users.errors.NotFoundException;
-import com.revature.autosurvey.users.errors.UserAlreadyExistsException;
+import com.revature.autosurvey.users.errors.AuthorizationError;
+import com.revature.autosurvey.users.errors.NotFoundError;
+import com.revature.autosurvey.users.errors.UserAlreadyExistsError;
 import com.revature.autosurvey.users.security.FirebaseUtil;
 import com.revature.autosurvey.users.security.SecurityContextRepository;
 import com.revature.autosurvey.users.services.UserService;
@@ -25,6 +29,7 @@ public class UserHandler {
 
 	private UserService userService;
 	private FirebaseUtil firebaseUtil;
+	private Logger log = LoggerFactory.getLogger(UserHandler.class);
 
 	@Autowired
 	public void setUserService(UserService userService) {
@@ -35,7 +40,7 @@ public class UserHandler {
 	public void setFirebaseUtil(FirebaseUtil firebaseUtil) {
 		this.firebaseUtil = firebaseUtil;
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	public Mono<ServerResponse> getUsers(ServerRequest req) {
 		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(userService.getAllUsers(), User.class);
@@ -45,11 +50,11 @@ public class UserHandler {
 	public Mono<ServerResponse> getIdTable(ServerRequest req) {
 		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(userService.getIdTable(), Id.class);
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	public Mono<ServerResponse> addUser(ServerRequest req) {
 		return req.bodyToMono(User.class).flatMap(user -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-				.body(userService.addUser(user).switchIfEmpty(Mono.error(new UserAlreadyExistsException())), User.class));
+				.body(userService.addUser(user).switchIfEmpty(Mono.error(new UserAlreadyExistsError())), User.class));
 
 	}
 
@@ -57,11 +62,9 @@ public class UserHandler {
 		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
 				.body(req.bodyToMono(LoginRequest.class)
 						.flatMap(login -> userService.findByUsername(login.getEmail())
-								.switchIfEmpty(Mono.error(new NotFoundException()))
+								.switchIfEmpty(Mono.error(new NotFoundError()))
 								.flatMap(foundUser -> userService.login(foundUser, login).flatMap(loggedUser -> {
-									System.out.println("hello from this flatmap");
 									try {
-										System.out.println("hello from try");
 										req.exchange().getResponse()
 												.addCookie(ResponseCookie
 														.from(SecurityContextRepository.COOKIE_KEY,
@@ -71,7 +74,14 @@ public class UserHandler {
 										return Mono.error(fae);
 									}
 									return Mono.just(loggedUser);
-								}))), User.class);
+								}))),
+						User.class);
+	}
+
+	public Mono<ServerResponse> logout(ServerRequest req) {
+		req.exchange().getResponse().addCookie(ResponseCookie.from(SecurityContextRepository.COOKIE_KEY, "").path("/")
+				.httpOnly(true).maxAge(0).build());
+		return ServerResponse.noContent().build();
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
@@ -80,26 +90,38 @@ public class UserHandler {
 				.body(userService.getUserById(req.pathVariable("id")), User.class);
 	}
 
-	public  Mono<ServerResponse> getUserEmail(ServerRequest req) {
+	@PreAuthorize("hasRole('ADMIN')")
+	public Mono<ServerResponse> getUserByEmail(ServerRequest req) {
 		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-				.body(userService.getUserByEmail(req.pathVariable("email")), User.class);
+				.body(userService.getUserByEmail(req.queryParam("email").get()), User.class);
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	public Mono<ServerResponse> updateUser(ServerRequest req) {
-		return null;
+		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+				.body(req.bodyToMono(User.class).flatMap(user -> {
+					user.setId(Integer.parseInt(req.pathVariable("id")));
+					return userService.updateUser(user);
+				}), User.class);
 	}
-	
+
 	@PreAuthorize("hasRole('USER')")
 	public Mono<ServerResponse> updatePassword(ServerRequest req) {
-		return null;
+		if (req.cookies().getFirst(SecurityContextRepository.COOKIE_KEY) == null) {
+			return Mono.error(new AuthorizationError());
+		}
+		return ServerResponse
+				.status(204).body(
+						req.bodyToMono(PasswordChangeRequest.class)
+								.flatMap(pcr -> firebaseUtil
+										.getDetailsFromCustomToken(
+												req.cookies().getFirst(SecurityContextRepository.COOKIE_KEY).getValue())
+										.flatMap(decodedToken -> userService.updatePassword(pcr, decodedToken))),
+						Object.class);
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
 	public Mono<ServerResponse> deleteUser(ServerRequest req) {
-		return req.bodyToMono(User.class)
-				.flatMap(u -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-						.body(userService.deleteUser(u.getEmail())  , User.class))
-				.doOnError(e -> ServerResponse.badRequest().body(e.getMessage(), String.class));
+		return ServerResponse.status(204).body(userService.deleteUser(Integer.parseInt(req.pathVariable("id"))), Object.class);
 	}
 }
