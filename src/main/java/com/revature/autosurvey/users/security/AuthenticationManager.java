@@ -1,6 +1,5 @@
 package com.revature.autosurvey.users.security;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +42,11 @@ public class AuthenticationManager implements ReactiveAuthenticationManager, Ini
 		try {
 			if (FirebaseApp.getApps().isEmpty()) {
 				FirebaseOptions options = FirebaseOptions.builder()
-						.setCredentials(GoogleCredentials
-								.fromStream(new FileInputStream(new ClassPathResource(credentials).getFile())))
-						.setServiceAccountId(serviceAccountId).build();
+						.setCredentials(GoogleCredentials.fromStream(
+								new ClassPathResource(credentials)
+										.getInputStream()))
+						.setServiceAccountId(serviceAccountId)
+						.build();
 				FirebaseApp.initializeApp(options);
 			}
 		} catch (IOException e) {
