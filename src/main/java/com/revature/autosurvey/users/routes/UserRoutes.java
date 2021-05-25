@@ -3,7 +3,6 @@ package com.revature.autosurvey.users.routes;
 import java.util.NoSuchElementException;
 
 import org.apache.http.HttpStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
