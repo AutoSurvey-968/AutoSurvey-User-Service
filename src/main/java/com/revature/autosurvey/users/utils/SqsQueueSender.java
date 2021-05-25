@@ -15,8 +15,6 @@ public class SqsQueueSender {
 
 	private final QueueMessagingTemplate queueMessagingTemplate;
 
-	//private final AmazonSQSAsync sqs;
-	
 	@Autowired
 	public SqsQueueSender(AmazonSQSAsync sqs) {
 		this.queueMessagingTemplate = new QueueMessagingTemplate(sqs);
