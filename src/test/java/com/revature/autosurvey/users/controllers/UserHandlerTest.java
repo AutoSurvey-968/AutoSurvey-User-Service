@@ -121,6 +121,21 @@ public class UserHandlerTest {
 		StepVerifier.create(result).expectNextMatches(r -> HttpStatus.OK.equals(r.statusCode()))
 		.expectComplete().verify();
 	}
+	
+	@Test
+	void testLoginIfEmpty() {
+		LoginRequest loginMock = new LoginRequest();
+		loginMock.setEmail("text@hotmail.com");
+		loginMock.setPassword("password");
+		User userMock = new User();
+		userMock.setPassword("password");
+		userMock.setEmail("text@hotmail.com");
+		
+		Mockito.when(userService.findByUsername(userMock.getEmail())).thenReturn(Mono.empty());
+		ServerRequest req = MockServerRequest.builder().body(Mono.just(loginMock));
+		Mono<ServerResponse> result = userHandler.login(req);
+		StepVerifier.create(result).expectError().verify();
+	}
 
 	@Test
 	void testGetUserById() {
