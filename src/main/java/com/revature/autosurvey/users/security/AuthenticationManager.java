@@ -1,6 +1,5 @@
 package com.revature.autosurvey.users.security;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
