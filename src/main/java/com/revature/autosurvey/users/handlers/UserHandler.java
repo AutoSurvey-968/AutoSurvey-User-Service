@@ -122,9 +122,6 @@ public class UserHandler {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	public Mono<ServerResponse> deleteUser(ServerRequest req) {
-		return req.bodyToMono(User.class)
-				.flatMap(u -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-						.body(userService.deleteUser(u.getEmail()), User.class))
-				.doOnError(e -> ServerResponse.badRequest().body(e.getMessage(), String.class));
+		return ServerResponse.status(204).body(userService.deleteUser(Integer.parseInt(req.pathVariable("id"))), Object.class);
 	}
 }

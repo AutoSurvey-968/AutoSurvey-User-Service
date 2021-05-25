@@ -25,7 +25,7 @@ public interface UserService extends ReactiveUserDetailsService {
 	
 	Mono<User> getUserById(String id);
 
-	Mono<User> deleteUser(String userName);
+	Mono<User> deleteUser(Integer id);
 
 	Mono<User> getUserByEmail(String email);
 

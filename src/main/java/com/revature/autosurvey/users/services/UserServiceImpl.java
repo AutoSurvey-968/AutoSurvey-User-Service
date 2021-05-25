@@ -102,15 +102,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Mono<User> deleteUser(String email) {
-		return userRepository.existsByEmail(email).flatMap(bool -> {
+	public Mono<User> deleteUser(Integer id) {
+		return userRepository.existsById(id).flatMap(bool -> {
 			if (bool.booleanValue()) {
-				return userRepository.findByEmail(email).flatMap(user -> {
+				return userRepository.findById(id).flatMap(user -> {
 					if (user.getAuthorities().contains(Role.ROLE_SUPER_ADMIN)) {
 						return Mono.error(new AuthorizationError());
 					}
 					userRepository.deleteById(user.getId()).subscribe();
-					return Mono.just(user);
+					return Mono.empty();
 				});
 			} else {
 				return Mono.error(new NotFoundError());
