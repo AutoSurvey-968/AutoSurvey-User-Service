@@ -17,14 +17,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.Id.Name;
 import com.revature.autosurvey.users.beans.LoginRequest;
+import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.beans.User.Role;
 import com.revature.autosurvey.users.data.IdRepository;
 import com.revature.autosurvey.users.data.UserRepository;
-import com.revature.autosurvey.users.errors.NotFoundException;
+import com.revature.autosurvey.users.errors.NotFoundError;
 import com.revature.autosurvey.users.services.UserService;
 import com.revature.autosurvey.users.services.UserServiceImpl;
 
@@ -33,7 +33,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
-public class UserServiceTest {
+class UserServiceTest {
 
 	@TestConfiguration
 	static class Config {
@@ -92,23 +92,26 @@ public class UserServiceTest {
 	}
 
 	@Test
-	void testDeleteUserReturnsDeletedUser() {
+	void testDeleteUserReturnsEmpty() {
 		User u = new User();
 		u.setId(1);
 		u.setEmail("a@a.com");
+		u.setAuthorities(new ArrayList<>());
 		
-		when(userRepository.findByEmail(u.getEmail())).thenReturn(Mono.just(u));
+		when(userRepository.findById(u.getId())).thenReturn(Mono.just(u));
 		when(userRepository.deleteById(1)).thenReturn(Mono.empty());
-		when(userRepository.existsByEmail("a@a.com")).thenReturn(Mono.just(true));
-		Mono<User> result = userService.deleteUser("a@a.com");
-		StepVerifier.create(result).expectNext(u).expectComplete().verify();
+		when(userRepository.existsById(1)).thenReturn(Mono.just(true));
+		Mono<User> result = userService.deleteUser(1);
+		StepVerifier.create(result).expectComplete().verify();
 	}
 
 	@Test
-	void testDeleteUserReturnsErrorIfnoUser() {
-		when(userRepository.existsByEmail("a")).thenReturn(Mono.just(false));
-		Mono<User> result = userService.deleteUser("a");
-		StepVerifier.create(result).expectError(NotFoundException.class).verify();
+	void testDeleteUserThrowsErrorIfnoUser() {
+		Mono<User> noOne = Mono.empty();
+		when(userRepository.existsById(1)).thenReturn(Mono.just(false));
+		Mono<User> result = userService.deleteUser(1);
+		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
+		StepVerifier.create(comparer).expectError(NotFoundError.class);
 	}
 
 	@Test
@@ -196,11 +199,11 @@ public class UserServiceTest {
 	void testAddUserReturnsEmptyIfUserExists() {
 		User user = new User();
 		user.setEmail("a@a.com");
-		user.setPassword("P4$$w0rd");
-		when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(true));
-//		Mockito.when(userRepository.insert(user)).thenReturn(Mono.empty());
-		Mono<User> result = userService.addUser(user);
-		StepVerifier.create(result).expectError().verify();
+		Mono<User> noOne = Mono.empty();
+		Mockito.when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(true));
+		Mono<User> result = userService.addUser(null);
+		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
+		StepVerifier.create(comparer).expectNext(true).verifyComplete();
 	}
 
 	@Test
@@ -209,11 +212,13 @@ public class UserServiceTest {
 		u1.setId(1);
 		u1.setEmail("text@text.com");
 		u1.setPassword("P4$$w0rd");
-		when(userRepository.findById(1)).thenReturn(Mono.just(u1));
-		when(userRepository.save(u1)).thenReturn(Mono.just(u1));
-		u1.setPassword("@Nother1");
+		List<Role> rList = new ArrayList<User.Role>();
+		rList.add(Role.ROLE_SUPER_ADMIN);
+		u1.setAuthorities(rList);
+		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u1));
+		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
 		Mono<User> result = userService.updateUser(u1);
-		StepVerifier.create(result).expectNextMatches(u -> u.getPassword().equals("@Nother1")).verifyComplete();
+		StepVerifier.create(result).expectNext(u1).verifyComplete();
 	}
 	
 	@ParameterizedTest
@@ -231,19 +236,6 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	void testUpdateUserReturnsErrorOnNoPassword() {
-		User u1 = new User();
-		u1.setId(1);
-		u1.setEmail("text@text.com");
-		u1.setPassword("P4$$w0rd");
-		when(userRepository.findById(1)).thenReturn(Mono.just(u1));
-		when(userRepository.save(u1)).thenReturn(Mono.just(u1));
-		u1.setPassword(null);
-		Mono<User> result = userService.updateUser(u1);
-		StepVerifier.create(result).expectError().verify();
-	}
-	
-	@Test
 	void testUpdateUserReturnsErrorOnNonExistingUser() {
 		User u1 = new User();
 		u1.setId(1);
@@ -251,7 +243,7 @@ public class UserServiceTest {
 		u1.setPassword("P4$$w0rd");
 		when(userRepository.findById(1)).thenReturn(Mono.empty());
 //		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
-		u1.setPassword("@Nother1");
+		u1.setPassword("@Nother1");	
 		Mono<User> result = userService.updateUser(u1);
 		StepVerifier.create(result).expectError().verify();
 	}
@@ -378,4 +370,18 @@ public class UserServiceTest {
 		
 		StepVerifier.create(result).expectNext(id1,id2,id3,id4);
 	}
+	
+//	Dont Know how to test this cuz firebaseToken constructor is default and the class is final
+//	@ParameterizedTest
+//	@ValueSource(strings = {"4Nother1", "@Notherone", "@NOTHER1", "@nother1", "@N0ther"})
+//	void testUpdatePasswordUpdatesPasswword(String password) {
+//		PasswordChangeRequest pcr = new PasswordChangeRequest();
+//		pcr.setNewPass(password);
+//		Map<String, Object> fbtMap = new HashMap<>();
+//		List<Role> rList = new ArrayList<>();
+//		rList.add(Role.ROLE_ADMIN);
+//		fbtMap.put("roles", rList);
+//		FirebaseToken fbt;
+//		
+//	}
 }

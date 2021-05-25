@@ -1,5 +1,7 @@
 package com.revature.autosurvey.users.routes;
 
+import java.util.NoSuchElementException;
+
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,8 +17,9 @@ import org.springframework.web.server.WebFilter;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.revature.autosurvey.users.errors.IllegalEmailException;
 import com.revature.autosurvey.users.errors.IllegalPasswordException;
-import com.revature.autosurvey.users.errors.NotFoundException;
-import com.revature.autosurvey.users.errors.UserAlreadyExistsException;
+import com.revature.autosurvey.users.errors.AuthorizationError;
+import com.revature.autosurvey.users.errors.NotFoundError;
+import com.revature.autosurvey.users.errors.UserAlreadyExistsError;
 import com.revature.autosurvey.users.handlers.UserHandler;
 
 
@@ -32,28 +35,36 @@ public class UserRoutes {
 				builder -> builder
 				.GET("id", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getIdTable)
 				.GET("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getUserById)
-				.DELETE("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::deleteUser)
 				.PUT("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::updateUser)
+				.DELETE("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::deleteUser)
+				.PUT("{id}/password", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::updatePassword)
+				.GET(RequestPredicates.queryParam("email", t -> true), uh::getUserByEmail)
 				.GET(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getUsers)
 				.POST(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::addUser)
 				.PUT(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::login))
+				.DELETE(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::logout)
 				.build();
 	}
 	
 	@Bean
 	WebFilter exceptionToErrorCode() {
 		return (exchange, next) -> next.filter(exchange)
-				.onErrorResume(NotFoundException.class, e -> {
+				.onErrorResume(NotFoundError.class, e -> {
 					ServerHttpResponse response = exchange.getResponse();
 					response.setRawStatusCode(HttpStatus.SC_NOT_FOUND);
 					return response.setComplete();
 				})
-				.onErrorResume(UserAlreadyExistsException.class, e -> {
+				.onErrorResume(UserAlreadyExistsError.class, e -> {
 					ServerHttpResponse response = exchange.getResponse();
 					response.setRawStatusCode(HttpStatus.SC_CONFLICT);
 					return response.setComplete();
 				})
-				.onErrorResume(FirebaseAuthException.class, e-> {
+				.onErrorResume(AuthorizationError.class, e -> {
+					ServerHttpResponse response = exchange.getResponse();
+					response.setRawStatusCode(HttpStatus.SC_FORBIDDEN);
+					return response.setComplete();
+				})
+				.onErrorResume(FirebaseAuthException.class, e -> {
 					ServerHttpResponse response = exchange.getResponse();
 					response.setRawStatusCode(HttpStatus.SC_FORBIDDEN);
 					return response.setComplete();
@@ -64,6 +75,11 @@ public class UserRoutes {
 					return response.setComplete();
 				})
 				.onErrorResume(IllegalEmailException.class, e -> {
+					ServerHttpResponse response = exchange.getResponse();
+					response.setRawStatusCode(HttpStatus.SC_BAD_REQUEST);
+					return response.setComplete();
+				})
+				.onErrorResume(NoSuchElementException.class, e -> {
 					ServerHttpResponse response = exchange.getResponse();
 					response.setRawStatusCode(HttpStatus.SC_BAD_REQUEST);
 					return response.setComplete();
