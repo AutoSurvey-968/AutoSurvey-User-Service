@@ -33,13 +33,14 @@ public class UserRoutes {
 				builder -> builder
 				.GET("id", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getIdTable)
 				.GET("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getUserById)
-				.DELETE("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::deleteUser)
 				.PUT("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::updateUser)
+				.DELETE("{id}", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::deleteUser)
 				.PUT("{id}/password", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::updatePassword)
 				.GET(RequestPredicates.queryParam("email", t -> true), uh::getUserByEmail)
 				.GET(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getUsers)
 				.POST(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::addUser)
 				.PUT(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::login))
+				.DELETE(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::logout)
 				.build();
 	}
 	
