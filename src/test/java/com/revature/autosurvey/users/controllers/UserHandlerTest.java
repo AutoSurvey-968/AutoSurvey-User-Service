@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.reactive.function.server.MockServerRequest;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -112,10 +113,13 @@ public class UserHandlerTest {
 		loginMock.setEmail("text@hotmail.com");
 		loginMock.setPassword("password");
 		User userMock = new User();
+		userMock.setId(1);
 		userMock.setPassword("password");
 		userMock.setEmail("text@hotmail.com");
 		
-		Mockito.when(userService.findByUsername(userMock.getEmail())).thenReturn(Mono.just(userMock));
+		Mockito.when(userService.findByUsername(userMock.getEmail())).thenReturn(Mono.just((UserDetails) userMock));
+		Mockito.when(userService.login(userMock, loginMock)).thenReturn(Mono.just(userMock));
+		
 		ServerRequest req = MockServerRequest.builder().body(Mono.just(loginMock));
 		Mono<ServerResponse> result = userHandler.login(req);
 		StepVerifier.create(result).expectNextMatches(r -> HttpStatus.OK.equals(r.statusCode()))

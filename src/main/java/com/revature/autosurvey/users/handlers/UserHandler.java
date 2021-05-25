@@ -54,10 +54,8 @@ public class UserHandler {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	public Mono<ServerResponse> addUser(ServerRequest req) {
-		return req.bodyToMono(User.class)
-				.flatMap(user -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(
-						userService.addUser(user).switchIfEmpty(Mono.error(new UserAlreadyExistsError())),
-						User.class));
+		return req.bodyToMono(User.class).flatMap(user -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+				.body(userService.addUser(user).switchIfEmpty(Mono.error(new UserAlreadyExistsError())), User.class));
 
 	}
 
@@ -80,9 +78,10 @@ public class UserHandler {
 								}))),
 						User.class);
 	}
-	
-	public Mono<ServerResponse> logout(ServerRequest req, @CookieValue String token) {
-		log.debug(token);
+
+	public Mono<ServerResponse> logout(ServerRequest req) {
+		req.exchange().getResponse().addCookie(ResponseCookie.from(SecurityContextRepository.COOKIE_KEY, "").path("/")
+				.httpOnly(true).maxAge(0).build());
 		return ServerResponse.noContent().build();
 	}
 
@@ -100,14 +99,11 @@ public class UserHandler {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	public Mono<ServerResponse> updateUser(ServerRequest req) {
-		return ServerResponse
-				.ok().contentType(
-						MediaType.APPLICATION_JSON)
-				.body(req.bodyToMono(User.class)
-						.flatMap(user -> {
-							user.setId(Integer.parseInt(req.pathVariable("id")));
-							return userService.updateUser(user);
-						}), User.class);
+		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+				.body(req.bodyToMono(User.class).flatMap(user -> {
+					user.setId(Integer.parseInt(req.pathVariable("id")));
+					return userService.updateUser(user);
+				}), User.class);
 	}
 
 	@PreAuthorize("hasRole('USER')")
@@ -129,7 +125,7 @@ public class UserHandler {
 	public Mono<ServerResponse> deleteUser(ServerRequest req) {
 		return req.bodyToMono(User.class)
 				.flatMap(u -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-						.body(userService.deleteUser(u.getEmail())  , User.class))
+						.body(userService.deleteUser(u.getEmail()), User.class))
 				.doOnError(e -> ServerResponse.badRequest().body(e.getMessage(), String.class));
 	}
 }
