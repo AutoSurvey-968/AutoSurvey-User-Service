@@ -2,7 +2,7 @@
 
 ## Project Description
 
-Here goes your awesome project description!
+User Service for AutoSurvey. Controls authentication, user creation, and user management.
 
 ## Technologies Used
 
@@ -82,6 +82,16 @@ Logs out user by deleting browser-side token.
 
 
 ```
+{base-url}/email?=:email
+```
+### GET
+Authorization level: ANY
+Logs out user by deleting browser-side token.
+Filters database by email to find the user with the given email.
+
+Responds with 404 if no user found.
+
+```
 {base-url}/id
 ```
 ### GET
@@ -109,6 +119,7 @@ Authorization level: ADMIN-ONLY
 Deletes a user. NOTE: account with authority ROLE_SUPER_ADMIN cannot be deleted.
 
 Responds with 404 if user with the given id is not found.
+
 
 ```
 {base-url}/:id/password
