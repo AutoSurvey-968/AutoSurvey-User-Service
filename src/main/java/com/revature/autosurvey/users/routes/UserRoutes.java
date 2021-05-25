@@ -24,11 +24,9 @@ import com.revature.autosurvey.users.handlers.UserHandler;
 
 @Configuration
 public class UserRoutes {
-	@Autowired
-	private UserHandler uh;
 	
 	@Bean
-	RouterFunction<ServerResponse> routes() {
+	RouterFunction<ServerResponse> routes(UserHandler uh) {
 		return RouterFunctions.route().path("/",
 				builder -> builder
 				.GET("id", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getIdTable)
