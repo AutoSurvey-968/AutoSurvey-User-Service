@@ -182,6 +182,11 @@ public class UserServiceImpl implements UserService {
 				log.debug("password change request: {}", pcr);
 				@SuppressWarnings("unchecked")
 				List<Role> roles = (List<Role>) fbt.getClaims().get("roles");
+				
+				if(validatePassword(pcr.getNewPass())) {
+					return Mono.error(new IllegalPasswordException());
+				}
+				
 				log.debug(fbt.getUid());
 				if ((roles.contains(Role.ROLE_ADMIN) || fbt.getUid().equals(foundUser.getEmail()) && encoder.matches(pcr.getOldPass(), foundUser.getPassword()))) {
 						foundUser.setPassword(encoder.encode(pcr.getNewPass()));
