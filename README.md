@@ -6,35 +6,58 @@ Here goes your awesome project description!
 
 ## Technologies Used
 
-* Tech 1 - version 1.0
-* Tech 2 - version 2.0
-* Tech 3 - version 3.0
+* Spring Webflux
+* Spring Security
+* Firebase Admin SDK
+* AWS SQS
+* AWS Keyspaces
+* Eureka
 
 ## Features
 
-List of features ready and TODOs for future development
-* Awesome feature 1
-* Awesome feature 2
-* Awesome feature 3
+* Sign-Up
+* Login
+* Update User
+* Change Password
 
 To-do list:
-* Wow improvement to be done 1
-* Wow improvement to be done 2
+* Delete User
 
 ## Getting Started
    
-(include git clone command)
-(include all environment setup steps)
+Requires Firebase credentials, API key, Service Account, AWS Keyspaces credentials, SQS credentials, and Eureka
 
-> Be sure to include BOTH Windows and Unix command  
-> Be sure to mention if the commands only work on a specific platform (eg. AWS, GCP)
+Set environment variables for:
 
-- All the `code` required to get started
-- Images of what it should look like
+AWS_PASS - Keyspaces username
+AWS_USER - Keyspaces password
+CREDENTIALS_JSON - name of credentials json file to be placed in src/main/resources
+EUREKA_URL - default URL for eureka host
+FIREBASE_API_KEY - Firebase API key for authentication calls
+SERVICE_ACCOUNT_ID - Firebase service account id
+SQS_USER - SQS username
+SQS_PASS - SQS password
+
+First, clone the repository:
+
+SSH
+
+```
+git clone git@github.com:AutoSurvey-968/AutoSurvey-User-Service.git
+```
+or HTTPS
+```
+git clone https://github.com/AutoSurvey-968/AutoSurvey-User-Service.git
+```
+in main project directory, run:
+```
+java -jar target/{name of jar file}
+```
+Assuming all environment variables set, service will run
 
 ## Usage
 
-> Here, you instruct other people on how to use your project after they’ve installed it. This would also be a good place to include screenshots of your project in action.
+
 
 ## Contributors
 
