@@ -1,4 +1,4 @@
-package com.revature.autosurvey.users.controllers;
+package com.revature.autosurvey.users.handlers.test;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +16,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.LoginRequest;
 import com.revature.autosurvey.users.beans.User;
+import com.revature.autosurvey.users.errors.NotFoundException;
 import com.revature.autosurvey.users.handlers.UserHandler;
 import com.revature.autosurvey.users.security.FirebaseUtil;
 import com.revature.autosurvey.users.services.UserService;
@@ -136,6 +137,15 @@ public class UserHandlerTest {
 	}
 	
 	@Test
+	void testGetUserByIdError() {
+		Mockito.when(userService.getUserById(String.valueOf(1))).thenReturn(Mono.empty());
+		ServerRequest req = MockServerRequest.builder().pathVariable("id", String.valueOf(1)).build();
+		Mono<ServerResponse> result = userHandler.getUserById(req);
+		StepVerifier.create(result).expectNextMatches(r -> HttpStatus.BAD_REQUEST.equals(r.statusCode()))
+		.expectComplete().verify();
+	}
+	
+	@Test
 	void testGetUserEmail() {
 		User userMock = new User();
 		userMock.setId(1);
@@ -145,6 +155,16 @@ public class UserHandlerTest {
 		ServerRequest req = MockServerRequest.builder().pathVariable("email", userMock.getEmail()).build();
 		Mono<ServerResponse> result = userHandler.getUserEmail(req);
 		StepVerifier.create(result).expectNextMatches(r -> HttpStatus.OK.equals(r.statusCode()))
+		.expectComplete().verify();
+	}
+	
+	@Test
+	void testGetUserByEmailError() {
+		String email = "fake@hotmail.com";
+		Mockito.when(userService.getUserByEmail(email)).thenReturn(Mono.empty());
+		ServerRequest req = MockServerRequest.builder().pathVariable("email", email).build();
+		Mono<ServerResponse> result = userHandler.getUserEmail(req);
+		StepVerifier.create(result).expectNextMatches(r -> HttpStatus.BAD_REQUEST.equals(r.statusCode()))
 		.expectComplete().verify();
 	}
 	
@@ -189,14 +209,30 @@ public class UserHandlerTest {
 		.expectComplete().verify();
 	}
 	
+//	@Test
+//	void testDeleteUserError() {
+//		User userMock = new User();
+//		userMock.setId(1);
+//		userMock.setPassword("password");
+//		userMock.setEmail("text@hotmail.com");
+//		Mockito.when(userService.deleteUser(userMock.getEmail())).thenReturn(Mono.error(new NotFoundException()));
+//		ServerRequest req = MockServerRequest.builder().body(Mono.just(userMock));
+//		Mono<ServerResponse> result = userHandler.deleteUser(req);
+//		StepVerifier.create(result).expectNextMatches(r -> HttpStatus.OK.equals(r.statusCode()))
+//		.expectComplete().verify();
+//	}
+	
+	
+	
+	
 
-	@Test
-	public void ok() {
-		User user = new User();
-		Mono<ServerResponse> result = ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(user);
-		StepVerifier.create(result).expectNextMatches(response -> HttpStatus.OK.equals(response.statusCode()))
-				.expectComplete().verify();
-	}
+//	@Test
+//	public void ok() {
+//		User user = new User();
+//		Mono<ServerResponse> result = ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(user);
+//		StepVerifier.create(result).expectNextMatches(response -> HttpStatus.OK.equals(response.statusCode()))
+//				.expectComplete().verify();
+//	}
 
 
 }
