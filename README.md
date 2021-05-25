@@ -63,12 +63,12 @@ Assuming all environment variables set, service will run.
 ### GET:
 **Authorization level**: ADMIN-ONLY  
 
-Gets all users in database.
+Gets all com.revature.autosurvey.users.karate in database.
 
 ### POST:
 **Authorization level**: ADMIN-ONLY  
 
-Creates a new user with default role USER. Requires firstName, lastName, email, and password fields as defined [here](src/main/java/com/revature/autosurvey/users/beans/User.java).  
+Creates a new user with default role USER. Requires firstName, lastName, email, and password fields as defined [here](src/main/java/com/revature/autosurvey/com.revature.autosurvey.users.karate/beans/User.java).  
 
 Responds with 409 if email already exists in database.
 
@@ -136,7 +136,7 @@ Responds with 404 if user with the given id is not found.
 ### PUT
 **Authorization level**: ANY USER/ADMIN  
 
-Updates a user's password given only an old password and new password field as detailed [here](src/main/java/com/revature/autosurvey/users/beans/PasswordChangeRequest.java). Admins can update any user's password.  
+Updates a user's password given only an old password and new password field as detailed [here](src/main/java/com/revature/autosurvey/com.revature.autosurvey.users.karate/beans/PasswordChangeRequest.java). Admins can update any user's password.  
 
 Responds with 404 if user with the given id is not found.
 

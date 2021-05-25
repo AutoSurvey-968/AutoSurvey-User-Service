@@ -16,13 +16,13 @@
 #""
 ## (Comments)
 #Sample Feature Definition Template
-@tag
-Feature: Login as User - PUT to /users
+@addUsers
+Feature: Add a new user - POST to /com.revature.autosurvey.users.karate
 
-  @tag1
-  Scenario: Send a request and login successfully
-    Given 'http://localhost:8080/users'
-    And request { userName: 'User' }
-    When method put
-    Then status 200
-    And match response == { username: '#notnull', email: '#notnull' }
+  @addUser
+  Scenario: Send a request to add a new user
+    Given url 'http://localhost:57323/users'
+    And request { userName: 'Tony', password: 'foo' }
+    When method post
+    Then status 201
+    And match response == { userName: '#notnull', password: '#notnull' }

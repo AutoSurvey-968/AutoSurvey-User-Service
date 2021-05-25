@@ -17,12 +17,14 @@
 ## (Comments)
 #Sample Feature Definition Template
 @tag
-Feature: Add a new user - POST to /users
+Feature: Delete user
 
   @tag1
-  Scenario: Send a request to add a new user
-    Given 'http://localhost:8080/users'
-    And request { userName: 'Tony', password: 'foo' }
-    When method post
-    Then status 201
-    And match response == { userName: '#notnull', password: 'foo' }
+  Scenario: Send a request to delete a user
+    Given url 'http://localhost:8080/com.revature.autosurvey.users.karate/{id}'
+    ##we will need to check that the user doing the deletion has rights to do so##
+    When method delete
+    Then status 200
+    ##I'm not sure if this next part is necessary or not.  TBD##
+    And match response == { id: '#notnull' }
+

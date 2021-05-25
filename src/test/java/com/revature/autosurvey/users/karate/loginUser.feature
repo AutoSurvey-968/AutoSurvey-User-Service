@@ -17,14 +17,12 @@
 ## (Comments)
 #Sample Feature Definition Template
 @tag
-Feature: Delete user
+Feature: Login as User - PUT to /com.revature.autosurvey.users.karate
 
   @tag1
-  Scenario: Send a request to delete a user
-    Given 'http://localhost:8080/users/{id}'
-    ##we will need to check that the user doing the deletion has rights to do so##
-    When method delete
+  Scenario: Send a request and login successfully
+    Given url 'http://localhost:57323/'
+    And request { email: 'test2', password: 'test3' }
+    When method put
     Then status 200
-    ##I'm not sure if this next part is necessary or not.  TBD##
-    And match response == { id: '#notnull' }
-
+    And match response == { username: '#notnull', email: '#notnull' }

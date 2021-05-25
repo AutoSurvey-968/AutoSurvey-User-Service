@@ -17,7 +17,7 @@
 ## (Comments)
 #Sample Feature Definition Template
 @tag
-Feature: Update a user - PUT to /users/{id}
+Feature: Update a user - PUT to /com.revature.autosurvey.users.karate/{id}
 
 
   @tag1
