@@ -26,7 +26,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
-public class UserHandlerTest {
+class UserHandlerTest {
 	@TestConfiguration
 	static class Configuration {
 
@@ -195,7 +195,7 @@ public class UserHandlerTest {
 	
 
 	@Test
-	public void ok() {
+	void ok() {
 		User user = new User();
 		Mono<ServerResponse> result = ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(user);
 		StepVerifier.create(result).expectNextMatches(response -> HttpStatus.OK.equals(response.statusCode()))
