@@ -189,7 +189,7 @@ class UserHandlerTest {
 		Mockito.when(userService.deleteUser(userMock.getId())).thenReturn(Mono.just(userMock));
 		ServerRequest req = MockServerRequest.builder().pathVariable("id","1").body(Mono.just(userMock));
 		Mono<ServerResponse> result = userHandler.deleteUser(req);
-		StepVerifier.create(result).expectNextMatches(r -> HttpStatus.OK.equals(r.statusCode()))
+		StepVerifier.create(result).expectNextMatches(r -> HttpStatus.NO_CONTENT.equals(r.statusCode()))
 		.expectComplete().verify();
 	}
 	
