@@ -1,7 +1,5 @@
 package com.revature.autosurvey.users.handlers;
 
-import java.util.function.BiConsumer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,6 @@ import com.revature.autosurvey.users.beans.LoginRequest;
 import com.revature.autosurvey.users.beans.PasswordChangeRequest;
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.errors.AuthorizationError;
-import com.revature.autosurvey.users.errors.NotFoundError;
 import com.revature.autosurvey.users.errors.UserAlreadyExistsError;
 import com.revature.autosurvey.users.security.FirebaseUtil;
 import com.revature.autosurvey.users.security.SecurityContextRepository;
@@ -70,17 +67,18 @@ public class UserHandler {
 			Mono<UserDetails> uDetails = userService.findByUsername(login.getEmail());
 //					.switchIfEmpty(Mono.error(new NotFoundError())); we throw errors now
 			return uDetails
+					//find the User
 					.flatMap(foundUser -> userService.login(foundUser, login))
+					//logs in
 					.flatMap(loggedUser -> {
-						ResponseCookie cookie;
 						try {
-							cookie = ResponseCookie
+							ResponseCookie cookie = ResponseCookie
 									.from(SecurityContextRepository.COOKIE_KEY, firebaseUtil.generateToken(loggedUser))
 									.path("/").httpOnly(true).build(); 
 							//the problem
 							req.exchange().getResponse().addCookie(cookie);
 						} catch (FirebaseAuthException fae) {
-							return Mono.error(fae);
+							return Mono.error(fae);//when something happens in firebase
 						}
 						return Mono.just(loggedUser);
 			});
@@ -91,33 +89,10 @@ public class UserHandler {
 		Mono<ServerResponse> res = user.flatMap(
 				bodyUser -> ServerResponse.ok()
 				.contentType(MediaType.APPLICATION_JSON).body(Mono.just(bodyUser), User.class))
-				.onErrorResume(e -> Mono.error(e));
+				.onErrorResume(e -> Mono.error(e));//returns this if theres an error
 		return res;
 	}
-		
-		
-//		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-//				.body(req.bodyToMono(LoginRequest.class)
-//						.flatMap(login -> userService.findByUsername(login.getEmail())
-////								.switchIfEmpty(Mono.error(new NotFoundError()))
-//								.flatMap(foundUser -> userService.login(foundUser, login).flatMap(loggedUser -> {
-//									try {
-//										req.exchange().getResponse()
-//												.addCookie(ResponseCookie
-//														.from(SecurityContextRepository.COOKIE_KEY,
-//																firebaseUtil.generateToken(loggedUser))
-//														.path("/").httpOnly(true).build());
-//									} catch (FirebaseAuthException fae) {
-//										return Mono.error(fae);
-//									}
-//									return Mono.just(loggedUser);
-//								}))
-//								),
-//						User.class);
-//	}
 	
-	
-
 	public Mono<ServerResponse> logout(ServerRequest req) {
 		req.exchange().getResponse().addCookie(ResponseCookie.from(SecurityContextRepository.COOKIE_KEY, "").path("/")
 				.httpOnly(true).maxAge(0).build());
