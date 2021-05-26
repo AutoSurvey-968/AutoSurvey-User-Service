@@ -17,7 +17,7 @@
 ## (Comments)
 #Sample Feature Definition Template
 @tag
-Feature: Login as User - PUT to /com.revature.autosurvey.users.karate
+Feature: Login as User - PUT to /users
 
   @tag1
   Scenario: Send a request and login successfully
