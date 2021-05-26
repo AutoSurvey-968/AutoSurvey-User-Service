@@ -2,6 +2,8 @@ package com.revature.autosurvey.users.services.test;
 
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -16,7 +18,7 @@ import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.Id.Name;
 import com.revature.autosurvey.users.data.IdRepository;
 import com.revature.autosurvey.users.data.UserRepository;
-import com.revature.autosurvey.users.errors.NotFoundException;
+import com.revature.autosurvey.users.errors.NotFoundError;
 import com.revature.autosurvey.users.services.UserService;
 import com.revature.autosurvey.users.services.UserServiceImpl;
 
@@ -25,7 +27,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
-public class UserServiceTest {
+class UserServiceTest {
 
 	@TestConfiguration
 	static class Config {
@@ -84,25 +86,26 @@ public class UserServiceTest {
 	}
 
 	@Test
-	void testDeleteUserReturnsDeletedUser() {
+	void testDeleteUserReturnsEmpty() {
 		User u = new User();
 		u.setId(1);
 		u.setEmail("a@a.com");
+		u.setAuthorities(new ArrayList<>());
 		
-		when(userRepository.findByEmail(u.getEmail())).thenReturn(Mono.just(u));
+		when(userRepository.findById(u.getId())).thenReturn(Mono.just(u));
 		when(userRepository.deleteById(1)).thenReturn(Mono.empty());
-		when(userRepository.existsByEmail("a@a.com")).thenReturn(Mono.just(true));
-		Mono<User> result = userService.deleteUser("a@a.com");
-		StepVerifier.create(result).expectNext(u).expectComplete().verify();
+		when(userRepository.existsById(1)).thenReturn(Mono.just(true));
+		Mono<User> result = userService.deleteUser(1);
+		StepVerifier.create(result).expectComplete().verify();
 	}
 
 	@Test
-	void testDeleteUserReturnsEmptyIfnoUser() {
+	void testDeleteUserThrowsErrorIfnoUser() {
 		Mono<User> noOne = Mono.empty();
-		when(userRepository.existsByEmail("a")).thenReturn(Mono.just(false));
-		Mono<User> result = userService.deleteUser("a");
+		when(userRepository.existsById(1)).thenReturn(Mono.just(false));
+		Mono<User> result = userService.deleteUser(1);
 		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
-		StepVerifier.create(comparer).expectError(NotFoundException.class);
+		StepVerifier.create(comparer).expectError(NotFoundError.class);
 	}
 
 	@Test
@@ -145,7 +148,6 @@ public class UserServiceTest {
 		user.setEmail("a@a.com");
 		Mono<User> noOne = Mono.empty();
 		Mockito.when(userRepository.existsByEmail(user.getEmail())).thenReturn(Mono.just(true));
-//		Mockito.when(userRepository.insert(user)).thenReturn(Mono.empty());
 		Mono<User> result = userService.addUser(null);
 		Mono<Boolean> comparer = Mono.sequenceEqual(result, noOne);
 		StepVerifier.create(comparer).expectNext(true).verifyComplete();
@@ -156,12 +158,10 @@ public class UserServiceTest {
 		User u1 = new User();
 		u1.setId(1);
 		u1.setEmail("text@text.com");
-		u1.setPassword("false");
 		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u1));
 		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
-		u1.setPassword("true");
 		Mono<User> result = userService.updateUser(u1);
-		StepVerifier.create(result).expectNextMatches(u -> u.getPassword().equals("true")).verifyComplete();
+		StepVerifier.create(result).expectNext(u1).verifyComplete();
 	}
 
 	@Test

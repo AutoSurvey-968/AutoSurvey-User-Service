@@ -1,14 +1,14 @@
 package com.revature.autosurvey.users.errors;
 
-public class NotFoundException extends Throwable {
+public class NotFoundError extends Throwable {
 
 	private static final long serialVersionUID = 8654814535437242330L;
 	
-	public NotFoundException() {
+	public NotFoundError() {
 		super();
 	}
 	
-	public NotFoundException(String errorMessage) {
+	public NotFoundError(String errorMessage) {
 		super(errorMessage);
 	}
 }
