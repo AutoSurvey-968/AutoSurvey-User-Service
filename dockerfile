@@ -2,7 +2,7 @@ FROM openjdk:8-jdk-alpine
 WORKDIR /app
 
 COPY target/user-service.jar .
-COPY src/main/resources/cassandra_truststore.jks src/main/resources/
+COPY docker/start.sh .
 EXPOSE 8080
 
-CMD [ "java", "-jar", "user-service.jar" ]
+CMD [ "sh", "./start.sh" ]
