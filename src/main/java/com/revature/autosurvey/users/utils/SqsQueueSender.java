@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 
-@Component
+//@Component
 public class SqsQueueSender {
 
 	private final QueueMessagingTemplate queueMessagingTemplate;

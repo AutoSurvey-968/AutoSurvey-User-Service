@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.aws.messaging.listener.SqsMessageDeletionPolicy;
 import org.springframework.cloud.aws.messaging.listener.annotation.SqsListener;
+
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
@@ -12,9 +13,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.revature.autosurvey.users.beans.User;
 import com.revature.autosurvey.users.beans.User.Role;
+import org.springframework.stereotype.Component;
+import com.revature.autosurvey.users.security.FirebaseUtil;
+
 
 @Component
 public class SqsQueueListener {
+
 	
 	private SqsQueueSender queueSender;
 	
@@ -44,7 +49,7 @@ public class SqsQueueListener {
 				returnQueue, 
 				authorized.toString(), 
 				message.getHeaders());
-	}
+
 	/*
 	 queueListener listens to the usersQueue for authentication requests received from other services
 	 the payload contains the cookie/custom firebase token, header contains sender info

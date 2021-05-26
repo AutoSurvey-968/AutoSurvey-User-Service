@@ -96,7 +96,7 @@ public class User implements UserDetails {
 		this.authorities = authorities;
 	}
 
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
@@ -105,6 +105,7 @@ public class User implements UserDetails {
 	}
 
 	public void setAccountNonLocked(boolean accountNonLocked) {
+		
 		this.accountNonLocked = accountNonLocked;
 	}
 
