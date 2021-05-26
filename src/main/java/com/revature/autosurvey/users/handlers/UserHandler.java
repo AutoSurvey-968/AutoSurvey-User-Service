@@ -59,6 +59,7 @@ public class UserHandler {
 	}
 
 	public Mono<ServerResponse> login(ServerRequest req) {
+		System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
 		//Get Login Request
 		Mono<LoginRequest> loginReq = req.bodyToMono(LoginRequest.class);
 		//Get the user to put in the body

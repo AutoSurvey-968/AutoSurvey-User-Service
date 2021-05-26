@@ -1,5 +1,6 @@
 package com.revature.autosurvey.users.routes;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 import org.apache.http.HttpStatus;
@@ -7,6 +8,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
@@ -14,9 +19,9 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.WebFilter;
 
 import com.google.firebase.auth.FirebaseAuthException;
+import com.revature.autosurvey.users.errors.AuthorizationError;
 import com.revature.autosurvey.users.errors.IllegalEmailException;
 import com.revature.autosurvey.users.errors.IllegalPasswordException;
-import com.revature.autosurvey.users.errors.AuthorizationError;
 import com.revature.autosurvey.users.errors.NotFoundError;
 import com.revature.autosurvey.users.errors.UserAlreadyExistsError;
 import com.revature.autosurvey.users.handlers.UserHandler;
@@ -27,7 +32,7 @@ import com.revature.autosurvey.users.handlers.UserHandler;
 public class UserRoutes {
 	
 	@Bean
-	RouterFunction<ServerResponse> routes(UserHandler uh) {
+	public RouterFunction<ServerResponse> routes(UserHandler uh) {
 		return RouterFunctions.route().path("/",
 				builder -> builder
 				.GET("id", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getIdTable)
@@ -42,9 +47,22 @@ public class UserRoutes {
 				.DELETE(RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::logout)
 				.build();
 	}
+	@Bean
+	public CorsWebFilter corsWebFilter() {
+		CorsConfiguration corsConfig = new CorsConfiguration();
+		corsConfig.applyPermitDefaultValues();
+		corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+		corsConfig.setAllowedMethods(Arrays.asList("PUT"));
+		corsConfig.setAllowCredentials(true);
+		
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", corsConfig);
+	
+		return new CorsWebFilter((CorsConfigurationSource) source);
+	}
 	
 	@Bean
-	WebFilter exceptionToErrorCode() {
+	public WebFilter exceptionToErrorCode() {
 		return (exchange, next) -> next.filter(exchange)
 				.onErrorResume(NotFoundError.class, e -> {
 					ServerHttpResponse response = exchange.getResponse();
