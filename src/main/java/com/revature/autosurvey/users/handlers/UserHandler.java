@@ -101,18 +101,15 @@ public class UserHandler {
 	@PreAuthorize("hasRole('ADMIN')")
 	public Mono<ServerResponse> getUserById(ServerRequest req) {
 		return userService.getUserById(req.pathVariable("id"))
-				.flatMap(u -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(Mono.just(u), User.class))
-				.switchIfEmpty(ServerResponse.status(404).build());
+				.flatMap(u -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(Mono.just(u), User.class));
+				
 	}
 
 
 	@PreAuthorize("hasRole('ADMIN')")
 	public Mono<ServerResponse> getUserByEmail(ServerRequest req) {
 		return userService.getUserByEmail(req.queryParam("email").get())
-				 .flatMap(u -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(Mono.just(u), User.class))
-						.switchIfEmpty(ServerResponse.status(404).build());
-//		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-//				.body(userService.getUserByEmail(req.queryParam("email").get()), User.class);
+				 .flatMap(u -> ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(Mono.just(u), User.class));
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
@@ -143,10 +140,7 @@ public class UserHandler {
 	public Mono<ServerResponse> deleteUser(ServerRequest req) {
 		return userService.getUserById(req.pathVariable("id"))
 				.flatMap(u -> ServerResponse.status(204)
-						.body(userService.deleteUser(Integer.parseInt(req.pathVariable("id"))), Object.class))
-				.doOnError(s -> ServerResponse.status(406).build())
-				.switchIfEmpty(ServerResponse.status(406).build());
-//		return ServerResponse.status(204).body(userService.deleteUser(Integer.parseInt(req.pathVariable("id"))), Object.class);
+						.body(userService.deleteUser(Integer.parseInt(req.pathVariable("id"))), Object.class));
 
 	}
 }
