@@ -3,7 +3,6 @@ package com.revature.autosurvey.users.routes;
 import java.util.NoSuchElementException;
 
 import org.apache.http.HttpStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -15,6 +14,8 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.WebFilter;
 
 import com.google.firebase.auth.FirebaseAuthException;
+import com.revature.autosurvey.users.errors.IllegalEmailException;
+import com.revature.autosurvey.users.errors.IllegalPasswordException;
 import com.revature.autosurvey.users.errors.AuthorizationError;
 import com.revature.autosurvey.users.errors.NotFoundError;
 import com.revature.autosurvey.users.errors.UserAlreadyExistsError;
@@ -24,11 +25,9 @@ import com.revature.autosurvey.users.handlers.UserHandler;
 
 @Configuration
 public class UserRoutes {
-	@Autowired
-	private UserHandler uh;
 	
 	@Bean
-	RouterFunction<ServerResponse> routes() {
+	RouterFunction<ServerResponse> routes(UserHandler uh) {
 		return RouterFunctions.route().path("/",
 				builder -> builder
 				.GET("id", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getIdTable)
@@ -67,7 +66,22 @@ public class UserRoutes {
 					response.setRawStatusCode(HttpStatus.SC_FORBIDDEN);
 					return response.setComplete();
 				})
+				.onErrorResume(IllegalPasswordException.class, e -> {
+					ServerHttpResponse response = exchange.getResponse();
+					response.setRawStatusCode(HttpStatus.SC_BAD_REQUEST);
+					return response.setComplete();
+				})
+				.onErrorResume(IllegalEmailException.class, e -> {
+					ServerHttpResponse response = exchange.getResponse();
+					response.setRawStatusCode(HttpStatus.SC_BAD_REQUEST);
+					return response.setComplete();
+				})
 				.onErrorResume(NoSuchElementException.class, e -> {
+					ServerHttpResponse response = exchange.getResponse();
+					response.setRawStatusCode(HttpStatus.SC_BAD_REQUEST);
+					return response.setComplete();
+				})
+				.onErrorResume(NumberFormatException.class, e -> {
 					ServerHttpResponse response = exchange.getResponse();
 					response.setRawStatusCode(HttpStatus.SC_BAD_REQUEST);
 					return response.setComplete();
