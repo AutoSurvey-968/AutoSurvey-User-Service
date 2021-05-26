@@ -14,6 +14,8 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.WebFilter;
 
 import com.google.firebase.auth.FirebaseAuthException;
+import com.revature.autosurvey.users.errors.IllegalEmailException;
+import com.revature.autosurvey.users.errors.IllegalPasswordException;
 import com.revature.autosurvey.users.errors.AuthorizationError;
 import com.revature.autosurvey.users.errors.NotFoundError;
 import com.revature.autosurvey.users.errors.UserAlreadyExistsError;
@@ -62,6 +64,16 @@ public class UserRoutes {
 				.onErrorResume(FirebaseAuthException.class, e -> {
 					ServerHttpResponse response = exchange.getResponse();
 					response.setRawStatusCode(HttpStatus.SC_FORBIDDEN);
+					return response.setComplete();
+				})
+				.onErrorResume(IllegalPasswordException.class, e -> {
+					ServerHttpResponse response = exchange.getResponse();
+					response.setRawStatusCode(HttpStatus.SC_BAD_REQUEST);
+					return response.setComplete();
+				})
+				.onErrorResume(IllegalEmailException.class, e -> {
+					ServerHttpResponse response = exchange.getResponse();
+					response.setRawStatusCode(HttpStatus.SC_BAD_REQUEST);
 					return response.setComplete();
 				})
 				.onErrorResume(NoSuchElementException.class, e -> {
