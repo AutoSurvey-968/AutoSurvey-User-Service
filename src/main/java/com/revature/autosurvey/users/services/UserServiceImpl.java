@@ -91,7 +91,8 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		return userRepository.existsByEmail(user.getEmail()).flatMap(bool -> {
-			if (!bool.booleanValue()) {
+			
+			if (!bool) {
 				return idRepository.findById(Name.USER).flatMap(id -> {
 					user.setPassword(encoder.encode(user.getPassword()));
 					user.setId(id.getNextId());
