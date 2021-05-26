@@ -2,6 +2,8 @@ package com.revature.autosurvey.users.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,15 +15,18 @@ import org.springframework.stereotype.Service;
 import com.datastax.oss.driver.shaded.guava.common.base.Objects;
 import com.google.firebase.auth.FirebaseToken;
 import com.revature.autosurvey.users.beans.Id;
+import com.revature.autosurvey.users.beans.Id.Name;
 import com.revature.autosurvey.users.beans.LoginRequest;
 import com.revature.autosurvey.users.beans.PasswordChangeRequest;
 import com.revature.autosurvey.users.beans.User;
-import com.revature.autosurvey.users.beans.Id.Name;
 import com.revature.autosurvey.users.beans.User.Role;
 import com.revature.autosurvey.users.data.IdRepository;
 import com.revature.autosurvey.users.data.UserRepository;
 import com.revature.autosurvey.users.errors.AuthorizationError;
+import com.revature.autosurvey.users.errors.IllegalEmailException;
+import com.revature.autosurvey.users.errors.IllegalPasswordException;
 import com.revature.autosurvey.users.errors.NotFoundError;
+import com.revature.autosurvey.users.errors.UserAlreadyExistsError;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -65,7 +70,28 @@ public class UserServiceImpl implements UserService {
 		if (Objects.equal(user, null)) {
 			return Mono.empty();
 		}
+		
+		if (user.getEmail() == null) {
+			return Mono.error(new IllegalEmailException("Empty Email Field"));
+		}
+		
+		Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
+		
+		Matcher emailMatcher = emailPattern.matcher(user.getEmail());
+		if (!emailMatcher.matches()) {
+			return Mono.error(new IllegalPasswordException("Entry is not an Email"));
+		}
+		
+		if (user.getPassword() == null) {
+			return Mono.error(new IllegalPasswordException("Empty password Field"));
+		}
+		
+		if (validatePassword(user.getPassword())) {
+			return Mono.error(new IllegalPasswordException("Invalid Password"));
+		}
+		
 		return userRepository.existsByEmail(user.getEmail()).flatMap(bool -> {
+			
 			if (!bool.booleanValue()) {
 				return idRepository.findById(Name.USER).flatMap(id -> {
 					user.setPassword(encoder.encode(user.getPassword()));
@@ -77,14 +103,18 @@ public class UserServiceImpl implements UserService {
 					return idRepository.save(id).flatMap(nextId -> userRepository.insert(user));
 				});
 			} else {
-				return Mono.empty();
+				return Mono.error(new UserAlreadyExistsError());
 			}
 		});
-
 	}
 
 	@Override
 	public Mono<User> updateUser(User user) {
+		
+		if (user.getPassword() != null && validatePassword(user.getPassword())) {
+			return Mono.error(new IllegalPasswordException("Invalid Password"));
+		}
+
 		return userRepository.findById(user.getId()).flatMap(found -> {
 			if (user.getPassword() != null) {
 				user.setPassword(encoder.encode(user.getPassword()));
@@ -124,7 +154,7 @@ public class UserServiceImpl implements UserService {
 			if (bool.booleanValue()) {
 				return userRepository.findByEmail(email);
 			} else {
-				return Mono.empty();
+				return Mono.error(new NotFoundError());
 			}
 		});
 	}
@@ -153,6 +183,11 @@ public class UserServiceImpl implements UserService {
 				log.debug("password change request: {}", pcr);
 				@SuppressWarnings("unchecked")
 				List<Role> roles = (List<Role>) fbt.getClaims().get("roles");
+				
+				if(validatePassword(pcr.getNewPass())) {
+					return Mono.error(new IllegalPasswordException());
+				}
+				
 				log.debug(fbt.getUid());
 				if ((roles.contains(Role.ROLE_ADMIN) || fbt.getUid().equals(foundUser.getEmail()) && encoder.matches(pcr.getOldPass(), foundUser.getPassword()))) {
 						foundUser.setPassword(encoder.encode(pcr.getNewPass()));
@@ -164,6 +199,34 @@ public class UserServiceImpl implements UserService {
 			}
 			return Mono.error(new AuthorizationError());
 		});
+	}
+
+	public boolean validatePassword(String password) {
+		
+		if(!patternMatcher(".*(?=.*[0-9]).*", password)) {
+			return true;
+		}
+		
+		if(!patternMatcher(".*(?=.*[a-z]).*", password)) {
+			return true;
+		}
+		
+		if(!patternMatcher(".*(?=.*[A-Z]).*", password)) {
+			return true;
+		}
+		
+		if(!patternMatcher(".*(?=.*[@#$%^&\\-+=()]).*", password)) {
+			return true;
+		}
+		
+		return !patternMatcher(".{8,}", password);
+	}
+	
+	public boolean patternMatcher(String patternStr, String password) {
+		
+		Pattern pattern = Pattern.compile(patternStr);
+		Matcher matcher = pattern.matcher(password);
+		return matcher.matches();
 	}
 
 }

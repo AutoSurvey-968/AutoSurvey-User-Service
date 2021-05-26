@@ -8,15 +8,19 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.reactive.function.server.MockServerRequest;
+import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.server.ServerWebExchange;
 
 import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.LoginRequest;
 import com.revature.autosurvey.users.beans.User;
+import com.revature.autosurvey.users.errors.NotFoundError;
 import com.revature.autosurvey.users.handlers.UserHandler;
 import com.revature.autosurvey.users.security.FirebaseUtil;
 import com.revature.autosurvey.users.services.UserService;
@@ -120,10 +124,26 @@ class UserHandlerTest {
 		Mockito.when(userService.findByUsername(userMock.getEmail())).thenReturn(Mono.just((UserDetails) userMock));
 		Mockito.when(userService.login(userMock, loginMock)).thenReturn(Mono.just(userMock));
 		
-		ServerRequest req = MockServerRequest.builder().body(Mono.just(loginMock));
+		
+		ServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.put("/", loginMock));
+		ServerRequest req = MockServerRequest.builder().exchange(exchange).body(Mono.just(loginMock));
 		Mono<ServerResponse> result = userHandler.login(req);
 		StepVerifier.create(result).expectNextMatches(r -> HttpStatus.OK.equals(r.statusCode()))
 		.expectComplete().verify();
+	}
+	
+	@Test
+	void testLoginIfEmpty() {
+		LoginRequest loginMock = new LoginRequest();
+		loginMock.setEmail("text@hotmail.com");
+		loginMock.setPassword("password");
+		User userMock = new User();
+		userMock.setPassword("password");
+		userMock.setEmail("text@hotmail.com");
+		Mockito.when(userService.findByUsername(Mockito.anyString())).thenReturn(Mono.error(new NotFoundError()));
+		ServerRequest req = MockServerRequest.builder().body(Mono.just(loginMock));
+		Mono<ServerResponse> result = userHandler.login(req);
+		StepVerifier.create(result).expectError().verify();
 	}
 
 	@Test
