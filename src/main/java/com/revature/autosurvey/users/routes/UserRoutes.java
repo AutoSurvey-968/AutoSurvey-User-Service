@@ -44,7 +44,7 @@ public class UserRoutes {
 	}
 	
 	@Bean
-	WebFilter exceptionToErrorCode() {
+	public WebFilter exceptionToErrorCode() {
 		return (exchange, next) -> next.filter(exchange)
 				.onErrorResume(NotFoundError.class, e -> {
 					ServerHttpResponse response = exchange.getResponse();
