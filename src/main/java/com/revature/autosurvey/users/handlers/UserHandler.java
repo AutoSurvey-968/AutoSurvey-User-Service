@@ -86,11 +86,10 @@ public class UserHandler {
 			
 		});
 		
-		Mono<ServerResponse> res = user.flatMap(
+		return user.flatMap(
 				bodyUser -> ServerResponse.ok()
 				.contentType(MediaType.APPLICATION_JSON).body(Mono.just(bodyUser), User.class))
 				.onErrorResume(e -> Mono.error(e));//returns this if theres an error
-		return res;
 	}
 	
 	public Mono<ServerResponse> logout(ServerRequest req) {
