@@ -49,6 +49,7 @@ public class SqsQueueListener {
 				returnQueue, 
 				authorized.toString(), 
 				message.getHeaders());
+	}
 
 	/*
 	 queueListener listens to the usersQueue for authentication requests received from other services
