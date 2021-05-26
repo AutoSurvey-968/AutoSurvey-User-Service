@@ -89,7 +89,7 @@ public class UserHandler {
 		return user.flatMap(
 				bodyUser -> ServerResponse.ok()
 				.contentType(MediaType.APPLICATION_JSON).body(Mono.just(bodyUser), User.class))
-				.onErrorResume(e -> Mono.error(e));//returns this if theres an error
+				.onErrorResume(Mono::error);//returns this if theres an error
 	}
 	
 	public Mono<ServerResponse> logout(ServerRequest req) {
