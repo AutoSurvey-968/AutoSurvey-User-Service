@@ -7,4 +7,4 @@ Scenario: Send a request to add a new user
     And cookie token = signIn.authToken
     When method post
     Then status 200
-    And match response == { userName: '#notnull', password: '#notnull' }
+    And match response == { email: '#notnull', password: '#notnull' }

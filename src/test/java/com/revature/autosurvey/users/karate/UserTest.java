@@ -30,15 +30,16 @@ class UserTest {
 	@Test
 	void testParallel() {
 		System.setProperty("karate.env", "dev");
+		//tests.add("classpath:/com/revature/autosurvey/users/karate/getIdTable.feature");
+		//tests.add("classpath:/com/revature/autosurvey/users/karate/getUserById.feature");
+		//tests.add("classpath:/com/revature/autosurvey/users/karate/updateUser.feature");
+		//tests.add("classpath:/com/revature/autosurvey/users/karate/deleteUser.feature");
+		//tests.add("classpath:/com/revature/autosurvey/users/karate/updatePassword.feature");
+		//tests.add("classpath:/com/revature/autosurvey/users/karate/getUserByEmail.feature");
+		//tests.add("classpath:/com/revature/autosurvey/users/karate/getUsers.feature");
 		//tests.add("classpath:/com/revature/autosurvey/users/karate/addUser.feature");
-		//tests.add("classpath:/com.revature.autosurvey.users.karate/deleteUser.feature");
-		//tests.add("classpath:/com.revature.autosurvey.users.karate/getUserById.feature");
-		//tests.add("classpath:/com.revature.autosurvey.users.karate/getUserEmail.feature");
-		tests.add("classpath:/com/revature/autosurvey/users/karate/loginUser.feature");
-		//tests.add("classpath:/com.revature.autosurvey.users.karate/updateUser.feature");
-		//tests.add("classpath:/com/revature/autosurvey/surveys/karate/survey-post.feature");
-		//tests.add("classpath:/com/revature/autosurvey/surveys/karate/survey-put.feature");
-		tests.add("classpath:/com/revature/autosurvey/users/karate/deleteUser.feature");
+		//tests.add("classpath:/com/revature/autosurvey/users/karate/login.feature");
+		tests.add("classpath:/com/revature/autosurvey/users/karate/user-tests.feature");
 		Results results = Runner.path(tests).parallel(5);
 		assertEquals(0, results.getFailCount(), results.getErrorMessages());
 	}
