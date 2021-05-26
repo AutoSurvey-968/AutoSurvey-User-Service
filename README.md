@@ -21,7 +21,6 @@ User Service for AutoSurvey. Controls authentication, user creation, and user ma
 * Change Password
 
 To-do list:
-* Delete User
 
 ## Getting Started
    
