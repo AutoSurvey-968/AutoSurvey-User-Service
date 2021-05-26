@@ -21,7 +21,7 @@ Feature: Login as User - PUT to /users
 
   @tag1
   Scenario: Send a request and login successfully
-    Given 'http://localhost:8080/users'
+    Given url 'http://localhost:50166/'
     And request { userName: 'User' }
     When method put
     Then status 200

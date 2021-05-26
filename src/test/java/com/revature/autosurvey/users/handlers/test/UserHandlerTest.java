@@ -130,7 +130,9 @@ class UserHandlerTest {
 		Mockito.when(userService.findByUsername(userMock.getEmail())).thenReturn(Mono.just((UserDetails) userMock));
 		Mockito.when(userService.login(userMock, loginMock)).thenReturn(Mono.just(userMock));
 		
-		ServerRequest req = MockServerRequest.builder().body(Mono.just(loginMock));
+		
+		ServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.put("/", loginMock));
+		ServerRequest req = MockServerRequest.builder().exchange(exchange).body(Mono.just(loginMock));
 		Mono<ServerResponse> result = userHandler.login(req);
 		StepVerifier.create(result).expectNextMatches(r -> HttpStatus.OK.equals(r.statusCode()))
 		.expectComplete().verify();
@@ -144,6 +146,19 @@ class UserHandlerTest {
 		Mono<ServerResponse> result = userHandler.logout(req);
 		StepVerifier.create(result).expectNextMatches(r -> HttpStatus.NO_CONTENT.equals(r.statusCode()))
 		.expectComplete().verify();
+	}
+		
+	void testLoginIfEmpty() {
+		LoginRequest loginMock = new LoginRequest();
+		loginMock.setEmail("text@hotmail.com");
+		loginMock.setPassword("password");
+		User userMock = new User();
+		userMock.setPassword("password");
+		userMock.setEmail("text@hotmail.com");
+		Mockito.when(userService.findByUsername(Mockito.anyString())).thenReturn(Mono.error(new NotFoundError()));
+		ServerRequest req = MockServerRequest.builder().body(Mono.just(loginMock));
+		Mono<ServerResponse> result = userHandler.login(req);
+		StepVerifier.create(result).expectError().verify();
 	}
 
 	@Test

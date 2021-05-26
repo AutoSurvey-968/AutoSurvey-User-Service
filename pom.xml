@@ -34,6 +34,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<finalName>user-service</finalName>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -68,6 +71,7 @@
 		</plugins>
 	</build>
 	<dependencies>
+
 		<dependency>
 			<groupId>com.intuit.karate</groupId>
 			<artifactId>karate-apache</artifactId>

@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Component
@@ -193,6 +194,7 @@ public class User implements UserDetails {
 		return this.enabled;
 	}
 
+	@JsonIgnore
 	@Override
 	public String getUsername() {
 		return this.email;
