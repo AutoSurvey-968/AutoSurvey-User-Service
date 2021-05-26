@@ -27,7 +27,7 @@ import com.revature.autosurvey.users.handlers.UserHandler;
 public class UserRoutes {
 	
 	@Bean
-	RouterFunction<ServerResponse> routes(UserHandler uh) {
+	public RouterFunction<ServerResponse> routes(UserHandler uh) {
 		return RouterFunctions.route().path("/",
 				builder -> builder
 				.GET("id", RequestPredicates.accept(MediaType.APPLICATION_JSON), uh::getIdTable)
@@ -44,7 +44,7 @@ public class UserRoutes {
 	}
 	
 	@Bean
-	WebFilter exceptionToErrorCode() {
+	public WebFilter exceptionToErrorCode() {
 		return (exchange, next) -> next.filter(exchange)
 				.onErrorResume(NotFoundError.class, e -> {
 					ServerHttpResponse response = exchange.getResponse();
