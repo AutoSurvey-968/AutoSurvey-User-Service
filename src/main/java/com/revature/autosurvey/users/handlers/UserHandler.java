@@ -1,7 +1,5 @@
 package com.revature.autosurvey.users.handlers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -29,7 +27,6 @@ public class UserHandler {
 
 	private UserService userService;
 	private FirebaseUtil firebaseUtil;
-	private Logger log = LoggerFactory.getLogger(UserHandler.class);
 
 	@Autowired
 	public void setUserService(UserService userService) {

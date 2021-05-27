@@ -136,6 +136,10 @@ class UserServiceTest {
 		encoded.setEmail("test@test.com");
 		encoded.setPassword("b");
 		encoded.setId(0);
+		encoded.setAccountNonExpired(true);
+		encoded.setEnabled(true);
+		encoded.setAccountNonLocked(true);
+		encoded.setCredentialsNonExpired(true);
 		List<Role> perms = new ArrayList<>();
 		perms.add(Role.ROLE_USER);
 		encoded.setAuthorities(perms);

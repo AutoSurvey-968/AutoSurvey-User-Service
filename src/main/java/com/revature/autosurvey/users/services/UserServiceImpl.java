@@ -99,6 +99,10 @@ public class UserServiceImpl implements UserService {
 					List<Role> perms = new ArrayList<>();
 					perms.add(Role.ROLE_USER);
 					user.setAuthorities(perms);
+					user.setEnabled(true);
+					user.setAccountNonExpired(true);
+					user.setAccountNonLocked(true);
+					user.setCredentialsNonExpired(true);
 					id.setNextId(id.getNextId() + 1);
 					return idRepository.save(id).flatMap(nextId -> userRepository.insert(user));
 				});
