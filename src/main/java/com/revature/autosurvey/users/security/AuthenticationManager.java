@@ -1,5 +1,7 @@
 package com.revature.autosurvey.users.security;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +13,6 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,11 +43,9 @@ public class AuthenticationManager implements ReactiveAuthenticationManager, Ini
 		try {
 			if (FirebaseApp.getApps().isEmpty()) {
 				FirebaseOptions options = FirebaseOptions.builder()
-						.setCredentials(GoogleCredentials.fromStream(
-								new ClassPathResource(credentials)
-										.getInputStream()))
-						.setServiceAccountId(serviceAccountId)
-						.build();
+						.setCredentials(GoogleCredentials
+								.fromStream(new FileInputStream(new File(credentials))))
+						.setServiceAccountId(serviceAccountId).build();
 				FirebaseApp.initializeApp(options);
 			}
 		} catch (IOException e) {
