@@ -33,9 +33,7 @@ public class SecurityConfig {
 				.and().csrf().disable().formLogin().disable().httpBasic().disable()
 				.authenticationManager(authenticationManager).securityContextRepository(securityContextRepository)
 				.authorizeExchange().pathMatchers(HttpMethod.OPTIONS).permitAll().pathMatchers(HttpMethod.PUT, "/")
-				.permitAll().pathMatchers(HttpMethod.POST, "/").permitAll().pathMatchers("/swagger-resources/**",
-						"/swagger-ui.html", "/swagger-ui/**", "/v2/api-docs", "/webjars/**")
-				.permitAll().anyExchange().authenticated().and().build();
+				.permitAll().pathMatchers(HttpMethod.POST, "/").permitAll().anyExchange().authenticated().and().build();
 	}
 
 	@Bean

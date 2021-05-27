@@ -1,4 +1,4 @@
-package com.revature.autosurvey.users;
+package com.revature.autosurvey.users.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
