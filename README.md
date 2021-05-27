@@ -9,7 +9,6 @@ User Service for AutoSurvey. Controls authentication, user creation, and user ma
 * Spring Webflux
 * Spring Security
 * Firebase Admin SDK
-* AWS SQS
 * AWS Keyspaces
 * Eureka
 
@@ -19,23 +18,23 @@ User Service for AutoSurvey. Controls authentication, user creation, and user ma
 * Login
 * Update User
 * Change Password
-
-To-do list:
+* Add new user
+* Get user objects by email, Id
 
 ## Getting Started
-   
+
+**See [Primary README.md](https://github.com/AutoSurvey-968/AutoSurvey-back) for full program setup instructions.**
+
 Requires Firebase credentials, API key, Service Account, AWS Keyspaces credentials, SQS credentials, and Eureka
 
-Set environment variables for:
+Set environment variables:
 
-* AWS_PASS - Keyspaces username
-* AWS_USER - Keyspaces password
+* AWS_USER - Keyspaces username
+* AWS_PASS - Keyspaces password
 * CREDENTIALS_JSON - name of credentials json file to be placed in src/main/resources
 * EUREKA_URL - default URL for eureka host
 * FIREBASE_API_KEY - Firebase API key for authentication calls
 * SERVICE_ACCOUNT_ID - Firebase service account id
-* SQS_USER - SQS username
-* SQS_PASS - SQS password
 
 First, clone the repository:  
 
@@ -141,10 +140,10 @@ Responds with 404 if user with the given id is not found.
 
 ## Contributors
 
-LEAD: [Thomas An](https://github.com/artuis)
-[Albert Magpoc](https://github.com/albert-magpoc-revature)
-[Rashad Bowman](https://github.com/RashadCBowman)
-[Tony Touma](https://github.com/chielo9513)
+- [Thomas An](https://github.com/artuis)
+- [Albert Magpoc](https://github.com/albert-magpoc-revature)
+- [Rashad Bowman](https://github.com/RashadCBowman)
+- [Tony Touma](https://github.com/chielo9513)
 
 ## License
 
