@@ -140,11 +140,8 @@ Responds with 404 if user with the given id is not found.
 
 ## Contributors
 
-- [Thomas An](https://github.com/artuis)
+- [Thomas An](https://github.com/artuis) - Primary
 - [Albert Magpoc](https://github.com/albert-magpoc-revature)
 - [Rashad Bowman](https://github.com/RashadCBowman)
 - [Tony Touma](https://github.com/chielo9513)
 
-## License
-
-This project uses the following license: [<license_name>](<link>).
