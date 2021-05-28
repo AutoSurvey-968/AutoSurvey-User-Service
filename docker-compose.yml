@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+    users:
+        image: autosurvey/user-service
+        restart: always
+        networks: 
+            - autosurvey-network
+        environment: 
+            EUREKA_URL: ${EUREKA_URL}
+            AWS_USER: ${AWS_USER}
+            AWS_PASS: ${AWS_PASS}
+            TRUSTSTORE_PASS: ${TRUSTSTORE_PASS}
+            TRUSTSTORE_ENCODED: "${TRUSTSTORE_ENCODED}"
+            CREDENTIALS_JSON: ${CREDENTIALS_JSON}
+            CREDENTIALS_JSON_ENCODED: "${CREDENTIALS_JSON_ENCODED}"
+            FIREBASE_API_KEY: ${FIREBASE_API_KEY}
+            SERVICE_ACCOUNT_ID: ${SERVICE_ACCOUNT_ID}
+
+
+networks: 
+    autosurvey-network:
+        driver: bridge
