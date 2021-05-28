@@ -35,10 +35,10 @@ public class SecurityConfig {
 				.authorizeExchange().pathMatchers(HttpMethod.OPTIONS).permitAll().pathMatchers(HttpMethod.PUT, "/")
 				.permitAll().pathMatchers(HttpMethod.POST, "/").permitAll().anyExchange().authenticated().and().build();
 	}
-	
+
 	@Bean
 	public PasswordEncoder encoder() {
-	    return new BCryptPasswordEncoder();
+		return new BCryptPasswordEncoder();
 	}
 
 }

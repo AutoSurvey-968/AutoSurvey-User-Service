@@ -16,7 +16,7 @@ buildNumber.properties
 *.jks
 *.crt
 *.der
-**/resources/*.json
+*.json
 
 .classpath
 .factorypath
