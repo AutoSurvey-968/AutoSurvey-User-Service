@@ -71,7 +71,7 @@ public class UserHandler {
 						try {
 							ResponseCookie cookie = ResponseCookie
 									.from(SecurityContextRepository.COOKIE_KEY, firebaseUtil.generateToken(loggedUser))
-									.path("/").httpOnly(true).build(); 
+									.path("/").httpOnly(true).secure(false).build(); 
 							//the problem
 							req.exchange().getResponse().addCookie(cookie);
 						} catch (FirebaseAuthException fae) {
