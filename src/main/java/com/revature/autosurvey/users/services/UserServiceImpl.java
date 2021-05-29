@@ -219,7 +219,7 @@ public class UserServiceImpl implements UserService {
 			return true;
 		}
 		
-		if(!patternMatcher(".*(?=.*[@#$%^&\\-+=()]).*", password)) {
+		if(!patternMatcher(".*(?=.*[@#$%^&\\-+=()!]).*", password)) {
 			return true;
 		}
 		
