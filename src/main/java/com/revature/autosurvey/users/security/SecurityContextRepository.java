@@ -1,6 +1,7 @@
 package com.revature.autosurvey.users.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -30,6 +31,11 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
 				&& swe.getRequest().getCookies().getFirst(COOKIE_KEY) != null) {
 			String authCookie = swe.getRequest().getCookies().getFirst(COOKIE_KEY).getValue();
 			Authentication auth = new UsernamePasswordAuthenticationToken(authCookie, authCookie);
+			return this.authenticationManager.authenticate(auth)
+					.map(SecurityContextImpl::new);
+		} else if (swe.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION) != null) {
+			String bearer = swe.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION).substring(7);
+			Authentication auth = new UsernamePasswordAuthenticationToken(bearer, bearer);
 			return this.authenticationManager.authenticate(auth)
 					.map(SecurityContextImpl::new);
 		} else {
