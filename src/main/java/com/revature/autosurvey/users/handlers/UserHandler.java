@@ -14,6 +14,7 @@ import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.LoginRequest;
 import com.revature.autosurvey.users.beans.PasswordChangeRequest;
 import com.revature.autosurvey.users.beans.User;
+import com.revature.autosurvey.users.beans.UserWithToken;
 import com.revature.autosurvey.users.errors.AuthorizationError;
 import com.revature.autosurvey.users.errors.UserAlreadyExistsError;
 import com.revature.autosurvey.users.security.FirebaseUtil;
@@ -59,7 +60,7 @@ public class UserHandler {
 		//Get Login Request
 		Mono<LoginRequest> loginReq = req.bodyToMono(LoginRequest.class);
 		//Get the user to put in the body
-		Mono<User> user = loginReq.flatMap(login->{
+		Mono<UserWithToken> user = loginReq.flatMap(login->{
 			// get the user details
 			Mono<UserDetails> uDetails = userService.findByUsername(login.getEmail());
 //					.switchIfEmpty(Mono.error(new NotFoundError())); we throw errors now
@@ -68,16 +69,18 @@ public class UserHandler {
 					.flatMap(foundUser -> userService.login(foundUser, login))
 					//logs in
 					.flatMap(loggedUser -> {
+						String token = null;
 						try {
+							token = firebaseUtil.generateToken(loggedUser);
 							ResponseCookie cookie = ResponseCookie
-									.from(SecurityContextRepository.COOKIE_KEY, firebaseUtil.generateToken(loggedUser))
-									.path("/").httpOnly(true).sameSite("Lax").build(); 
+									.from(SecurityContextRepository.COOKIE_KEY, token)
+									.path("/").httpOnly(true).sameSite("").build(); 
 							//the problem
 							req.exchange().getResponse().addCookie(cookie);
 						} catch (FirebaseAuthException fae) {
 							return Mono.error(fae);//when something happens in firebase
 						}
-						return Mono.just(loggedUser);
+						return Mono.just(new UserWithToken(loggedUser, token));
 			});
 			
 			
