@@ -74,6 +74,8 @@ public class UserHandler {
 									.path("/").httpOnly(true).secure(false).build(); 
 							//the problem
 							req.exchange().getResponse().addCookie(cookie);
+							req.exchange().getResponse().getHeaders().setAccessControlAllowCredentials(true);
+							req.exchange().getResponse().getHeaders().setAccessControlAllowOrigin("http://localhost:4200");
 						} catch (FirebaseAuthException fae) {
 							return Mono.error(fae);//when something happens in firebase
 						}
