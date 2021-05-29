@@ -27,20 +27,18 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
 
 	@Override
 	public Mono<SecurityContext> load(ServerWebExchange swe) {
+		String authString = null;
 		if (swe.getRequest().getCookies().containsKey(COOKIE_KEY)
 				&& swe.getRequest().getCookies().getFirst(COOKIE_KEY) != null) {
-			String authCookie = swe.getRequest().getCookies().getFirst(COOKIE_KEY).getValue();
-			Authentication auth = new UsernamePasswordAuthenticationToken(authCookie, authCookie);
-			return this.authenticationManager.authenticate(auth)
-					.map(SecurityContextImpl::new);
+			authString = swe.getRequest().getCookies().getFirst(COOKIE_KEY).getValue();
 		} else if (swe.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION) != null) {
-			String bearer = swe.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION).substring(7);
-			Authentication auth = new UsernamePasswordAuthenticationToken(bearer, bearer);
-			return this.authenticationManager.authenticate(auth)
-					.map(SecurityContextImpl::new);
+			authString = swe.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION).substring(7);
 		} else {
 			return Mono.empty();
 		}
+		Authentication auth = new UsernamePasswordAuthenticationToken(authString, authString);
+		return this.authenticationManager.authenticate(auth)
+				.map(SecurityContextImpl::new);
 	}
 
 }
