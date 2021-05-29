@@ -1,19 +1,23 @@
 package com.revature.autosurvey.users.beans;
 
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 
 public class UserWithToken extends User {
 
 	private static final long serialVersionUID = -87467209632178467L;
 	
-	private String token;
+	private String token;;
 	
 	public UserWithToken() {
 		super();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public UserWithToken(User u, String token) {
 		BeanUtils.copyProperties(u, this);
+		this.setAuthorities((List<Role>) u.getAuthorities());
 		this.token = token;
 	}
 
