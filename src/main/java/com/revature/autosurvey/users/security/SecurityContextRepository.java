@@ -1,6 +1,7 @@
 package com.revature.autosurvey.users.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -26,15 +27,18 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
 
 	@Override
 	public Mono<SecurityContext> load(ServerWebExchange swe) {
+		String authString = null;
 		if (swe.getRequest().getCookies().containsKey(COOKIE_KEY)
 				&& swe.getRequest().getCookies().getFirst(COOKIE_KEY) != null) {
-			String authCookie = swe.getRequest().getCookies().getFirst(COOKIE_KEY).getValue();
-			Authentication auth = new UsernamePasswordAuthenticationToken(authCookie, authCookie);
-			return this.authenticationManager.authenticate(auth)
-					.map(SecurityContextImpl::new);
+			authString = swe.getRequest().getCookies().getFirst(COOKIE_KEY).getValue();
+		} else if (swe.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION) != null) {
+			authString = swe.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION).substring(7);
 		} else {
 			return Mono.empty();
 		}
+		Authentication auth = new UsernamePasswordAuthenticationToken(authString, authString);
+		return this.authenticationManager.authenticate(auth)
+				.map(SecurityContextImpl::new);
 	}
 
 }
