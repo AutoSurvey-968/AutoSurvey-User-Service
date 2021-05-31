@@ -231,6 +231,7 @@ class UserServiceTest {
 		u1.setAuthorities(rList);
 		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u1));
 		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
+		Mockito.when(userRepository.existsByEmail(u1.getEmail())).thenReturn(Mono.just(Boolean.FALSE));
 		Mono<User> result = userService.updateUser(u1);
 		StepVerifier.create(result).expectNext(u1).verifyComplete();
 	}
@@ -249,6 +250,7 @@ class UserServiceTest {
 		u1.setAuthorities(rList);
 		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u2));
 		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u2));
+		Mockito.when(userRepository.existsByEmail(u1.getEmail())).thenReturn(Mono.just(Boolean.FALSE));
 		Mono<User> result = userService.updateUser(u1);
 		StepVerifier.create(result).expectNext(u2).verifyComplete();
 	}
