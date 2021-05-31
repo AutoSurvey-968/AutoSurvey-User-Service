@@ -306,9 +306,7 @@ class UserServiceTest {
 		user.setId(0);
 		String id = "0";
 		when(userRepository.findById(Integer.parseInt(id))).thenReturn(Mono.just(user));
-		
 		Mono<User> result = userService.getUserById("0");
-		
 		StepVerifier.create(result).expectNext(user).verifyComplete();
 	}
 	
