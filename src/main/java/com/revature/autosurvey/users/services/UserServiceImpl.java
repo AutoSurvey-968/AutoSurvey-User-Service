@@ -27,6 +27,7 @@ import com.revature.autosurvey.users.errors.IllegalEmailException;
 import com.revature.autosurvey.users.errors.IllegalPasswordException;
 import com.revature.autosurvey.users.errors.NotFoundError;
 import com.revature.autosurvey.users.errors.UserAlreadyExistsError;
+import com.revature.autosurvey.users.sqs.SqsQueueSender;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,7 +38,8 @@ public class UserServiceImpl implements UserService {
 	private UserRepository userRepository;
 	private PasswordEncoder encoder;
 	private IdRepository idRepository;
-	
+	private SqsQueueSender qSender;
+
 	private Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	@Autowired
@@ -53,6 +55,11 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	public void setIdRepository(IdRepository idRepository) {
 		this.idRepository = idRepository;
+	}
+	
+	@Autowired
+	public void setSqsSender(SqsQueueSender sqs) {
+		this.qSender = sqs;
 	}
 
 	@Override
@@ -70,28 +77,28 @@ public class UserServiceImpl implements UserService {
 		if (Objects.equal(user, null)) {
 			return Mono.empty();
 		}
-		
+
 		if (user.getEmail() == null) {
 			return Mono.error(new IllegalEmailException("Empty Email Field"));
 		}
-		
+
 		Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
-		
+
 		Matcher emailMatcher = emailPattern.matcher(user.getEmail());
 		if (!emailMatcher.matches()) {
 			return Mono.error(new IllegalPasswordException("Entry is not an Email"));
 		}
-		
+
 		if (user.getPassword() == null) {
 			return Mono.error(new IllegalPasswordException("Empty password Field"));
 		}
-		
+
 		if (validatePassword(user.getPassword())) {
 			return Mono.error(new IllegalPasswordException("Invalid Password"));
 		}
-		
+
 		return userRepository.existsByEmail(user.getEmail()).flatMap(bool -> {
-			
+
 			if (!bool.booleanValue()) {
 				return idRepository.findById(Name.USER).flatMap(id -> {
 					user.setPassword(encoder.encode(user.getPassword()));
@@ -104,7 +111,10 @@ public class UserServiceImpl implements UserService {
 					user.setAccountNonLocked(true);
 					user.setCredentialsNonExpired(true);
 					id.setNextId(id.getNextId() + 1);
-					return idRepository.save(id).flatMap(nextId -> userRepository.insert(user));
+					return idRepository.save(id).flatMap(nextId -> {
+						
+						return userRepository.insert(user);
+					});
 				});
 			} else {
 				return Mono.error(new UserAlreadyExistsError());
@@ -114,7 +124,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Mono<User> updateUser(User user) {
-		
+
 		if (user.getPassword() != null && validatePassword(user.getPassword())) {
 			return Mono.error(new IllegalPasswordException("Invalid Password"));
 		}
@@ -126,7 +136,13 @@ public class UserServiceImpl implements UserService {
 				user.setPassword(found.getPassword());
 			}
 			log.debug("password: {}", user.getPassword());
-			return userRepository.save(user);
+			return userRepository.existsByEmail(user.getEmail()).flatMap(bool -> {
+				if (!bool.booleanValue()) {
+					return userRepository.save(user);
+				} else {
+					return Mono.error(new UserAlreadyExistsError("email already in use"));
+				}
+			});
 		}).switchIfEmpty(Mono.error(new NotFoundError()));
 	}
 
@@ -187,17 +203,18 @@ public class UserServiceImpl implements UserService {
 				log.debug("password change request: {}", pcr);
 				@SuppressWarnings("unchecked")
 				List<Role> roles = (List<Role>) fbt.getClaims().get("roles");
-				
-				if(validatePassword(pcr.getNewPass())) {
+
+				if (validatePassword(pcr.getNewPass())) {
 					return Mono.error(new IllegalPasswordException());
 				}
-				
+
 				log.debug(fbt.getUid());
-				if ((roles.contains(Role.ROLE_ADMIN) || fbt.getUid().equals(foundUser.getEmail()) && encoder.matches(pcr.getOldPass(), foundUser.getPassword()))) {
-						foundUser.setPassword(encoder.encode(pcr.getNewPass()));
-						userRepository.save(foundUser).subscribe();
-						return Mono.empty();
-					
+				if ((roles.contains(Role.ROLE_ADMIN) || fbt.getUid().equals(foundUser.getEmail())
+						&& encoder.matches(pcr.getOldPass(), foundUser.getPassword()))) {
+					foundUser.setPassword(encoder.encode(pcr.getNewPass()));
+					userRepository.save(foundUser).subscribe();
+					return Mono.empty();
+
 				}
 				log.debug("Not authorized for user: {}", foundUser);
 			}
@@ -206,28 +223,28 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public boolean validatePassword(String password) {
-		
-		if(!patternMatcher(".*(?=.*[0-9]).*", password)) {
+
+		if (!patternMatcher(".*(?=.*[0-9]).*", password)) {
 			return true;
 		}
-		
-		if(!patternMatcher(".*(?=.*[a-z]).*", password)) {
+
+		if (!patternMatcher(".*(?=.*[a-z]).*", password)) {
 			return true;
 		}
-		
-		if(!patternMatcher(".*(?=.*[A-Z]).*", password)) {
+
+		if (!patternMatcher(".*(?=.*[A-Z]).*", password)) {
 			return true;
 		}
-		
-		if(!patternMatcher(".*(?=.*[@#$%^&\\-+=()!]).*", password)) {
+
+		if (!patternMatcher(".*(?=.*[@#$%^&\\-+=()!]).*", password)) {
 			return true;
 		}
-		
+
 		return !patternMatcher(".{8,}", password);
 	}
-	
+
 	public boolean patternMatcher(String patternStr, String password) {
-		
+
 		Pattern pattern = Pattern.compile(patternStr);
 		Matcher matcher = pattern.matcher(password);
 		return matcher.matches();

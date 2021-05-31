@@ -28,6 +28,7 @@ import com.revature.autosurvey.users.errors.AuthorizationError;
 import com.revature.autosurvey.users.errors.NotFoundError;
 import com.revature.autosurvey.users.services.UserService;
 import com.revature.autosurvey.users.services.UserServiceImpl;
+import com.revature.autosurvey.users.sqs.SqsQueueSender;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -40,11 +41,12 @@ class UserServiceTest {
 	static class Config {
 
 		@Bean
-		public UserService getUserService(UserRepository userRepository, PasswordEncoder encoder, IdRepository ir) {
+		public UserService getUserService(UserRepository userRepository, PasswordEncoder encoder, IdRepository ir, SqsQueueSender sqs) {
 			UserServiceImpl usi = new UserServiceImpl();
 			usi.setIdRepository(ir);
 			usi.setUserRepo(userRepository);
 			usi.setPasswordEncoder(encoder);
+			usi.setSqsSender(sqs);
 			return usi;
 		}
 
@@ -61,6 +63,10 @@ class UserServiceTest {
 		@Bean
 		public IdRepository getIdRepo() {
 			return Mockito.mock(IdRepository.class);
+		}
+		
+		@Bean SqsQueueSender getSqs() {
+			return Mockito.mock(SqsQueueSender.class);
 		}
 	}
 	@Autowired
@@ -231,6 +237,7 @@ class UserServiceTest {
 		u1.setAuthorities(rList);
 		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u1));
 		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u1));
+		Mockito.when(userRepository.existsByEmail(u1.getEmail())).thenReturn(Mono.just(Boolean.FALSE));
 		Mono<User> result = userService.updateUser(u1);
 		StepVerifier.create(result).expectNext(u1).verifyComplete();
 	}
@@ -249,6 +256,7 @@ class UserServiceTest {
 		u1.setAuthorities(rList);
 		Mockito.when(userRepository.findById(1)).thenReturn(Mono.just(u2));
 		Mockito.when(userRepository.save(u1)).thenReturn(Mono.just(u2));
+		Mockito.when(userRepository.existsByEmail(u1.getEmail())).thenReturn(Mono.just(Boolean.FALSE));
 		Mono<User> result = userService.updateUser(u1);
 		StepVerifier.create(result).expectNext(u2).verifyComplete();
 	}
