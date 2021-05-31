@@ -205,7 +205,7 @@ public class UserServiceImpl implements UserService {
 		});
 	}
 
-	public boolean validatePassword(String password) {
+	private boolean validatePassword(String password) {
 		
 		if(!patternMatcher(".*(?=.*[0-9]).*", password)) {
 			return true;
@@ -226,7 +226,7 @@ public class UserServiceImpl implements UserService {
 		return !patternMatcher(".{8,}", password);
 	}
 	
-	public boolean patternMatcher(String patternStr, String password) {
+	private boolean patternMatcher(String patternStr, String password) {
 		
 		Pattern pattern = Pattern.compile(patternStr);
 		Matcher matcher = pattern.matcher(password);
