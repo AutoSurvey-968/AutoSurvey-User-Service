@@ -82,14 +82,6 @@ public class UserServiceImpl implements UserService {
 			return Mono.error(new IllegalPasswordException("Entry is not an Email"));
 		}
 
-		if (user.getPassword() == null) {
-			return Mono.error(new IllegalPasswordException("Empty password Field"));
-		}
-
-		if (validatePassword(user.getPassword())) {
-			return Mono.error(new IllegalPasswordException("Invalid Password"));
-		}
-
 		return userRepository.existsByEmail(user.getEmail()).flatMap(bool -> {
 
 			if (!bool.booleanValue()) {
