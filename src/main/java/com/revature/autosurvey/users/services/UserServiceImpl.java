@@ -1,10 +1,15 @@
 package com.revature.autosurvey.users.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +61,7 @@ public class UserServiceImpl implements UserService {
 	public void setIdRepository(IdRepository idRepository) {
 		this.idRepository = idRepository;
 	}
-	
+
 	@Autowired
 	public void setSqsSender(SqsQueueSender sqs) {
 		this.qSender = sqs;
@@ -93,11 +98,14 @@ public class UserServiceImpl implements UserService {
 
 			if (!bool.booleanValue()) {
 				return idRepository.findById(Name.USER).flatMap(id -> {
+					String password;
 					if (user.getPassword() == null) {
-						user.setPassword(encoder.encode(user.getFirstName() + user.getLastName()));
+						password = generateCommonLangPassword();
 					} else {
-						user.setPassword(encoder.encode(user.getPassword()));
+						password = user.getPassword();
 					}
+					log.debug("user password: {}",password);
+					user.setPassword(encoder.encode(password));
 					user.setId(id.getNextId());
 					List<Role> perms = new ArrayList<>();
 					perms.add(Role.ROLE_USER);
@@ -108,7 +116,11 @@ public class UserServiceImpl implements UserService {
 					user.setCredentialsNonExpired(true);
 					id.setNextId(id.getNextId() + 1);
 					return idRepository.save(id).flatMap(nextId -> {
-						
+						Map<String, String> registrationEmail = new HashMap<>();
+						registrationEmail.put("recipient", user.getEmail());
+						registrationEmail.put("subject", "Your new Survey QC account");
+						registrationEmail.put("body", "Your QC AutoSurvey account has been created!\nYour password is: " + password);
+						qSender.sendEmail(registrationEmail);
 						return userRepository.insert(user);
 					});
 				});
@@ -218,11 +230,7 @@ public class UserServiceImpl implements UserService {
 		});
 	}
 
-<<<<<<< HEAD
-	public boolean validatePassword(String password) {
-=======
 	private boolean validatePassword(String password) {
->>>>>>> main
 
 		if (!patternMatcher(".*(?=.*[0-9]).*", password)) {
 			return true;
@@ -243,15 +251,26 @@ public class UserServiceImpl implements UserService {
 		return !patternMatcher(".{8,}", password);
 	}
 
-<<<<<<< HEAD
-	public boolean patternMatcher(String patternStr, String password) {
-=======
 	private boolean patternMatcher(String patternStr, String password) {
->>>>>>> main
 
 		Pattern pattern = Pattern.compile(patternStr);
 		Matcher matcher = pattern.matcher(password);
 		return matcher.matches();
+	}
+
+	private String generateCommonLangPassword() {
+		String upperCaseLetters = RandomStringUtils.random(2, 65, 90, true, true);
+		String lowerCaseLetters = RandomStringUtils.random(2, 97, 122, true, true);
+		String numbers = RandomStringUtils.randomNumeric(2);
+		String specialChar = RandomStringUtils.random(2, 33, 47, false, false);
+		String totalChars = RandomStringUtils.randomAlphanumeric(2);
+		String combinedChars = upperCaseLetters.concat(lowerCaseLetters).concat(numbers).concat(specialChar)
+				.concat(totalChars);
+		List<Character> pwdChars = combinedChars.chars().mapToObj(c -> (char) c).collect(Collectors.toList());
+		Collections.shuffle(pwdChars);
+		String password = pwdChars.stream().collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+				.toString();
+		return password;
 	}
 
 }
