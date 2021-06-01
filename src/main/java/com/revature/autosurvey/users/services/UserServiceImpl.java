@@ -89,19 +89,15 @@ public class UserServiceImpl implements UserService {
 			return Mono.error(new IllegalPasswordException("Entry is not an Email"));
 		}
 
-		if (user.getPassword() == null) {
-			return Mono.error(new IllegalPasswordException("Empty password Field"));
-		}
-
-		if (validatePassword(user.getPassword())) {
-			return Mono.error(new IllegalPasswordException("Invalid Password"));
-		}
-
 		return userRepository.existsByEmail(user.getEmail()).flatMap(bool -> {
 
 			if (!bool.booleanValue()) {
 				return idRepository.findById(Name.USER).flatMap(id -> {
-					user.setPassword(encoder.encode(user.getPassword()));
+					if (user.getPassword() == null) {
+						user.setPassword(encoder.encode(user.getFirstName() + user.getLastName()));
+					} else {
+						user.setPassword(encoder.encode(user.getPassword()));
+					}
 					user.setId(id.getNextId());
 					List<Role> perms = new ArrayList<>();
 					perms.add(Role.ROLE_USER);
@@ -222,7 +218,11 @@ public class UserServiceImpl implements UserService {
 		});
 	}
 
+<<<<<<< HEAD
 	public boolean validatePassword(String password) {
+=======
+	private boolean validatePassword(String password) {
+>>>>>>> main
 
 		if (!patternMatcher(".*(?=.*[0-9]).*", password)) {
 			return true;
@@ -243,7 +243,11 @@ public class UserServiceImpl implements UserService {
 		return !patternMatcher(".{8,}", password);
 	}
 
+<<<<<<< HEAD
 	public boolean patternMatcher(String patternStr, String password) {
+=======
+	private boolean patternMatcher(String patternStr, String password) {
+>>>>>>> main
 
 		Pattern pattern = Pattern.compile(patternStr);
 		Matcher matcher = pattern.matcher(password);
