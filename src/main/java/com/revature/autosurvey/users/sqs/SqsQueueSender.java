@@ -24,7 +24,6 @@ public class SqsQueueSender {
 	}
 	
 	public void sendEmail(Email message) {
-		System.out.println(Jackson.toJsonString(message));
 		this.queueMessagingTemplate.send(queueName, MessageBuilder.withPayload(Jackson.toJsonString(message)).build());
 	}
 
