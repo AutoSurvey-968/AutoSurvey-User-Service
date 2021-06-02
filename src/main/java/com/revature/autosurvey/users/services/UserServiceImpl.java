@@ -265,7 +265,7 @@ public class UserServiceImpl implements UserService {
 		String totalChars = RandomStringUtils.randomAlphanumeric(2);
 		String combinedChars = upperCaseLetters.concat(lowerCaseLetters).concat(numbers).concat(specialChar)
 				.concat(totalChars);
-		List<Character> pwdChars = combinedChars.chars().mapToObj(char.class::cast).collect(Collectors.toList());
+		List<Character> pwdChars = combinedChars.chars().mapToObj(c -> (char) c).collect(Collectors.toList());
 		Collections.shuffle(pwdChars);
 		return pwdChars.stream().collect(StringBuilder::new, StringBuilder::append, StringBuilder::append).toString();
 	}
