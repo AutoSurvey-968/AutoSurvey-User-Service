@@ -1,7 +1,5 @@
 package com.revature.autosurvey.users.sqs;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
@@ -10,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.util.json.Jackson;
+import com.revature.autosurvey.users.beans.Email;
 
 @Component
 public class SqsQueueSender {
@@ -24,7 +23,8 @@ public class SqsQueueSender {
 		this.queueMessagingTemplate = new QueueMessagingTemplate(sqs);
 	}
 	
-	public void sendEmail(Map<String, String> message) {
+	public void sendEmail(Email message) {
+		System.out.println(Jackson.toJsonString(message));
 		this.queueMessagingTemplate.send(queueName, MessageBuilder.withPayload(Jackson.toJsonString(message)).build());
 	}
 

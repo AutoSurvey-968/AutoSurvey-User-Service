@@ -2,9 +2,7 @@ package com.revature.autosurvey.users.services;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -19,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.datastax.oss.driver.shaded.guava.common.base.Objects;
 import com.google.firebase.auth.FirebaseToken;
+import com.revature.autosurvey.users.beans.Email;
 import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.Id.Name;
 import com.revature.autosurvey.users.beans.LoginRequest;
@@ -116,10 +115,10 @@ public class UserServiceImpl implements UserService {
 					user.setCredentialsNonExpired(true);
 					id.setNextId(id.getNextId() + 1);
 					return idRepository.save(id).flatMap(nextId -> {
-						Map<String, String> registrationEmail = new HashMap<>();
-						registrationEmail.put("recipient", user.getEmail());
-						registrationEmail.put("subject", "Your new Survey QC account");
-						registrationEmail.put("body", "Your QC AutoSurvey account has been created!\nYour password is: " + password);
+						Email registrationEmail = new Email();
+						registrationEmail.setRecipient(user.getEmail());
+						registrationEmail.setSubject("Your new AutoSurvey QC account");
+						registrationEmail.setBody("Hello, " + user.getFirstName() + " Your QC AutoSurvey account has been created!\n\nYour password is: " + password);
 						qSender.sendEmail(registrationEmail);
 						return userRepository.insert(user);
 					});
