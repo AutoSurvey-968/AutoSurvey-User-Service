@@ -28,6 +28,7 @@ import com.revature.autosurvey.users.errors.AuthorizationError;
 import com.revature.autosurvey.users.errors.NotFoundError;
 import com.revature.autosurvey.users.services.UserService;
 import com.revature.autosurvey.users.services.UserServiceImpl;
+import com.revature.autosurvey.users.sqs.SqsQueueSender;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -40,11 +41,12 @@ class UserServiceTest {
 	static class Config {
 
 		@Bean
-		public UserService getUserService(UserRepository userRepository, PasswordEncoder encoder, IdRepository ir) {
+		public UserService getUserService(UserRepository userRepository, PasswordEncoder encoder, IdRepository ir, SqsQueueSender sqs) {
 			UserServiceImpl usi = new UserServiceImpl();
 			usi.setIdRepository(ir);
 			usi.setUserRepo(userRepository);
 			usi.setPasswordEncoder(encoder);
+			usi.setSqsSender(sqs);
 			return usi;
 		}
 
@@ -61,6 +63,10 @@ class UserServiceTest {
 		@Bean
 		public IdRepository getIdRepo() {
 			return Mockito.mock(IdRepository.class);
+		}
+		
+		@Bean SqsQueueSender getSqs() {
+			return Mockito.mock(SqsQueueSender.class);
 		}
 	}
 	@Autowired

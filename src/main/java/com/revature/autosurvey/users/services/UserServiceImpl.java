@@ -1,10 +1,13 @@
 package com.revature.autosurvey.users.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.datastax.oss.driver.shaded.guava.common.base.Objects;
 import com.google.firebase.auth.FirebaseToken;
+import com.revature.autosurvey.users.beans.Email;
 import com.revature.autosurvey.users.beans.Id;
 import com.revature.autosurvey.users.beans.Id.Name;
 import com.revature.autosurvey.users.beans.LoginRequest;
@@ -27,6 +31,7 @@ import com.revature.autosurvey.users.errors.IllegalEmailException;
 import com.revature.autosurvey.users.errors.IllegalPasswordException;
 import com.revature.autosurvey.users.errors.NotFoundError;
 import com.revature.autosurvey.users.errors.UserAlreadyExistsError;
+import com.revature.autosurvey.users.sqs.SqsQueueSender;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,6 +42,7 @@ public class UserServiceImpl implements UserService {
 	private UserRepository userRepository;
 	private PasswordEncoder encoder;
 	private IdRepository idRepository;
+	private SqsQueueSender qSender;
 
 	private Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -53,6 +59,11 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	public void setIdRepository(IdRepository idRepository) {
 		this.idRepository = idRepository;
+	}
+
+	@Autowired
+	public void setSqsSender(SqsQueueSender sqs) {
+		this.qSender = sqs;
 	}
 
 	@Override
@@ -86,11 +97,14 @@ public class UserServiceImpl implements UserService {
 
 			if (!bool.booleanValue()) {
 				return idRepository.findById(Name.USER).flatMap(id -> {
+					String password;
 					if (user.getPassword() == null) {
-						user.setPassword(encoder.encode(user.getFirstName() + user.getLastName()));
+						password = generateCommonLangPassword();
 					} else {
-						user.setPassword(encoder.encode(user.getPassword()));
+						password = user.getPassword();
 					}
+					log.debug("user password: {}",password);
+					user.setPassword(encoder.encode(password));
 					user.setId(id.getNextId());
 					List<Role> perms = new ArrayList<>();
 					perms.add(Role.ROLE_USER);
@@ -100,7 +114,14 @@ public class UserServiceImpl implements UserService {
 					user.setAccountNonLocked(true);
 					user.setCredentialsNonExpired(true);
 					id.setNextId(id.getNextId() + 1);
-					return idRepository.save(id).flatMap(nextId -> userRepository.insert(user));
+					return idRepository.save(id).flatMap(nextId -> {
+						Email registrationEmail = new Email();
+						registrationEmail.setRecipient(user.getEmail());
+						registrationEmail.setSubject("Your new AutoSurvey QC account");
+						registrationEmail.setBody("Hello, " + user.getFirstName() + " Your QC AutoSurvey account has been created!\n\nYour password is: " + password);
+						qSender.sendEmail(registrationEmail);
+						return userRepository.insert(user);
+					});
 				});
 			} else {
 				return Mono.error(new UserAlreadyExistsError());
@@ -110,22 +131,26 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Mono<User> updateUser(User user) {
+
 		if (user.getPassword() != null && validatePassword(user.getPassword())) {
 			return Mono.error(new IllegalPasswordException("Invalid Password"));
 		}
-		return userRepository.findById(user.getId())
-				.flatMap(found -> userRepository.existsByEmail(user.getEmail()).flatMap(bool -> {
-					if (bool.booleanValue()) {
-						return Mono.empty();
-					}
-					if (user.getPassword() != null) {
-						user.setPassword(encoder.encode(user.getPassword()));
-					} else {
-						user.setPassword(found.getPassword());
-					}
-					log.debug("password: {}", user.getPassword());
+
+		return userRepository.findById(user.getId()).flatMap(found -> {
+			if (user.getPassword() != null) {
+				user.setPassword(encoder.encode(user.getPassword()));
+			} else {
+				user.setPassword(found.getPassword());
+			}
+			log.debug("password: {}", user.getPassword());
+			return userRepository.existsByEmail(user.getEmail()).flatMap(bool -> {
+				if (!bool.booleanValue()) {
 					return userRepository.save(user);
-				})).switchIfEmpty(Mono.error(new NotFoundError()));
+				} else {
+					return Mono.error(new UserAlreadyExistsError("email already in use"));
+				}
+			});
+		}).switchIfEmpty(Mono.error(new NotFoundError()));
 	}
 
 	@Override
@@ -230,6 +255,19 @@ public class UserServiceImpl implements UserService {
 		Pattern pattern = Pattern.compile(patternStr);
 		Matcher matcher = pattern.matcher(password);
 		return matcher.matches();
+	}
+
+	private String generateCommonLangPassword() {
+		String upperCaseLetters = RandomStringUtils.random(2, 65, 90, true, true);
+		String lowerCaseLetters = RandomStringUtils.random(2, 97, 122, true, true);
+		String numbers = RandomStringUtils.randomNumeric(2);
+		String specialChar = RandomStringUtils.random(2, 33, 47, false, false);
+		String totalChars = RandomStringUtils.randomAlphanumeric(2);
+		String combinedChars = upperCaseLetters.concat(lowerCaseLetters).concat(numbers).concat(specialChar)
+				.concat(totalChars);
+		List<Character> pwdChars = combinedChars.chars().mapToObj(char.class::cast).collect(Collectors.toList());
+		Collections.shuffle(pwdChars);
+		return pwdChars.stream().collect(StringBuilder::new, StringBuilder::append, StringBuilder::append).toString();
 	}
 
 }
