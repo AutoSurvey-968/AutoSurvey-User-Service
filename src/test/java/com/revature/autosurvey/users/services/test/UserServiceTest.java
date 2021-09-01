@@ -40,13 +40,10 @@ class UserServiceTest {
 	@TestConfiguration
 	static class Config {
 
+		//changed the getUserServicetest so ill have to test it later
 		@Bean
 		public UserService getUserService(UserRepository userRepository, PasswordEncoder encoder, IdRepository ir, SqsQueueSender sqs) {
-			UserServiceImpl usi = new UserServiceImpl();
-			usi.setIdRepository(ir);
-			usi.setUserRepo(userRepository);
-			usi.setPasswordEncoder(encoder);
-			usi.setSqsSender(sqs);
+			UserServiceImpl usi = new UserServiceImpl(userRepository, encoder, ir, sqs);
 			return usi;
 		}
 

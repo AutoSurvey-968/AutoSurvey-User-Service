@@ -47,25 +47,14 @@ public class UserServiceImpl implements UserService {
 	private Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	@Autowired
-	public void setUserRepo(UserRepository userRepository) {
+	public UserServiceImpl(UserRepository userRepository, PasswordEncoder encoder, IdRepository idRepository, SqsQueueSender sqs) {
+		super();
 		this.userRepository = userRepository;
-	}
-
-	@Autowired
-	public void setPasswordEncoder(PasswordEncoder encoder) {
 		this.encoder = encoder;
-	}
-
-	@Autowired
-	public void setIdRepository(IdRepository idRepository) {
 		this.idRepository = idRepository;
-	}
-
-	@Autowired
-	public void setSqsSender(SqsQueueSender sqs) {
 		this.qSender = sqs;
 	}
-
+	
 	@Override
 	public Flux<User> getAllUsers() {
 		return userRepository.findAll();

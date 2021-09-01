@@ -15,7 +15,6 @@ import reactor.core.publisher.Mono;
 
 public interface UserService extends ReactiveUserDetailsService {
 	
-	public void setUserRepo(UserRepository userRepo);
 	
 	Flux<User> getAllUsers();
 	
