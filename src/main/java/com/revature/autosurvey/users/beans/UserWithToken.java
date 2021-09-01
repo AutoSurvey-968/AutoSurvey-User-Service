@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 
 public class UserWithToken extends User {
+	
+	//lombok not used since it generates errors
 
 	private static final long serialVersionUID = -87467209632178467L;
 	
