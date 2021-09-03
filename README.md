@@ -35,6 +35,9 @@ Set environment variables:
 * EUREKA_URL - default URL for eureka host
 * FIREBASE_API_KEY - Firebase API key for authentication calls
 * SERVICE_ACCOUNT_ID - Firebase service account id
+* SQS_USER - SQS username
+* SQS_PASS - SQS password
+* SQS_QUEUE_NAME - name of queue you are accessing
 
 First, clone the repository:  
 
