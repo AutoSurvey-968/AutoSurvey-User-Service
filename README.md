@@ -31,6 +31,7 @@ Set environment variables:
 
 * AWS_USER - Keyspaces username
 * AWS_PASS - Keyspaces password
+* TRUSTSTORE_PASS  - Truststore password 
 * CREDENTIALS_JSON - name of credentials json file to be placed in src/main/resources
 * EUREKA_URL - default URL for eureka host
 * FIREBASE_API_KEY - Firebase API key for authentication calls
